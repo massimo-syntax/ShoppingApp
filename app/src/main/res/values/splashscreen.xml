@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="Theme.nameofsplashscreen.Splash" parent="Theme.SplashScreen">
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_cart</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+
+        <item name="windowSplashScreenIconBackgroundColor">#F44336</item>
+
+
+        <!-- Defaults to the theme
+        <item name="windowSplashScreenBackground">?attr/animationBackgroundColor</item>
+        -->
+        <item name="windowSplashScreenBackground">#4CAF50</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.ShoppingApp</item>
+    </style>
+
+
+</resources>

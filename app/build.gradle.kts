@@ -80,6 +80,9 @@ dependencies {
     // ViewModel integration with Navigation3
     //implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0-alpha04")
 
+    // splash screeen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
