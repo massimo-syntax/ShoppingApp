@@ -1,4 +1,4 @@
-package com.example.shoppingapp.screens
+package com.example.shoppingapp.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,7 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.viewmodel.RemoteProductsViewModel
 
 @Composable
-fun RemoteProductsScreen(viewModel: RemoteProductsViewModel = viewModel()) {
+fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProductsViewModel = viewModel()) {
 
     val products by viewModel.products
 

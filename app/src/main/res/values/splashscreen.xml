@@ -4,8 +4,8 @@
 
     <style name="Theme.nameofsplashscreen.Splash" parent="Theme.SplashScreen">
 
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_cart</item>
-        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/adaptivecarticon_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">2000</item>
 
         <item name="windowSplashScreenIconBackgroundColor">#F44336</item>
 

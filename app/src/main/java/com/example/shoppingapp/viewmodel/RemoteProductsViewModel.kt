@@ -19,6 +19,7 @@ class RemoteProductsViewModel : ViewModel() {
                 val productsResponse = repository.getProducts()
                 products.value = productsResponse
             } catch (e: Exception) {
+                products.value = emptyList()
                 Log.wtf("NO DATA FROM REMOTE , VIEWMODEL", "-- ERROR IN VIEWMODEL ::: ${e.message}")
             }
         }
