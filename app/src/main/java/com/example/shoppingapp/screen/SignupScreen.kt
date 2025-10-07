@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 
 import androidx.compose.foundation.verticalScroll
@@ -41,12 +42,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
 
 import com.example.shoppingapp.viewmodel.AuthViewModel
 
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier , authViewModel: AuthViewModel = viewModel() ){
+fun SignupScreen(modifier: Modifier = Modifier , navController: NavController ,authViewModel: AuthViewModel = viewModel() ){
 
     var email by remember{mutableStateOf("")}
     var name by remember{mutableStateOf("")}
@@ -140,8 +143,11 @@ fun SignupScreen(modifier: Modifier = Modifier , authViewModel: AuthViewModel = 
                     signupLoading = true
                     authViewModel.signup(email, name, password){ successful, message ->
                         if(successful){
-                            Toast.makeText(context,"User created successfully", Toast.LENGTH_SHORT).show()
                             signupLoading = false
+                            navController.navigate(Routes.main){
+                                // pop [auth][signup] backstack, first in backstack is main now
+                                popUpTo(Routes.auth){inclusive = true}
+                            }
                         }else{
                             Toast.makeText(context, message?:"creating user failed", Toast.LENGTH_SHORT).show()
                             signupLoading = false
@@ -159,7 +165,7 @@ fun SignupScreen(modifier: Modifier = Modifier , authViewModel: AuthViewModel = 
 
             if(signupLoading)
                 CircularProgressIndicator(
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier.width(36.dp),
                     color = Color.DarkGray
                 )
             else

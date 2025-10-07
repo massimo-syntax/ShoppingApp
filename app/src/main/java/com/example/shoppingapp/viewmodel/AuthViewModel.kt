@@ -3,6 +3,7 @@ package com.example.shoppingapp.viewmodel
 import androidx.lifecycle.ViewModel
 import com.example.shoppingapp.data.model.User
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 
@@ -11,7 +12,21 @@ class AuthViewModel : ViewModel() {
     private val auth = Firebase.auth
     private val DB = Firebase.firestore
 
+
+    fun login(email:String, password: String, resultCallback: (success:Boolean, message:String?) -> Unit){
+        if (email.isNullOrEmpty()||password.isNullOrEmpty())return
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                resultCallback(true,null)
+            }
+            .addOnFailureListener {
+                resultCallback(false, it.message)
+            }
+    }
+
     fun signup(email:String , name: String , password:String, resultCallback:(successful:Boolean , message:String?)->Unit ){
+        if (email.isNullOrEmpty()||name.isNullOrEmpty()||password.isNullOrEmpty())return
+
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if(it.isSuccessful){

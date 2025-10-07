@@ -1,13 +1,17 @@
 package com.example.shoppingapp.screen
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
@@ -20,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -29,16 +34,31 @@ import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
+import com.example.shoppingapp.viewmodel.AuthViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier){
+fun LoginScreen(modifier: Modifier = Modifier , navController: NavController, authViewModel: AuthViewModel = viewModel()){
+
+    val context = LocalContext.current
+    fun toast(message:Any?){
+        if(message == null)Toast.makeText(context, "toast not working, MESSAGE IS NULL", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show()
+    }
 
     var email by remember{mutableStateOf("")}
     var password by remember { mutableStateOf("") }
+    var loading by remember {mutableStateOf(false)}
 
     Column (
         modifier = modifier
+            .imePadding()
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,
@@ -92,19 +112,40 @@ fun LoginScreen(modifier: Modifier = Modifier){
 
         Button(
             onClick = {
-                if(email.isEmpty() || password.isEmpty())
-                    email = "something empty"
-                else
-                    email = "nice email"
+                if(email.isEmpty() || password.isEmpty()){
+                    toast("All fields are required")
+                    return@Button
+                }
+                loading = true
+                authViewModel.login(email, password){ success, message ->
+                    if(success){
+                        //redirect user
+                        navController.navigate(Routes.main){
+                            // pop [auth][signup] backstack, first in backstack is main now
+                            popUpTo(Routes.auth){inclusive = true}
+                        }
+                        loading = false
+                    }else{
+                        toast(message)
+                        loading = false
+                    }
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+                .height(60.dp),
+            enabled = !loading
         ) {
-            Text(
-                text = "Login",
-                fontSize = 22.sp
-            )
+            if(loading)
+                CircularProgressIndicator(
+                    modifier = Modifier.width(36.dp),
+                    color = Color.DarkGray
+                )
+            else
+                Text(
+                    text = "Login",
+                    fontSize = 22.sp
+                )
         }
 
 
