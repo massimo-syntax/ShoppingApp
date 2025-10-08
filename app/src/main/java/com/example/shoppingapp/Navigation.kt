@@ -15,7 +15,7 @@ import com.google.firebase.auth.auth
 @Composable
 fun Navigation(modifier: Modifier = Modifier){
 
-    // rediirect to main screen if user is already/still logged in
+    // redirect to main screen if user is already/still logged in
 
     val login:Boolean = Firebase.auth.currentUser != null
     val startDestination = if(login) Routes.main else Routes.auth

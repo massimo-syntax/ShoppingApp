@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -35,16 +36,17 @@ fun CustomTextField(){
         state = state,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(6.dp)
+            .padding(0.dp)
             .border(1.dp, Color.LightGray, RoundedCornerShape(6.dp))
             .padding(2.dp),
         textStyle = TextStyle(fontSize = 18.sp),
         decorator = { innerTextField ->
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.fillMaxWidth().border(1.dp,Color.Green)) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp, end = 48.dp)
+                        .border(1.dp, Color.Red, RectangleShape)
                 ) {
                     innerTextField()
                 }
@@ -55,11 +57,10 @@ fun CustomTextField(){
                         .align(Alignment.CenterEnd)
                         .requiredSize(48.dp)
                         .padding(2.dp)
+                        .border(1.dp,Color.Cyan)
                 )
             }
         }
-
-
     )
 
 

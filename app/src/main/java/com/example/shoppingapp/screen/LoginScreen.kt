@@ -39,8 +39,7 @@ import androidx.navigation.NavController
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.viewmodel.AuthViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier , navController: NavController, authViewModel: AuthViewModel = viewModel()){
