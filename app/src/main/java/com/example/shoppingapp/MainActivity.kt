@@ -19,12 +19,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // format code Ctrl+Shift+Alt+L
         setContent {
             ShoppingAppTheme {
-                Scaffold(Modifier.fillMaxSize()) { innerPadding ->
-                    Navigation(Modifier.padding(innerPadding))
+
+                    Navigation()
                 }
-            }
+
         }
     }
 }

@@ -23,7 +23,9 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
         viewModel.fetchProducts()
     }
 
-    Column {
+    Column (
+        modifier
+    ) {
         if (products.isEmpty()) {
             // Show loading indicator or placeholder
             Text(text = "Loading...")

@@ -1,14 +1,19 @@
 package com.example.shoppingapp.screen
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,13 +25,16 @@ import androidx.compose.ui.unit.dp
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.TopBarHome
 import com.example.shoppingapp.components.TopBarHouse
+import com.example.shoppingapp.screen.mainScreenPages.Home
+import java.lang.reflect.TypeVariable
 
 enum class Pages{ ONE, TWO, THREE, FOUR }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier){
+fun MainScreen(){
 
     var selectedPage by remember { mutableStateOf(Pages.ONE) }
+    val variable  = rememberTextFieldState()
 
     fun colorNavbarItem(page:Pages):Color{
         return if (selectedPage == page) Color.Black
@@ -34,17 +42,19 @@ fun MainScreen(modifier: Modifier = Modifier){
     }
 
     Scaffold(
-        topBar = { when(selectedPage) {
-                        Pages.ONE -> TopBarHome()
-                        Pages.TWO -> null
-                        Pages.THREE -> TopBarHouse()
-                        Pages.FOUR -> null
-                    }
-                 },
+        topBar = {
+            when(selectedPage){
+                Pages.ONE -> TopBarHouse(variable)
+                Pages.TWO -> null
+                Pages.THREE -> null
+                Pages.FOUR -> null
+            }
+        },
+
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier.padding(top = 20.dp)
+                modifier = Modifier.border(2.dp,Color.Red)
             ){
                 NavigationBarItem(
                     selected = false,
@@ -104,23 +114,27 @@ fun MainScreen(modifier: Modifier = Modifier){
                             tint = colorNavbarItem(Pages.FOUR)
                         )
                     },
-                    label = {Text("page1")}
+                    label = {Text(text = variable.text.toString())}
                 )
             }
 
         }
     ) { innerPadding ->
-        MainScreenContent(modifier.padding(innerPadding) , selectedPage)
+        MainScreenContent(
+            modifier= Modifier.padding(innerPadding),
+            selectedPage,
+            variable
+            )
     }
 
 
 }
 
 @Composable
-fun MainScreenContent(modifier: Modifier = Modifier, page: Pages){
+fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, variable: TextFieldState){
 
     when(page){
-        Pages.ONE -> Text("hello there")
+        Pages.ONE -> Home(modifier, variable)
         Pages.TWO -> Text("hello there 2")
         Pages.THREE -> RemoteProductsScreen()
         Pages.FOUR -> Text("hello there last")

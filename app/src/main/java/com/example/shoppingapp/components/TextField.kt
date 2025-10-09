@@ -1,5 +1,6 @@
 package com.example.shoppingapp.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -28,12 +30,12 @@ import androidx.compose.ui.unit.sp
 import com.example.shoppingapp.R
 
 @Composable
-fun CustomTextField(){
+fun CustomTextField(textFieldState: TextFieldState){
 
-    val state = remember { TextFieldState() }
+    //val state = remember { TextFieldState() }
 
     BasicTextField(
-        state = state,
+        state = textFieldState,
         modifier = Modifier
             .fillMaxWidth()
             .padding(0.dp)
@@ -62,9 +64,40 @@ fun CustomTextField(){
             }
         }
     )
+}
 
 
 
+
+@Composable
+fun SearchTextField(textFieldState: TextFieldState){
+    //val state = remember { TextFieldState() }
+    BasicTextField(
+        state = textFieldState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape = RoundedCornerShape(16.dp))
+            .background(Color.LightGray)
+            .border(1.dp, Color.Blue, RoundedCornerShape(16.dp)),
+        textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        color = Color.Green
+        ),
+        decorator = { innerTextField ->
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 16.dp, end = 16.dp)
+                        .border(1.dp, Color.Red, RectangleShape)
+                ) {
+                    innerTextField()
+                }
+            }
+        }
+    )
 }
 
 

@@ -13,7 +13,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 @Composable
-fun Navigation(modifier: Modifier = Modifier){
+fun Navigation(){
 
     // redirect to main screen if user is already/still logged in
 
@@ -23,17 +23,20 @@ fun Navigation(modifier: Modifier = Modifier){
     val navController = rememberNavController()
 
     NavHost(navController = navController , startDestination = startDestination) {
+       /*
         composable(Routes.auth) {
-            AuthScreen(modifier , navController)
+            AuthScreen( navController)
         }
         composable(Routes.login) {
-            LoginScreen(modifier, navController)
+            LoginScreen( navController)
         }
         composable(Routes.signup) {
-            SignupScreen(modifier , navController)
+            SignupScreen( navController)
         }
+        */
+
         composable(Routes.main) {
-            MainScreen(modifier)
+            MainScreen()
         }
         //RemoteProductsScreen(modifier)
     }
