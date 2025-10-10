@@ -26,10 +26,10 @@ import com.example.shoppingapp.Routes
 import com.example.shoppingapp.R
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier, navController: NavHostController){
+fun AuthScreen( navController: NavHostController){
 
     Column(
-        modifier
+         modifier = Modifier
             .fillMaxSize()
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,

@@ -42,7 +42,7 @@ import com.example.shoppingapp.viewmodel.AuthViewModel
 
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier , navController: NavController, authViewModel: AuthViewModel = viewModel()){
+fun LoginScreen( navController: NavController, authViewModel: AuthViewModel = viewModel()){
 
     val context = LocalContext.current
     fun toast(message:Any?){
@@ -55,7 +55,7 @@ fun LoginScreen(modifier: Modifier = Modifier , navController: NavController, au
     var loading by remember {mutableStateOf(false)}
 
     Column (
-        modifier = modifier
+        modifier = Modifier
             .imePadding()
             .verticalScroll(rememberScrollState())
             .fillMaxSize()

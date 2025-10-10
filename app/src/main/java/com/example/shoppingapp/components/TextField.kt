@@ -21,6 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -70,11 +72,12 @@ fun CustomTextField(textFieldState: TextFieldState){
 
 
 @Composable
-fun SearchTextField(textFieldState: TextFieldState){
+fun SearchTextField(textFieldState: TextFieldState , focusRequester: FocusRequester){
     //val state = remember { TextFieldState() }
     BasicTextField(
         state = textFieldState,
         modifier = Modifier
+            .focusRequester(focusRequester)
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(16.dp))
             .background(Color.LightGray)

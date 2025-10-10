@@ -23,22 +23,19 @@ fun Navigation(){
     val navController = rememberNavController()
 
     NavHost(navController = navController , startDestination = startDestination) {
-       /*
+
         composable(Routes.auth) {
-            AuthScreen( navController)
+            AuthScreen(navController)
         }
         composable(Routes.login) {
-            LoginScreen( navController)
+            LoginScreen(navController)
         }
         composable(Routes.signup) {
-            SignupScreen( navController)
+            SignupScreen(navController)
         }
-        */
-
         composable(Routes.main) {
             MainScreen()
         }
-        //RemoteProductsScreen(modifier)
     }
 
 }

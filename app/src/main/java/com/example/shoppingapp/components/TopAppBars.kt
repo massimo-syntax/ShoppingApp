@@ -21,8 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -79,34 +81,48 @@ fun TopBarHome() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarHouse(textState: TextFieldState) {
-    var expanded by remember { mutableStateOf(false) }
+    var active by remember {mutableStateOf(false)}
+    val focusRequester = remember { FocusRequester() }
+    //val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     TopAppBar(
         modifier = Modifier.background(color = Color.Transparent),
         title = {
-            if (expanded) SearchTextField(textState)
-            else Text("Navbar house")
+            SearchTextField(textState , focusRequester)
                 },
         actions = {
-            Spacer(Modifier.width(6.dp))
-            IconButton(
-                onClick = {
-                    expanded = !expanded
-                    textState.clearText()
-                }) {
-                if (expanded)
-                    Image(
-                        painter = painterResource(R.drawable.ic_launcher_foreground),
-                        contentDescription = "cart icon",
-                    )
+            Spacer(Modifier.width(8.dp))
+            IconButton(onClick = {
+                active = !active
+                if(active){
+
+                    focusRequester.requestFocus()
+                    textState.setTextAndPlaceCursorAtEnd("")
+                    keyboardController?.show()
+
+                }else{
+                    //textState.clearText()
+                    textState.setTextAndPlaceCursorAtEnd("")
+                    //focusManager.clearFocus()
+                    keyboardController?.hide()
+
+                }
+            }) {
+                if(active)
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_background),
+                    contentDescription = "cart icon",
+                )
                 else
                     Image(
                         painter = painterResource(R.drawable.adaptivecarticon_foreground),
                         contentDescription = "cart icon",
                     )
-
             }
-            IconButton(onClick = { textState.clearText()}) {
+
+            IconButton(onClick = {}) {
                 Image(
                     painter = painterResource(R.drawable.ic_launcher_background),
                     contentDescription = "cart icon",

@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +35,8 @@ enum class Pages{ ONE, TWO, THREE, FOUR }
 fun MainScreen(){
 
     var selectedPage by remember { mutableStateOf(Pages.ONE) }
-    val variable  = rememberTextFieldState()
+    val textFieldState = rememberTextFieldState()
+
 
     fun colorNavbarItem(page:Pages):Color{
         return if (selectedPage == page) Color.Black
@@ -44,13 +46,12 @@ fun MainScreen(){
     Scaffold(
         topBar = {
             when(selectedPage){
-                Pages.ONE -> TopBarHouse(variable)
+                Pages.ONE -> TopBarHouse(textFieldState)
                 Pages.TWO -> null
                 Pages.THREE -> null
                 Pages.FOUR -> null
             }
         },
-
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.background,
@@ -114,7 +115,7 @@ fun MainScreen(){
                             tint = colorNavbarItem(Pages.FOUR)
                         )
                     },
-                    label = {Text(text = variable.text.toString())}
+                    label = {Text(text = textFieldState.text.toString())}
                 )
             }
 
@@ -122,19 +123,19 @@ fun MainScreen(){
     ) { innerPadding ->
         MainScreenContent(
             modifier= Modifier.padding(innerPadding),
-            selectedPage,
-            variable
-            )
+            page = selectedPage,
+            textFieldState,
+        )
     }
 
 
 }
 
 @Composable
-fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, variable: TextFieldState){
+fun MainScreenContent(modifier: Modifier = Modifier, page: Pages , textFieldState: TextFieldState){
 
     when(page){
-        Pages.ONE -> Home(modifier, variable)
+        Pages.ONE -> Home(modifier , textFieldState)
         Pages.TWO -> Text("hello there 2")
         Pages.THREE -> RemoteProductsScreen()
         Pages.FOUR -> Text("hello there last")

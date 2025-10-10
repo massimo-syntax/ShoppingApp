@@ -49,7 +49,7 @@ import com.example.shoppingapp.Routes
 import com.example.shoppingapp.viewmodel.AuthViewModel
 
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier , navController: NavController ,authViewModel: AuthViewModel = viewModel() ){
+fun SignupScreen( navController: NavController ,authViewModel: AuthViewModel = viewModel() ){
 
     var email by remember{mutableStateOf("")}
     var name by remember{mutableStateOf("")}
@@ -61,7 +61,7 @@ fun SignupScreen(modifier: Modifier = Modifier , navController: NavController ,a
     val context = LocalContext.current
 
     Column (
-        modifier = modifier
+        modifier = Modifier
             .imePadding()
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
