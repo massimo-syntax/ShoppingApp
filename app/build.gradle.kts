@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.compose.ui.unit)
 
     //
     val lifecycle_version = "2.9.4"
@@ -86,6 +87,13 @@ dependencies {
 
     // splash screeen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // AsyncImage
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // probably no need
+    //implementation("io.coil-kt.coil3:coil-network-okhttp:4.12.0")
+    //implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

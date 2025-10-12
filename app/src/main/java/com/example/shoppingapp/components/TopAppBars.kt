@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -29,6 +28,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.shoppingapp.R
+import com.example.shoppingapp.data.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -61,15 +61,15 @@ fun TopBarHome() {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    onClick = {},
+                    onClick = {expanded = false},
                     text = { Text("option 1") }
                 )
                 DropdownMenuItem(
-                    onClick = {},
+                    onClick = {expanded = false},
                     text = { Text("option 2") }
                 )
                 DropdownMenuItem(
-                    onClick = {},
+                    onClick = {expanded = false},
                     text = { Text("option 3") }
                 )
             }
@@ -77,39 +77,108 @@ fun TopBarHome() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimpleStandardTopBar(title: String = "Title" ) {
+    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    TopAppBar(
+        modifier = Modifier,
+        title = { Text(title) },
+        actions = {
+            IconButton(onClick = {
+                Toast.makeText(context, "Nothing", Toast.LENGTH_SHORT).show()
+            }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = "cart icon"
+                )
+            }
+            IconButton(onClick = { expanded = !expanded }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher_background),
+                    contentDescription = "cart icon"
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {expanded = false},
+                    text = { Text("option 1") }
+                )
+                DropdownMenuItem(
+                    onClick = {expanded = false},
+                    text = { Text("option 2") }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        Firebase.auth.signOut()
+                              },
+                    text = { Text("Sign Out") }
+                )
+            }
+        },
+    )
+}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// NOT POSSIBLE TO DO: NO TEXTFIELD POPPING UP
+/*
+    - when the view is recomposed, every combination of focus-requester-manager,  keyboard controller
+    do not prevent the keyboard bouncing.. get hidden, then again appears for some ms then disappeares again,
+    every time..
+    I wanted to do like Whatsapp, which is kind of opening another fragment even hiding the bottom bar
+    when on search..
+*/
+// THAT WAS ALSO JUST EXPERIMENTAL
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarHouse(textState: TextFieldState) {
     var active by remember {mutableStateOf(false)}
     val focusRequester = remember { FocusRequester() }
-    //val focusManager = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    keyboardController?.hide()
 
     TopAppBar(
         modifier = Modifier.background(color = Color.Transparent),
         title = {
-            SearchTextField(textState , focusRequester)
+            if(active) SearchTextField(textState , focusRequester)
+            else Text("title")
                 },
         actions = {
             Spacer(Modifier.width(8.dp))
             IconButton(onClick = {
-                active = !active
+
                 if(active){
-
-                    focusRequester.requestFocus()
+                    //focusRequester.requestFocus()
                     textState.setTextAndPlaceCursorAtEnd("")
-                    keyboardController?.show()
-
+                    //keyboardController?.show()
                 }else{
                     //textState.clearText()
-                    textState.setTextAndPlaceCursorAtEnd("")
+                    //textState.setTextAndPlaceCursorAtEnd("")
                     //focusManager.clearFocus()
-                    keyboardController?.hide()
-
+                   // keyboardController?.hide()
                 }
+                active = !active
             }) {
+
                 if(active)
                 Image(
                     painter = painterResource(R.drawable.ic_launcher_background),
@@ -129,7 +198,8 @@ fun TopBarHouse(textState: TextFieldState) {
                 )
             }
 
-
         },
     )
 }
+
+*/
