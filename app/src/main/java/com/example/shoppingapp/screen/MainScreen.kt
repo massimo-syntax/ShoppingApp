@@ -1,9 +1,12 @@
 package com.example.shoppingapp.screen
 
+import android.graphics.drawable.Icon
+import android.graphics.pdf.PdfDocument
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,15 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.SimpleStandardTopBar
 import com.example.shoppingapp.screen.mainScreenPages.Home
+import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
 
 enum class Pages(val str: String) {
-    ONE("dsf"),
-    TWO("sdfasd"),
-    THREE("asdfasd"),
-    FOUR("sdfad")
+    ONE("Products"),
+    TWO("Featured"),
+    THREE("Cart"),
+    FOUR("Profile")
 }
 
 @Composable
@@ -35,85 +40,71 @@ fun MainScreen(){
     var selectedPage by remember { mutableStateOf(Pages.ONE) }
 
     fun colorNavbarItem(page:Pages):Color{
-        return if (selectedPage == page) Color.Black
+        return if (selectedPage == page) Color.White
         else Color.LightGray
     }
+
+    val navbarItems: List<Pair<Pages, Int>> = listOf(
+        Pair(
+            Pages.ONE,
+            R.drawable.ic_launcher_foreground
+        ),
+        Pair(
+            Pages.TWO,
+            R.drawable.ic_launcher_foreground
+        ),        Pair(
+            Pages.THREE,
+            R.drawable.ic_launcher_foreground
+        ),        Pair(
+            Pages.FOUR,
+            R.drawable.ic_launcher_foreground
+        ),
+
+    )
 
     Scaffold(
         topBar = {
             when(selectedPage){
-                Pages.ONE -> SimpleStandardTopBar(Pages.ONE.str)
-                Pages.TWO -> SimpleStandardTopBar(Pages.TWO.str)
-                Pages.THREE -> SimpleStandardTopBar(Pages.THREE.str)
-                Pages.FOUR -> SimpleStandardTopBar(Pages.FOUR.str)
+                Pages.ONE -> SimpleStandardTopBar(Pages.ONE.str , true)
+                Pages.TWO -> SimpleStandardTopBar(Pages.TWO.str , true)
+                Pages.THREE -> SimpleStandardTopBar(Pages.THREE.str , true)
+                Pages.FOUR -> SimpleStandardTopBar(Pages.FOUR.str , true)
             }
         },
         bottomBar = {
             NavigationBar(
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = AppStyle.colors.darkBlule,
+                contentColor = Color.White,
                 //modifier = Modifier.border(2.dp,Color.Red)
             ){
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { selectedPage = Pages.ONE},
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_launcher_foreground),
-                            contentDescription = "cart",
-                            modifier = Modifier.height(36.dp),
-                            tint = colorNavbarItem(Pages.ONE)
-                        )
-                    },
-                    label = {Text("page1")}
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = {selectedPage = Pages.TWO},
-                    modifier = Modifier.height(80.dp),
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_launcher_foreground),
-                            contentDescription = "cart",
-                            modifier = Modifier.height(36.dp),
-                            tint = colorNavbarItem(Pages.TWO)
-                        )
-                    },
-                    label = {Text("page1")}
-                )
+                navbarItems.forEach {
+                    NavigationBarItem(
+                        selected = selectedPage == it.first,
+                        onClick = { selectedPage = it.first},
+                        icon = {
+                            Icon(
+                                painter = painterResource(it.second),
+                                contentDescription = it.first.str,
+                                modifier = Modifier.height(32.dp),
+                                tint = {
+                                    colorNavbarItem(it.first)
+                                }
 
-                NavigationBarItem(
-                    selected = false,
-                    onClick = {selectedPage = Pages.THREE},
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_launcher_foreground),
-                            contentDescription = "cart",
-                            modifier = Modifier.height(36.dp),
-                            tint = colorNavbarItem(Pages.THREE)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text ="page1",
-                            color = colorNavbarItem(Pages.THREE)
-                        )
-                    }
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = it.first.str,
+                                color = colorNavbarItem(it.first)
+                                )
+                        }
+                    )
+                }
 
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = {selectedPage = Pages.FOUR},
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_launcher_foreground),
-                            contentDescription = "cart",
-                            modifier = Modifier.height(36.dp),
-                            tint = colorNavbarItem(Pages.FOUR)
-                        )
-                    },
-                    label = {Text(text = "LABEL")}
-                )
+
             }
+
+
 
         }
     ) { innerPadding ->
@@ -133,7 +124,7 @@ fun MainScreenContent(modifier: Modifier = Modifier, page: Pages){
         Pages.ONE -> Home(modifier)
         Pages.TWO -> Text("hello there 2")
         Pages.THREE -> RemoteProductsScreen(modifier)
-        Pages.FOUR -> Text("hello there last")
+        Pages.FOUR -> ProfilePage(modifier)
     }
 
 }

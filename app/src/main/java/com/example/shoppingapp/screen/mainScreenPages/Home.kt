@@ -35,19 +35,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.CustomTextField
 
 import com.example.shoppingapp.data.remote.Product
 
-
-
-
-sealed class AppStyle(){
-    object colors {
-        val lightBlue = Color(0xffd8e6ff)
-    }
-}
 
 
 @Composable

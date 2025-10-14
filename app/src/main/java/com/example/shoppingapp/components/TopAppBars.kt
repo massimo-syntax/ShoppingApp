@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.data.model.User
 import com.google.firebase.Firebase
@@ -79,10 +81,18 @@ fun TopBarHome() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleStandardTopBar(title: String = "Title" ) {
+fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     TopAppBar(
+        colors = TopAppBarColors(
+            containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
+            scrolledContainerColor = if(dark) AppStyle.colors.darkBlule else Color.White,
+            titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            ),
         modifier = Modifier,
         title = { Text(title) },
         actions = {
