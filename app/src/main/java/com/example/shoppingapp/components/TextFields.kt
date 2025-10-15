@@ -18,10 +18,10 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,36 +42,34 @@ import com.example.shoppingapp.R
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
-    leadingIcon: (@Composable () -> Unit)? = null,
-    trailingIcon: (@Composable () -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     placeholderText: String = "Placeholder",
-    fontSize: TextUnit = 18.sp
+    fontSize: TextUnit = 18.sp,
+    text: MutableState<String> = mutableStateOf("")
 ) {
-    var text by rememberSaveable { mutableStateOf("") }
     BasicTextField(modifier = modifier
-        .background(
-            AppStyle.colors.lightBlue,
-            MaterialTheme.shapes.small,
-        )
         .fillMaxWidth(),
-        value = text,
+        value = text.value,
         onValueChange = {
-            text = it
+            text.value = it
         },
         singleLine = true,
-        cursorBrush = SolidColor(Color.Black),
+        cursorBrush = SolidColor(AppStyle.colors.darkBlule),
         textStyle = LocalTextStyle.current.copy(
-            color = Color.Black,
+            color = AppStyle.colors.darkBlule,
             fontSize = fontSize
         ),
         decorationBox = { innerTextField ->
             Row(
-                modifier,
+                modifier
+                    .border(2.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(40))
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingIcon != null) leadingIcon()
-                Box(Modifier.weight(1f)) {
-                    if (text.isEmpty()) Text(
+                Box(Modifier.weight(1f).padding(8.dp)) {
+                    if (text.value.isEmpty()) Text(
                         placeholderText,
                         style = LocalTextStyle.current.copy(
                             color = Color.LightGray,

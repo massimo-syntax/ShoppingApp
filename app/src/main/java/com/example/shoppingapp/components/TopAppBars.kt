@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -99,15 +100,17 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
             IconButton(onClick = {
                 Toast.makeText(context, "Nothing", Toast.LENGTH_SHORT).show()
             }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = "cart icon"
+                Icon(
+                    painter = painterResource(R.drawable.icon_settings),
+                    contentDescription = "menu",
+                    tint = Color.White
                 )
             }
             IconButton(onClick = { expanded = !expanded }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = "cart icon"
+                Icon(
+                    painter = painterResource(R.drawable.icon_menu),
+                    contentDescription = "menu",
+                    tint = Color.White
                 )
             }
             DropdownMenu(
@@ -116,7 +119,14 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
             ) {
                 DropdownMenuItem(
                     onClick = {expanded = false},
-                    text = { Text("option 1") }
+                    text = { Text("option 1") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.icon_menu),
+                            contentDescription = "menu",
+                            tint = AppStyle.colors.darkBlule
+                        )
+                    }
                 )
                 DropdownMenuItem(
                     onClick = {expanded = false},
@@ -126,7 +136,14 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
                     onClick = {
                         Firebase.auth.signOut()
                               },
-                    text = { Text("Sign Out") }
+                    text = { Text("Sign Out") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.icon_profile),
+                            contentDescription = "menu",
+                            tint = AppStyle.colors.darkBlule
+                        )
+                    }
                 )
             }
         },

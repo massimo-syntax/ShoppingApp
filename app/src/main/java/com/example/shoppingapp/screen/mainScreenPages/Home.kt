@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -16,8 +15,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,61 +57,6 @@ fun Home(modifier: Modifier = Modifier) {
         //horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        var textState by remember { mutableStateOf("") }
-        val maxLength = 110
-        val lightBlue = Color(0xffd8e6ff)
-        val blue = Color(0xff76a9ff)
-
-        val theother = AppStyle.colors.lightBlue
-
-
-        Text(
-            text = "Caption",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            textAlign = TextAlign.Start,
-            color = blue
-        )
-
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = textState,
-            colors = TextFieldDefaults.colors (
-                cursorColor = Color.Black,
-                disabledLabelColor = lightBlue,
-                focusedContainerColor = lightBlue,
-                unfocusedContainerColor = lightBlue,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-
-            onValueChange = {
-                if (it.length <= maxLength) textState = it
-            },
-            shape = RoundedCornerShape(percent = 100),
-            singleLine = true,
-            trailingIcon = {
-                if (textState.isNotEmpty()) {
-                    IconButton(onClick = { textState = "" }) {
-                        Icon(
-                            painterResource(R.drawable.adaptivecarticon_foreground),
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-        )
-
-        Text(
-            text = "${textState.length} / $maxLength",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-            textAlign = TextAlign.End,
-            color = blue
-        )
-
 
         Text(
             text = "NOTHING",
@@ -134,29 +76,9 @@ fun Home(modifier: Modifier = Modifier) {
         )
 
 
-        val focusManager = LocalFocusManager.current
 
-
-        Row (Modifier.padding(32.dp)) {
-
-            CustomTextField(
-                modifier = Modifier.padding(6.dp),
-                trailingIcon = {
-                    IconButton(
-                        modifier = Modifier.height(36.dp).width(36.dp),
-                        onClick = {
-                            focusManager.clearFocus()
-                        }) {
-                        Icon(painterResource(R.drawable.adaptivecarticon_foreground) , contentDescription = "hello")
-                    }
-                }
-
-            )
-
-        }
 
         Button(onClick = {
-            focusManager.clearFocus()
         },
             shape = RoundedCornerShape(percent = 5),
             colors = ButtonColors(

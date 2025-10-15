@@ -16,6 +16,15 @@ class RemoteProductsViewModel : ViewModel() {
     fun fetchProducts() {
         viewModelScope.launch {
             try {
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+                Log.wtf("MANY DATA FROM REMOTE , VIEWMODEL", "-- DATA FROM VIEWMODEL.. WAITING DATA")
+
                 val productsResponse = repository.getProducts()
                 products.value = productsResponse
             } catch (e: Exception) {
