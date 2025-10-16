@@ -60,9 +60,20 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.components.CustomTextField
 import com.example.shoppingapp.data.remote.Product
 import com.example.shoppingapp.viewmodel.RemoteProductsViewModel
+import kotlinx.coroutines.runBlocking
+
+
+data class UiProduct(
+    val id:String,
+    val title:String,
+    val image:String,
+    val price:String,
+    var cart:Boolean = false,
+)
 
 @Composable
 fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProductsViewModel = viewModel()) {
+
 
     var products by viewModel.products
 
@@ -72,9 +83,15 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
         Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show()
     }
 
-    val cart = mutableListOf( 1, 3 ,5 ,9)
+    val cart = mutableListOf( 1, 3 ,5 ,9 )
 
     val searchQuery = remember { mutableStateOf("") }
+
+    // used to update the ui on icon button click
+
+
+
+    var uiProducts by viewModel.uiProducts
 
     LaunchedEffect(Unit) {
         viewModel.fetchProducts()
@@ -116,7 +133,9 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
         }
 
         // Result
-        if (products.isEmpty()) {
+        //if (products.isEmpty()) {
+        if (uiProducts.isEmpty()) {
+
             Row (
                 Modifier.padding(32.dp).fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -132,18 +151,23 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
-                val filtered  = products.filter { it.title.lowercase().contains(searchQuery.value.lowercase()) }
+                val filtered  = uiProducts.filter { it.title.lowercase().contains(searchQuery.value.lowercase()) }
 
                 items(filtered ){ product ->
-                    val index = products.indexOf( product )
-                    val isInCart = cart.contains( index )
+                    val index = uiProducts.indexOf( product )
 
                     ProductCard(
                         product = product,
-                        isInCart = isInCart,
+                        isInCart = product.cart,
                         onToggleCart = {
-                            if (isInCart) cart.remove(index)
-                            else cart.add(index)
+                            // add to cart
+                            //if (isInCart) cart.remove(index)
+                            //else cart.add(index)
+
+                            //val list = uiProducts
+                            val newList = uiProducts.toMutableList()
+                            newList[index] = product.copy(title = "helo", cart = !product.cart)
+                            uiProducts = newList
                         }
                     )
                     Spacer(Modifier.height(10.dp))
@@ -174,7 +198,7 @@ fun RatingBar(
 }
 @Composable
 fun ProductCard(
-    product: Product,
+    product: UiProduct,
     onToggleCart: () -> Unit,
     isInCart: Boolean,
     modifier: Modifier = Modifier
@@ -252,6 +276,7 @@ fun ProductCard(
         }
     }
 }
+
 
 @Composable
 fun AnimatedAddToCartButton(
