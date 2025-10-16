@@ -9,5 +9,5 @@ data class Product(
     val description: String,
     val category: String,
     val image: String,
-    val rating: String? = "0.0"
+    //val rating: String? = "0.0"
 )

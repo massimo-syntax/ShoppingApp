@@ -1,5 +1,6 @@
 package com.example.shoppingapp.screen
 
+import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.animation.core.Transition
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -62,7 +64,13 @@ import com.example.shoppingapp.viewmodel.RemoteProductsViewModel
 @Composable
 fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProductsViewModel = viewModel()) {
 
-    val products by viewModel.products
+    var products by viewModel.products
+
+    val context = LocalContext.current
+
+    fun toast(message:Any){
+        Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show()
+    }
 
     val cart = mutableListOf( 1, 3 ,5 ,9)
 
@@ -70,7 +78,6 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
 
     LaunchedEffect(Unit) {
         viewModel.fetchProducts()
-
     }
 
     Column (
@@ -126,17 +133,20 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 val filtered  = products.filter { it.title.lowercase().contains(searchQuery.value.lowercase()) }
-                items(filtered){ product ->
-                   /* val isInCart = cart.contains( products.indexOf(product) )
+
+                items(filtered ){ product ->
+                    val index = products.indexOf( product )
+                    val isInCart = cart.contains( index )
+
                     ProductCard(
-                        product =product,
+                        product = product,
                         isInCart = isInCart,
-                        onAddToCart = {
-                            if (isInCart) cart.remove(products.indexOf(product))
-                            else cart.add(products.indexOf(product))
+                        onToggleCart = {
+                            if (isInCart) cart.remove(index)
+                            else cart.add(index)
                         }
-                    )*/
-                  Text(product.title)
+                    )
+                    Spacer(Modifier.height(10.dp))
                 }
 
             }
@@ -165,7 +175,7 @@ fun RatingBar(
 @Composable
 fun ProductCard(
     product: Product,
-    onAddToCart: () -> Unit,
+    onToggleCart: () -> Unit,
     isInCart: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -194,7 +204,7 @@ fun ProductCard(
 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = product.description,
+                    text = product.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -217,13 +227,26 @@ fun ProductCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    RatingBar(rating = product.rating?.toFloat() ?: 0.0.toFloat()  )
+                    //RatingBar(rating = product.rating?.toFloat() ?: 0.0.toFloat()  )
 
                     // Animated Add to Cart Button
+                    /*
                     AnimatedAddToCartButton(
                         isAdded = isInCart,
                         onToggle = onAddToCart
                     )
+                    */
+                    IconButton(
+                        onClick = onToggleCart,
+                    ) {
+                        Icon(
+                            painterResource( R.drawable.icon_cart_garden),
+                            contentDescription = if (isInCart) "Added" else "Add to Cart",
+                            tint = if(isInCart) Color.Blue else Color.LightGray
+                        )
+                    }
+
+
                 }
             }
         }
@@ -245,13 +268,14 @@ fun AnimatedAddToCartButton(
 
 
     //val image = AnimatedImageVector.animatedVectorResource(R.drawable.ic_hourglass_animated)
-
+/*
     val icon by transition.animateInt (
         transitionSpec = { tween(durationMillis = 300) },
         label = "IconTransition"
     ) { added ->
         if (added) R.drawable.icon_cart_garden else R.drawable.adaptivecarticon_foreground
     }
+*/
 
     val tint by transition.animateColor(
         transitionSpec = { tween(durationMillis = 300) },
@@ -260,12 +284,13 @@ fun AnimatedAddToCartButton(
         if (added) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary
     }
 
+
     IconButton(
         onClick = onToggle,
         modifier = modifier.scale(scale)
     ) {
         Icon(
-            painterResource(icon),
+            painterResource( R.drawable.icon_cart_garden),
             contentDescription = if (isAdded) "Added" else "Add to Cart",
             tint = tint
         )
