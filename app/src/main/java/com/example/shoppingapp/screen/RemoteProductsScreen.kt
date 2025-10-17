@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -148,7 +151,8 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
 
         } else {
             // Display the list of credit cards
-            LazyColumn(
+            LazyVerticalGrid (
+                columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 val filtered  = uiProducts.filter { it.title.lowercase().contains(searchQuery.value.lowercase()) }

@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shoppingapp.AppStyle.AppStyle
+import com.example.shoppingapp.Routes
+import okhttp3.Route
 
 @Composable
 fun ProfilePage(modifier: Modifier = Modifier) {
@@ -99,6 +101,7 @@ fun ProfilePage(modifier: Modifier = Modifier) {
 
                 Spacer(modifier = Modifier.height(0.dp))
 
+                // Name + Button
                 Row (
                     modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -112,14 +115,16 @@ fun ProfilePage(modifier: Modifier = Modifier) {
                         fontSize = 22.sp,
                     )
                     OutlinedButton(
-                        onClick = { /* Follow action */ },
+                        onClick = {
+                            Routes.navController.navigate(Routes.UploadSinglePicture)
+                        },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Color.White,
                             containerColor = AppStyle.colors.darkBlule
                         ),
                         shape = RoundedCornerShape(40)
                     ) {
-                        Text("Follow", fontWeight = FontWeight.Bold)
+                        Text("Add Product", fontWeight = FontWeight.Bold)
                     }
                 }
                 Spacer(Modifier.height(16.dp))

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ShoppingApp</string>
+
+    <!--Replace with your public/private keys to use UploadcareWidget. Private key is optional, required only if you use Rest API features.-->
+    <string name="uploadcare_public_key" translatable="false">16f1bb7a0b596194a8c2</string>
+    <string name="uploadcare_private_key" translatable="false">place_uploadcare_private_key_here</string>
+
 </resources>

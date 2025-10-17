@@ -91,6 +91,8 @@ dependencies {
     // AsyncImage
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    implementation("com.uploadcare.android.library:uploadcare-android:4.3.1")
+
     // probably no need
     //implementation("io.coil-kt.coil3:coil-network-okhttp:4.12.0")
     //implementation("com.squareup.okhttp3:okhttp:4.12.0")
