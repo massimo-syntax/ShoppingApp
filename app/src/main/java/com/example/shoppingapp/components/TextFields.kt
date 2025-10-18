@@ -64,7 +64,7 @@ fun CustomTextField(
             Row(
                 modifier
                     .border(2.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(40))
-                    .padding(8.dp),
+                    .padding(horizontal = 10.dp , vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingIcon != null) leadingIcon()

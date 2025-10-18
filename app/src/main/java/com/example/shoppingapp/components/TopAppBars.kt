@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
@@ -13,10 +14,12 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
 import com.example.shoppingapp.data.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -103,14 +107,14 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
                 Icon(
                     painter = painterResource(R.drawable.icon_settings),
                     contentDescription = "menu",
-                    tint = Color.White
+                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
                 )
             }
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     painter = painterResource(R.drawable.icon_menu),
                     contentDescription = "menu",
-                    tint = Color.White
+                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
                 )
             }
             DropdownMenu(
@@ -149,6 +153,97 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
         },
     )
 }
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BackButtonSimpleTopBar(title: String = "Title", dark:Boolean = false) {
+    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    TopAppBar(
+        colors = TopAppBarColors(
+            containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
+            scrolledContainerColor = if(dark) AppStyle.colors.darkBlule else Color.White,
+            titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+        ),
+        modifier = Modifier,
+        title = { Text(title) },
+        navigationIcon = {
+            // NO RIPPLE ON BUTTON CLICK
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                IconButton(onClick = {
+                    Routes.navController.popBackStack()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_back),
+                        contentDescription = "menu",
+                        tint = if (dark) Color.White else AppStyle.colors.darkBlule,
+                    )
+                }
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                Toast.makeText(context, "Nothing", Toast.LENGTH_SHORT).show()
+            }) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_settings),
+                    contentDescription = "menu",
+                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                )
+            }
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_menu),
+                    contentDescription = "menu",
+                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {expanded = false},
+                    text = { Text("option 1") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.icon_menu),
+                            contentDescription = "menu",
+                            tint = AppStyle.colors.darkBlule
+                        )
+                    }
+                )
+                DropdownMenuItem(
+                    onClick = {expanded = false},
+                    text = { Text("option 2") }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        Firebase.auth.signOut()
+                    },
+                    text = { Text("Sign Out") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.icon_profile),
+                            contentDescription = "menu",
+                            tint = AppStyle.colors.darkBlule
+                        )
+                    }
+                )
+            }
+        },
+    )
+}
+
+
+
+
+
 
 
 

@@ -1,8 +1,6 @@
 package com.example.shoppingapp.data.remote
 
-import android.media.Rating
-
-data class Product(
+data class RemoteProduct(
     val id: String,
     val title: String,
     val price: String,

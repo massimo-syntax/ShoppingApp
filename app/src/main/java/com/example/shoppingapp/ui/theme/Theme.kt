@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.example.shoppingapp.AppStyle.AppStyle
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -18,7 +19,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = AppStyle.colors.darkBlule,
     secondary = PurpleGrey40,
     tertiary = Pink40
 

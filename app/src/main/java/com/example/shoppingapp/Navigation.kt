@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.shoppingapp.screen.AuthScreen
 import com.example.shoppingapp.screen.LoginScreen
 import com.example.shoppingapp.screen.MainScreen
+import com.example.shoppingapp.screen.ProductScreen
 import com.example.shoppingapp.screen.SignupScreen
 import com.example.shoppingapp.screen.UploadSinglePictureScreen
 import com.google.firebase.Firebase
@@ -42,6 +43,11 @@ fun Navigation(){
         composable(Routes.UploadSinglePicture) {
             UploadSinglePictureScreen()
         }
+        composable(Routes.product + "/{id}") { navBackStack ->
+            // Extracting the argument
+            val id = navBackStack.arguments?.getString("id") ?: "0"
+            ProductScreen(id)
+        }
 
     }
 
@@ -53,6 +59,7 @@ object Routes{
     val login = "LOGIN"
     val signup = "SIGNUP"
     val main = "MAIN"
+    val product = "PRODUCT"
     val UploadSinglePicture = "UPLOAD_SINGLE_PICTURE"
     val UploadMultiplePictures = "UPLOAD_MULTIPLE_PICTURES"
 

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -72,7 +73,7 @@ dependencies {
     // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
     // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    //implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
 
     // Lifecycles only (without ViewModel or LiveData)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
@@ -91,7 +92,15 @@ dependencies {
     // AsyncImage
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    // UPLOAD IMAGE with uploadcare
     implementation("com.uploadcare.android.library:uploadcare-android:4.3.1")
+
+    // ROOM
+    val room_version = "2.8.2"
+    implementation("androidx.room:room-runtime:$room_version")
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$room_version")
 
     // probably no need
     //implementation("io.coil-kt.coil3:coil-network-okhttp:4.12.0")
