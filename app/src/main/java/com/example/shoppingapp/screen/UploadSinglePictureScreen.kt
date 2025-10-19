@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,9 +21,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +46,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
 import com.example.shoppingapp.features.UIEvent
 import com.example.shoppingapp.features.UIViewModel
 
@@ -77,10 +83,20 @@ fun PhotoScreen(viewModel: UIViewModel = viewModel()) {
         }
     )
 
+
+
+
+
     Surface(modifier = Modifier.fillMaxSize()) {
+
+
+
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)) {
+            .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // Displays a title for the file uploader
             Text(
                 text = "UC file uploader in Android",
@@ -145,6 +161,47 @@ fun PhotoScreen(viewModel: UIViewModel = viewModel()) {
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+
+            Column (
+                Modifier.padding(32.dp)
+            ){
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(2.dp, Color.Blue),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Blue,
+                    ),
+                    onClick = {},
+                ){
+
+                    Icon(
+                        painter = painterResource(R.drawable.icon_image),
+                        contentDescription = "save picture",
+                        tint = AppStyle.colors.darkBlule,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Text("Save picture")
+                }
+
+
+                IconButton(onClick = {
+                    Routes.navController.popBackStack()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_back),
+                        contentDescription = "icon back",
+                        tint = AppStyle.colors.darkBlule,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+
             }
         }
     }

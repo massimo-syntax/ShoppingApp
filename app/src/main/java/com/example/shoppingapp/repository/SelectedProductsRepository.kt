@@ -32,6 +32,15 @@ class SelectedProductsRepository (context: Context) {
         return favDao.getAll(userId)
     }
 
+    suspend fun getOneCart(id:String) : Cart? {
+       return cartDao.getId(userId,id)
+    }
+
+    suspend fun getOneFav(id:String) : Fav? {
+        return favDao.getId(userId,id)
+    }
+
+
     // CREATE + UPDATE
     suspend fun dropInCart(productId: String){
         val cart = Cart(

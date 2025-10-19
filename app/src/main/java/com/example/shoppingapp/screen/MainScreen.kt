@@ -1,17 +1,11 @@
 package com.example.shoppingapp.screen
 
-import android.graphics.drawable.Icon
-import android.graphics.pdf.PdfDocument
-import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalRippleConfiguration
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
@@ -20,10 +14,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -39,7 +31,7 @@ import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
 enum class Pages(val str: String) {
     ONE("Products"),
     TWO("Featured"),
-    THREE("Cart"),
+    CART("Cart"),
     FOUR("Profile")
 }
 
@@ -51,6 +43,8 @@ private val MyRippleConfiguration =
 fun MainScreen(){
 
     var selectedPage by rememberSaveable { mutableStateOf(Pages.ONE) }
+    var cart by rememberSaveable { mutableStateOf(0) }
+
 
     fun colorNavbarItem(page:Pages):Color{
         return if (selectedPage == page) Color.White
@@ -66,7 +60,7 @@ fun MainScreen(){
             Pages.TWO,
             R.drawable.icon_sell
         ),        Pair(
-            Pages.THREE,
+            Pages.CART,
             R.drawable.icon_cart_garden
         ),        Pair(
             Pages.FOUR,
@@ -80,7 +74,7 @@ fun MainScreen(){
             when(selectedPage){
                 Pages.ONE -> SimpleStandardTopBar(Pages.ONE.str , true)
                 Pages.TWO -> SimpleStandardTopBar(Pages.TWO.str , true)
-                Pages.THREE -> SimpleStandardTopBar(Pages.THREE.str , true)
+                Pages.CART -> SimpleStandardTopBar(Pages.CART.str , true)
                 Pages.FOUR -> SimpleStandardTopBar(Pages.FOUR.str , true)
             }
         },
@@ -110,7 +104,7 @@ fun MainScreen(){
                                             contentDescription = it.first.str,
                                             modifier = Modifier.height(32.dp),
                                             tint = {
-                                                colorNavbarItem(it.first)
+                                                 colorNavbarItem(it.first)
                                             }
                                         )
 
@@ -147,7 +141,7 @@ fun MainScreenContent(modifier: Modifier = Modifier, page: Pages){
     when(page){
         Pages.ONE -> Home(modifier)
         Pages.TWO -> Text("hello there 2")
-        Pages.THREE -> RemoteProductsScreen(modifier)
+        Pages.CART -> RemoteProductsScreen(modifier)
         Pages.FOUR -> ProfilePage(modifier)
     }
 

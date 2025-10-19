@@ -170,24 +170,8 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
 }
 
 
-/*
-@Composable
-fun RatingBar(
-    rating: Float,
-    maxRating: Int = 5
-) {
-    Row {
-        repeat(maxRating) { index ->
-            Icon(
-                painter = if (index < rating.toInt()) painterResource(R.drawable.icon_settings) else painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                tint = Color(0xFFFFC107), // Gold
-                modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-*/
+
+
 @Composable
 fun ProductCard(
     product: UiProductWithFieldsFromRoom,

@@ -12,6 +12,9 @@ interface FavDAO {
     @Query("SELECT * FROM fav WHERE user_id = :userId")
     suspend fun getAll(userId:String): List<Fav>
 
+    @Query("SELECT * FROM fav WHERE user_id = :userId AND product_id = :productId LIMIT 1")
+    suspend fun getId(userId:String , productId: String): Fav?
+
     /*
     @Query("SELECT * FROM user WHERE uid IN (:userIds)")
     fun loadAllByIds(userIds: IntArray): List<User>

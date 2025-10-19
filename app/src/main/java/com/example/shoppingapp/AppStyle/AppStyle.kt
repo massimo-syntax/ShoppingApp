@@ -7,5 +7,6 @@ sealed class AppStyle {
     object colors {
         val lightBlue = Color(0xffd8e6ff)
         val darkBlule = Color(0xFF1A1A2E)
+        val gold = Color(0xFFFFC107)
     }
 }
