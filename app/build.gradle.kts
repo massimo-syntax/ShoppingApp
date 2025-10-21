@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.compose.ui.unit)
+    implementation(libs.androidx.compose.foundation)
 
     //
     val lifecycle_version = "2.9.4"

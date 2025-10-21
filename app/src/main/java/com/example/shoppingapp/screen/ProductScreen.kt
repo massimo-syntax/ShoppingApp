@@ -3,12 +3,9 @@ package com.example.shoppingapp.screen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -27,11 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.repository.RemoteProductsRepository
@@ -157,7 +151,7 @@ fun ProductScreen(id:String){
                         }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.favorite),
+                            painter = painterResource(R.drawable.icon_favorite),
                             contentDescription = "favorite",
                             tint = if (inFav) Color.Red else Color.LightGray
                         )

@@ -45,8 +45,9 @@ fun CustomTextField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     placeholderText: String = "Placeholder",
-    fontSize: TextUnit = 18.sp,
-    text: MutableState<String> = mutableStateOf("")
+    fontSize: TextUnit = 16.sp,
+    text: MutableState<String> = mutableStateOf(""),
+    singleLine:Boolean = true,
 ) {
     BasicTextField(modifier = modifier
         .fillMaxWidth(),
@@ -54,7 +55,7 @@ fun CustomTextField(
         onValueChange = {
             text.value = it
         },
-        singleLine = true,
+        singleLine = singleLine,
         cursorBrush = SolidColor(AppStyle.colors.darkBlule),
         textStyle = LocalTextStyle.current.copy(
             color = AppStyle.colors.darkBlule,
@@ -63,7 +64,7 @@ fun CustomTextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier
-                    .border(2.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(40))
+                    .border(2.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(16.dp))
                     .padding(horizontal = 10.dp , vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

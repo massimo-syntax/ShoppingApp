@@ -20,7 +20,7 @@ class ProfileVIewModel : ViewModel() {
 
 
     // cannot deserialize user with .toObject() - as User - get(User::java.class) or found in internet
-    private fun getUser(map:Map<String,Any>?):User?{
+    private fun documentToUser(map:Map<String,Any>?):User?{
         return if (map!=null)User(
             id = map["id"].toString(),
             name = map["name"].toString(),
@@ -31,32 +31,25 @@ class ProfileVIewModel : ViewModel() {
 
 
     fun getProfile(profileId:String = userId){
-
         DB  .collection("users")
             .document(userId)
             .get()
             .addOnSuccessListener {
-                Log.wtf("it it it ti tittit  it" , it.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-                Log.wtf("it.data it.data it.data", it.data.toString())
-
-                val user = getUser(it.data)
-
+                val user = documentToUser(it.data)
                 _profile.value = user
-
-                Log.wtf("USER_NAME", user.toString())
-                Log.wtf("USER_NAME", user.toString())
-                Log.wtf("USER_NAME", user.toString())
-                Log.wtf("USER_NAME", user.toString())
-                Log.wtf("USER_NAME", user.toString())
-
-
             }
+    }
 
+    fun updateProfile(url:String , onComplete : ( Success:Boolean , message:String ) -> Unit ){
+        DB  .collection("users")
+            .document(userId)
+            .update("image" , url )
+            .addOnSuccessListener {
+                onComplete(true , "Picture saved")
+            }
+            .addOnFailureListener {
+                onComplete(false , "Database error: ${it.message.toString()}")
+            }
     }
 
 }

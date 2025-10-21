@@ -2,16 +2,13 @@ package com.example.shoppingapp.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -95,7 +92,7 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
                         }) {
                         if(searchQuery.value.isEmpty())
                             Icon(
-                                painterResource(R.drawable.search),
+                                painterResource(R.drawable.icon_search),
                                 contentDescription = "Search",
                                 tint = AppStyle.colors.darkBlule,
                                 modifier = Modifier.height(36.dp)
@@ -212,7 +209,7 @@ fun ProductCard(
                         onClick = onToggleFav,
                     ) {
                         Icon(
-                            painterResource(R.drawable.favorite),
+                            painterResource(R.drawable.icon_favorite),
                             contentDescription = if (isInFav) "Added" else "Add to Favorites",
                             tint = if (isInFav) Color.Red else Color.LightGray
                         )

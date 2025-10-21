@@ -2,7 +2,6 @@ package com.example.shoppingapp.screen.mainScreenPages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +36,6 @@ import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
-import com.example.shoppingapp.data.remote.RemoteProduct
 import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
@@ -82,9 +81,17 @@ fun ProfilePage( modifier: Modifier = Modifier , profileVIewModel: ProfileVIewMo
                             modifier = Modifier
                                 .size(96.dp)
                                 .clip(CircleShape)
-                                .background(Color.White)
+                                .background(Color.White),
                         )
-                    else AsyncImage(profile!!.image,"profile picture")
+                    else AsyncImage(
+                        model = profile!!.image,
+                        contentDescription = "profile picture",
+                        modifier = Modifier
+                            .size(96.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds,
+                        )
+
 
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -155,7 +162,7 @@ fun ProfilePage( modifier: Modifier = Modifier , profileVIewModel: ProfileVIewMo
                     )
                     OutlinedButton(
                         onClick = {
-                            Routes.navController.navigate(Routes.UploadSinglePicture)
+                            Routes.navController.navigate(Routes.newProduct)
                         },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = Color.White,
@@ -315,7 +322,7 @@ fun FavoriteProductsTab() {
     ) {
         if (favs.isEmpty()) {
             Icon(
-                painterResource(R.drawable.favorite),
+                painterResource(R.drawable.icon_favorite),
                 contentDescription = null,
                 tint = Color.Red,
                 modifier = Modifier.size(48.dp)
