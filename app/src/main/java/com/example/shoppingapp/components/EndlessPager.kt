@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import kotlinx.coroutines.delay
 
@@ -52,9 +54,9 @@ fun EndlessPager() {
 
         CompositionLocalProvider(LocalOverscrollFactory provides null) {
             HorizontalPager(
-                modifier = Modifier.height(250.dp),
+                modifier = Modifier.height(160.dp),
                 pageSpacing = 15.dp,
-                contentPadding = PaddingValues(horizontal = 40.dp),
+                contentPadding = PaddingValues(horizontal = 18.dp),
                 state = pagerState
             ) { index ->
                 list.getOrNull(
@@ -86,9 +88,10 @@ fun EndlessPager() {
 fun BannerItem(image: Int) {
     Box(
         modifier = Modifier
+            .border(1.dp, Color.Green)
             .fillMaxSize()
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color.Black),
+            .clip(RoundedCornerShape(16.dp))
+            .background(AppStyle.colors.green),
         contentAlignment = Alignment.Center
     ) {
         Image(

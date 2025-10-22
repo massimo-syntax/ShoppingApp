@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,10 +50,12 @@ fun CustomTextField(
     fontSize: TextUnit = 16.sp,
     text: MutableState<String> = mutableStateOf(""),
     singleLine:Boolean = true,
+    keyboard: KeyboardType = KeyboardType.Unspecified
 ) {
     BasicTextField(modifier = modifier
         .fillMaxWidth(),
         value = text.value,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboard),
         onValueChange = {
             text.value = it
         },

@@ -53,9 +53,7 @@ fun Navigation(){
         composable(Routes.newProduct) {
             NewProductUpload()
         }
-        composable(Routes.UploadMultiplePictures) {
-            UploadMultipleImages()
-        }
+
 
 
     }

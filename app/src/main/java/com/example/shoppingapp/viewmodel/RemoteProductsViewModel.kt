@@ -10,6 +10,7 @@ import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class RemoteProductsViewModel() : ViewModel() {
     // Repository to query JSON API
@@ -30,15 +31,21 @@ class RemoteProductsViewModel() : ViewModel() {
                 val cart = roomRepository.getCart().map { it.productId }
                 val favs = roomRepository.getFavs().map { it.productId }
 
+
                 // create fill a list with product objects capable of cart-fav + toggle
                 val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
                 productsResponse.forEachIndexed { index, it ->
+
+                    val rating = String.format("%.2f" , Random.nextFloat() )
+
                     val ui_p = UiProductWithFieldsFromRoom(
                         it.id,
                         it.title,
                         it.description,
                         it.image,
                         it.price,
+                        it.category,
+                        rating = rating,
                         cart.contains(it.id),
                         favs.contains(it.id)
                     )

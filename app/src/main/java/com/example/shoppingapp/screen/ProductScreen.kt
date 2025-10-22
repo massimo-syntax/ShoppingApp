@@ -33,6 +33,7 @@ import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.RatingBar
 import kotlinx.coroutines.runBlocking
+import kotlin.random.Random
 
 
 @Composable
@@ -62,12 +63,16 @@ fun ProductScreen(id:String){
         inCart = cart != null && cart.productId == remoteProduct.id
         inFav = fav != null && fav.productId == remoteProduct.id
 
+        val rating = String.format("%.2f" , Random.nextFloat() )
+
         val uiProduct = UiProductWithFieldsFromRoom(
             id = remoteProduct.id,
             title = remoteProduct.title,
             description = remoteProduct.description,
             images = remoteProduct.image,
             price = remoteProduct.image,
+            category = remoteProduct.category,
+            rating = rating,
             cart = inCart,
             fav = inFav
         )

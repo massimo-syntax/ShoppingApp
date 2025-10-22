@@ -306,6 +306,8 @@ fun FavoriteProductsTab() {
                 remoteProduct.description,
                 remoteProduct.image, // now is just 1, remote product has just 1
                 remoteProduct.price,
+                category = remoteProduct.category,
+                rating = "0.0"
                 // cart or fav nothing here
             )
             remoteFavourites.add(p)

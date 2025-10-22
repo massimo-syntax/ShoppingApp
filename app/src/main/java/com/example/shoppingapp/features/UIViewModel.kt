@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import com.uploadcare.android.library.api.UploadcareClient
 import com.uploadcare.android.library.api.UploadcareFile
 import com.uploadcare.android.library.callbacks.UploadFileCallback
+import com.uploadcare.android.library.callbacks.UploadFilesCallback
 import com.uploadcare.android.library.exceptions.UploadcareApiException
 import com.uploadcare.android.library.upload.FileUploader
+import com.uploadcare.android.library.upload.MultipleFilesUploader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +31,9 @@ class UIViewModel : ViewModel() {
         when (event) {
             is UIEvent.SingleImageChanged -> {
                 uploadSingleImage(event.context, event.uri)
+            }
+            is UIEvent.MultipleImageChanged -> {
+                uploadMultipleImages(event.context, event.uris)
             }
         }
     }
@@ -79,5 +84,41 @@ class UIViewModel : ViewModel() {
             }
         )
     }
+
+
+
+    private fun uploadMultipleImages(context: Context, uris: List<Uri>) {
+        _uiState.value = UIState(isUploading = true)
+        val images = _uiState.value.images
+        val uploader = MultipleFilesUploader(client, uris, context).store(true)
+
+        uploader.uploadAsync(
+            object : UploadFilesCallback {
+                override fun onFailure(e: UploadcareApiException) {
+                    Log.i("ERROR", e.message.toString())
+                }
+
+                override fun onProgressUpdate(
+                    bytesWritten: Long,
+                    contentLength: Long,
+                    progress: Double
+                ) {
+                    _uploadProgress.value = progress.toFloat()
+                }
+
+                override fun onSuccess(result: List<UploadcareFile>) {
+                    result.forEach {
+                        images.add(
+                            ImageResults(uid = it.uuid, imageUrl = it.originalFileUrl.toString())
+                        )
+                    }
+                    _uiState.update { it.copy(isUploading = false, images = images) }
+                }
+            }
+        )
+    }
+
+
+
 }
 
