@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalRippleConfiguration
@@ -23,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,11 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.SimpleStandardTopBar
+import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.screen.mainScreenPages.Home
 import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
 
@@ -47,7 +52,7 @@ enum class Pages(val str: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 private val MyRippleConfiguration =
-    RippleConfiguration(color = Color.Red, rippleAlpha = RippleAlpha(0f,0f,0f,0f,))
+    RippleConfiguration(color = AppStyle.colors.lightBlue, rippleAlpha = RippleAlpha(0f,0f,0f,0f,))
 
 @Composable
 fun MainScreen(){
@@ -55,10 +60,20 @@ fun MainScreen(){
     var selectedPage by rememberSaveable { mutableStateOf(Pages.ONE) }
     var cart by rememberSaveable { mutableStateOf(0) }
 
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        cart = SelectedProductsRepository(context).getCart().size
+    }
+
+
+    fun updateBadge(n:Int){
+        cart = n
+    }
 
     fun colorNavbarItem(page:Pages):Color{
-        return if (selectedPage == page) Color.White
-        else Color.DarkGray
+        return if (selectedPage == page) AppStyle.colors.lightBlue
+        else AppStyle.colors.middleBlue
     }
 
     val navbarItems: List<Pair<Pages, Int>> = listOf(
@@ -109,14 +124,27 @@ fun MainScreen(){
                                     disabledTextColor = colorNavbarItem(it.first)
                                 ),
                                 icon = {
+                                    BadgedBox(
+                                        badge = {
+                                            if(cart > 0 && it.first == Pages.CART)
+                                                Badge(
+                                                    containerColor = Color.White,
+                                                    contentColor = AppStyle.colors.darkBlule
+                                                ) {
+                                                    Text(cart.toString())
+                                                }
+                                        }
+                                    ){
                                         Icon(
                                             painter = painterResource(it.second),
                                             contentDescription = it.first.str,
                                             modifier = Modifier.requiredSize(26.dp),
                                             tint = {
-                                                 colorNavbarItem(it.first)
+                                                colorNavbarItem(it.first)
                                             }
                                         )
+                                    }
+
 
                                 },
                                 alwaysShowLabel = true,
@@ -139,6 +167,7 @@ fun MainScreen(){
         MainScreenContent(
             modifier= Modifier.padding(innerPadding),
             page = selectedPage,
+            updateBadge = { updateBadge(it) }
         )
     }
 
@@ -146,12 +175,12 @@ fun MainScreen(){
 }
 
 @Composable
-fun MainScreenContent(modifier: Modifier = Modifier, page: Pages){
+fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, updateBadge:(n:Int)->Unit ){
 
     when(page){
         Pages.ONE -> Home(modifier)
-        Pages.TWO -> Text("hello there 2")
-        Pages.CART -> RemoteProductsScreen(modifier)
+        Pages.TWO -> RemoteProductsScreen(modifier, updateBadge)
+        Pages.CART -> Text("hello there 2")
         Pages.FOUR -> ProfilePage(modifier)
     }
 

@@ -37,7 +37,7 @@ import kotlin.random.Random
 
 
 @Composable
-fun ProductScreen(id:String){
+fun ProductScreenJsonApi(id:String){
 
 
 

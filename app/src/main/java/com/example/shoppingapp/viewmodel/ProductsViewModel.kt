@@ -3,14 +3,17 @@ package com.example.shoppingapp.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.shoppingapp.Category
 import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.data.model.User
+import com.example.shoppingapp.features.ImageResults
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
@@ -18,20 +21,31 @@ import kotlin.uuid.Uuid
 
 class ProductsViewModel : ViewModel() {
 
+    data class UIState(
+        val fetching: Boolean = true,
+        val result: List<UiProductWithFieldsFromRoom> = emptyList()
+    )
+
     private val userId = Firebase.auth.currentUser!!.uid
     private val DB = Firebase.firestore
 
 
-    private val _uiProducts = MutableStateFlow<List<UiProductWithFieldsFromRoom>>(emptyList())
-    val uiProducts = _uiProducts.asStateFlow()
+    private val _uiProducts = MutableStateFlow(UIState())
+    val uiProducts: StateFlow<UIState> = _uiProducts.asStateFlow()
 
     // some constant
 
     val PRODUCTS = "products"
+    val productsRef = DB.collection(PRODUCTS)
 
 
-    private fun documentToProduct(map:Map<String,Any> , cart:List<String>, favs:List<String>) : UiProductWithFieldsFromRoom {
-        val rating = String.format("%.2f" , Random.nextFloat() )
+
+    private fun documentToProduct(
+        map: Map<String, Any>,
+        cart: List<String>,
+        favs: List<String>
+    ): UiProductWithFieldsFromRoom {
+        val rating = String.format("%.2f", Random.nextFloat())
         return UiProductWithFieldsFromRoom(
             id = map["id"].toString(),
             title = map["title"].toString(),
@@ -46,7 +60,7 @@ class ProductsViewModel : ViewModel() {
     }
 
 
-    suspend fun getAllProducts( roomRepository: SelectedProductsRepository ){
+    suspend fun getAllProducts(roomRepository: SelectedProductsRepository) {
 
         // get list of cart and favourites
         val cart = roomRepository.getCart().map { it.productId }
@@ -55,37 +69,79 @@ class ProductsViewModel : ViewModel() {
         // create fill a list with product objects capable of cart-fav + toggle
         val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
 
-        DB.collection(PRODUCTS)
+        productsRef
             .get()
             .addOnSuccessListener {
                 it.documents.forEach {
-                    val ui_p = documentToProduct(it.data!! , cart, favs)
+                    val ui_p = documentToProduct(it.data!!, cart, favs)
                     ui_Products.add(ui_p)
                 }
-                _uiProducts.value = ui_Products
+                _uiProducts.value = UIState(fetching = false, result = ui_Products)
 
 
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
 
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!" , _uiProducts.value.toString())
-
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
+                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
 
 
             }.addOnFailureListener {
-                Log.wtf("ERROR FETCHING LIST" , it.message.toString() )
-                Log.wtf("ERROR FROM DATABASE FIREBASE" , it.message.toString() )
+                Log.wtf("ERROR FETCHING LIST", it.message.toString())
+                Log.wtf("ERROR FROM DATABASE FIREBASE", it.message.toString())
             }
 
     }
 
+    fun getProduct(id:String){
+        productsRef
+            .document(id)
+            .get()
+            .addOnSuccessListener {
+                val product = documentToProduct(it.data!!, emptyList(),emptyList())
+                _uiProducts.value = UIState(fetching = false, result = listOf(product) )
+            }
+            .addOnFailureListener { exception ->
+                Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
+            }
+    }
+
+    fun getCategory(category: Category) {
+        // create fill a list with product objects capable of cart-fav + toggle
+        val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
+
+        productsRef
+            .whereEqualTo("category", category.enam)
+            .get()
+            .addOnSuccessListener {
+                it.documents.forEach {
+                    val ui_p = documentToProduct(it.data!!, emptyList(), emptyList())
+                    ui_Products.add(ui_p)
+                }
+                _uiProducts.value = UIState(fetching = false, result = ui_Products)
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
+            }
+
+
+
+
+    }
 
 
     @OptIn(ExperimentalUuidApi::class)
-    fun uploadProduct(title:String, description:String, price:String, images:String, category: String, onSuccess:()->Unit ){
+    fun uploadProduct(
+        title: String,
+        description: String,
+        price: String,
+        images: String,
+        category: String,
+        onSuccess: () -> Unit
+    ) {
         val uuid = Uuid.random().toString()
         val p = Product(
             id = uuid,
@@ -101,9 +157,9 @@ class ProductsViewModel : ViewModel() {
             .document(uuid)
             .set(p)
             .addOnCompleteListener {
-                if(it.isSuccessful){
+                if (it.isSuccessful) {
                     onSuccess()
-                }else{
+                } else {
                     // feedback to UI
                 }
             }

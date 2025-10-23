@@ -1,17 +1,16 @@
 package com.example.shoppingapp
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.shoppingapp.components.UploadMultipleImages
 import com.example.shoppingapp.screen.AuthScreen
 import com.example.shoppingapp.screen.LoginScreen
 import com.example.shoppingapp.screen.MainScreen
 import com.example.shoppingapp.screen.NewProductUpload
-import com.example.shoppingapp.screen.ProductScreen
+import com.example.shoppingapp.screen.ProductScreenJsonApi
+import com.example.shoppingapp.screen.ProductScreenUploaded
 import com.example.shoppingapp.screen.SignupScreen
 import com.example.shoppingapp.screen.UploadSinglePictureScreen
 import com.google.firebase.Firebase
@@ -45,13 +44,18 @@ fun Navigation(){
         composable(Routes.UploadSinglePicture) {
             UploadSinglePictureScreen()
         }
-        composable(Routes.product + "/{id}") { navBackStack ->
+        composable(Routes.productJsonApi + "/{id}") { navBackStack ->
             // Extracting the argument
             val id = navBackStack.arguments?.getString("id") ?: "0"
-            ProductScreen(id)
+            ProductScreenJsonApi(id)
         }
         composable(Routes.newProduct) {
             NewProductUpload()
+        }
+        composable(Routes.productUploaded + "/{id}") { navBackStack ->
+            // Extracting the argument
+            val id = navBackStack.arguments?.getString("id") ?: "0"
+            ProductScreenUploaded(id)
         }
 
 
@@ -66,7 +70,8 @@ object Routes{
     val login = "LOGIN"
     val signup = "SIGNUP"
     val main = "MAIN"
-    val product = "PRODUCT"
+    val productJsonApi = "PRODUCT_REMOTE"
+    val productUploaded = "PRODUCT_DB"
     val newProduct = "NEW_PRODUCT"
     val UploadSinglePicture = "UPLOAD_SINGLE_PICTURE"
     val UploadMultiplePictures = "UPLOAD_MULTIPLE_PICTURES"

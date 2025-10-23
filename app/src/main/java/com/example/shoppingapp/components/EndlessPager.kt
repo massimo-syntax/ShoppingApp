@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import kotlinx.coroutines.delay
@@ -30,7 +31,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EndlessPager() {
+fun EndlessPager(images:List<String> = emptyList() ) {
 
     val list = listOf(
         R.drawable.icon_sell,
@@ -59,7 +60,7 @@ fun EndlessPager() {
                 contentPadding = PaddingValues(horizontal = 18.dp),
                 state = pagerState
             ) { index ->
-                list.getOrNull(
+                images.getOrNull(
                     index % (list.size)
                 )?.let { item ->
                     BannerItem(image = item)
@@ -85,19 +86,29 @@ fun EndlessPager() {
 }
 
 @Composable
-fun BannerItem(image: Int) {
+fun BannerItem(image: String) {
     Box(
         modifier = Modifier
-            .border(1.dp, Color.Green)
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
             .background(AppStyle.colors.green),
         contentAlignment = Alignment.Center
     ) {
+
+        AsyncImage(
+            model = image,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillWidth,
+            contentDescription = "Banner Image"
+        )
+
+        /*
         Image(
             painter = painterResource(id = image),
             contentScale = ContentScale.Crop,
             contentDescription = "Banner Image"
         )
+        */
+
     }
 }

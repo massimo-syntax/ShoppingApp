@@ -54,7 +54,7 @@ import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProductsViewModel = viewModel()) {
+fun RemoteProductsScreen(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewModel: RemoteProductsViewModel = viewModel()) {
 
     val context = LocalContext.current
     fun toast(message:Any){
@@ -63,6 +63,7 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
 
     // get cart and fav from ROOM
     val roomRepo = SelectedProductsRepository(context)
+    var cartCount by remember { mutableStateOf(0) }
 
     // products from JSON api
     var uiProducts by viewModel.uiProducts
@@ -73,6 +74,7 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
     // get products async, request also cart and favourites from room
     LaunchedEffect(Unit) {
         viewModel.fetchRemoteProducts(roomRepo)
+        cartCount = roomRepo.getCart().size
     }
 
 
@@ -134,8 +136,15 @@ fun RemoteProductsScreen(modifier: Modifier = Modifier, viewModel: RemoteProduct
                         isInCart = product.cart,
                         onToggleCart = {
                             runBlocking {
-                                if(!product.cart) roomRepo.dropInCart(product.id)
-                                else roomRepo.deleteFromCart(product.id)
+                                if(!product.cart){
+                                    roomRepo.dropInCart(product.id)
+                                    cartCount++
+                                }
+                                else{
+                                    roomRepo.deleteFromCart(product.id)
+                                    cartCount--
+                                }
+                                onBadge(cartCount)
                             }
                             // UPDATE LIST UI, TRIGGER RECOMPOSITION
                             // new List
@@ -242,7 +251,7 @@ fun ProductCard(
                     // see button
                     OutlinedButton(
                         onClick = {
-                            Routes.navController.navigate(Routes.product+"/"+product.id)
+                            Routes.navController.navigate(Routes.productJsonApi+"/"+product.id)
                         },
                         modifier = Modifier.height(36.dp).width(100.dp)
                     ) {
