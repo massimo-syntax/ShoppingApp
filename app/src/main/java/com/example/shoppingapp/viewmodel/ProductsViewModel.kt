@@ -69,6 +69,36 @@ class ProductsViewModel : ViewModel() {
 
     }
 
+
+    fun getDefinedListOfProducts(ids:List<String>){
+        var count = 0
+        val products = mutableListOf<UiProductWithFieldsFromRoom>()
+
+        ids.forEach {
+            productsRef
+                .document(it)
+                .get()
+                .addOnSuccessListener {
+                    val product = documentToProduct(it.data!!, emptyList(),emptyList())
+                    products.add(product)
+                    count++
+                    if(count == ids.size ){
+                        Log.wtf("count==id.size" , "$count - ${ids.size}")
+
+                        Log.wtf("count==id.size" , "$count - ${ids.size}")
+                        Log.wtf("count==id.size" , "$count - ${ids.size}")
+                        Log.wtf("count==id.size" , "$count - ${ids.size}")
+
+                        //_uiProducts.value = UIState(fetching = false, result = products)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
+                }
+        }
+
+    }
+
     suspend fun getAllProducts(roomRepository: SelectedProductsRepository) {
 
         // get list of cart and favourites

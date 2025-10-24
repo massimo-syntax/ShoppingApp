@@ -1,16 +1,7 @@
 package com.example.shoppingapp.screen
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.captionBarPadding
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -31,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,8 +30,11 @@ import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.SimpleStandardTopBar
 import com.example.shoppingapp.repository.SelectedProductsRepository
+import com.example.shoppingapp.screen.mainScreenPages.Cart
 import com.example.shoppingapp.screen.mainScreenPages.Home
 import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
+import com.example.shoppingapp.screen.mainScreenPages.RemoteProducts
+
 
 enum class Pages(val str: String) {
     ONE("Products"),
@@ -55,9 +48,9 @@ private val MyRippleConfiguration =
     RippleConfiguration(color = AppStyle.colors.lightBlue, rippleAlpha = RippleAlpha(0f,0f,0f,0f,))
 
 @Composable
-fun MainScreen(){
+fun MainScreen(page:Pages = Pages.ONE){
 
-    var selectedPage by rememberSaveable { mutableStateOf(Pages.ONE) }
+    var selectedPage by rememberSaveable { mutableStateOf(page) }
     var cart by rememberSaveable { mutableStateOf(0) }
 
     val context = LocalContext.current
@@ -179,8 +172,8 @@ fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, updateBadge:(n
 
     when(page){
         Pages.ONE -> Home(modifier)
-        Pages.TWO -> RemoteProductsScreen(modifier, updateBadge)
-        Pages.CART -> Text("hello there 2")
+        Pages.TWO -> RemoteProducts(modifier, updateBadge)
+        Pages.CART -> Cart(modifier)
         Pages.FOUR -> ProfilePage(modifier)
     }
 

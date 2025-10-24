@@ -1,11 +1,19 @@
 package com.example.shoppingapp.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -21,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -70,61 +80,82 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
             if (!uiState.fetching && uiState.result.isNotEmpty()) {
 
                 val product = uiState.result.first()
+                val images = product.images.split(",")
 
-                AsyncImage(product.images, contentDescription = "image of" + product.title)
+                val imagesBoxHeight = 256.dp
+                // images
+                Box(Modifier.fillMaxWidth().height(imagesBoxHeight)){
+                    val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
+                    HorizontalPager(state = pagerState) { page ->
+                        AsyncImage(
+                            model = images[page],
+                            contentDescription = "image of" + product.title,
+                            contentScale = ContentScale.FillWidth,
+                            modifier = Modifier.fillMaxWidth().height(imagesBoxHeight),
+                            )
+                    }
 
-                Text(product.rating)
 
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.End
+                        ){
+
+                            IconButton(
+                                onClick = {
+                                    runBlocking {
+                                        if(!inFav) roomRepo.addToFav(product.id)
+                                        else roomRepo.deleteFromFav(product.id)
+                                        inFav = !inFav
+                                    }
+
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.icon_favorite),
+                                    contentDescription = "favorite",
+                                    tint = if (inFav) Color.Red else Color.LightGray,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                val pagerState2 = rememberPagerState(pageCount = {
+                    10
+                })
+                HorizontalPager(state = pagerState2) { page ->
+                    // Our page content
+                    Text(
+                        text = "Page: $page",
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+
+                // title
                 Text(
                     text = product.title,
                     style = MaterialTheme.typography.titleLarge,
                 )
 
+                // description
                 Text(
                     text = product.description,
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
-                Row(
-                    modifier = Modifier.padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-
-                    IconButton(
-                        onClick = {
-                            runBlocking {
-                                if(!inCart) roomRepo.dropInCart(product.id)
-                                else roomRepo.deleteFromCart(product.id)
-                                inCart = !inCart
-                            }
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.icon_cart_garden),
-                            contentDescription = "cart",
-                            tint = if (inCart) Color.Blue else Color.LightGray
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
-                            runBlocking {
-                                if(!inFav) roomRepo.addToFav(product.id)
-                                else roomRepo.deleteFromFav(product.id)
-                                inFav = !inFav
-                            }
-
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.icon_favorite),
-                            contentDescription = "favorite",
-                            tint = if (inFav) Color.Red else Color.LightGray
-                        )
-                    }
-                }
-
+                // rating
+                Text(product.rating)
                 RatingBar(product.rating.toFloat())
+                
 
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -141,6 +172,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                         contentDescription = "cart",
                         tint = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         text= if(inCart) "remove from cart" else "add to cart"
                     )

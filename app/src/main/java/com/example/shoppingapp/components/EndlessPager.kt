@@ -61,7 +61,7 @@ fun EndlessPager(images:List<String> = emptyList() ) {
                 state = pagerState
             ) { index ->
                 images.getOrNull(
-                    index % (list.size)
+                    index % (images.size)
                 )?.let { item ->
                     BannerItem(image = item)
                 }

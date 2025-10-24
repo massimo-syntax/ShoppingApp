@@ -1,4 +1,4 @@
-package com.example.shoppingapp.screen
+package com.example.shoppingapp.screen.mainScreenPages
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -54,7 +54,7 @@ import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun RemoteProductsScreen(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewModel: RemoteProductsViewModel = viewModel()) {
+fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewModel: RemoteProductsViewModel = viewModel()) {
 
     val context = LocalContext.current
     fun toast(message:Any){

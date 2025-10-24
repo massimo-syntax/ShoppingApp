@@ -121,8 +121,6 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         )
 
         if(!uiProducts.fetching && uiProducts.result.isNotEmpty()){
-
-
             LazyRow {
                 val products = uiProducts.result
                 itemsIndexed(products){ index , product ->
@@ -140,12 +138,6 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
                     )
                 }
             }
-
-
-
-
-
-
         }
         else
             CircularProgressIndicator()
