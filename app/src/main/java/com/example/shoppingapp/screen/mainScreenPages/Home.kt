@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -58,10 +59,11 @@ import com.example.shoppingapp.components.EndlessPager
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProductsViewModel
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun Home(modifier: Modifier = Modifier ,  productsViewModel: ProductsViewModel = viewModel()) {
+fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewModel()) {
 
 
     val context = LocalContext.current
@@ -75,7 +77,7 @@ fun Home(modifier: Modifier = Modifier ,  productsViewModel: ProductsViewModel =
     val roomRepo = SelectedProductsRepository(context)
 
     // products from Firebase
-    val uiProducts by productsViewModel.uiProducts.collectAsState()
+    val uiProducts by viewModel.uiProducts.collectAsState()
 
 
     val imagesForBanner = listOf(
@@ -94,8 +96,8 @@ fun Home(modifier: Modifier = Modifier ,  productsViewModel: ProductsViewModel =
 
 
     LaunchedEffect(Unit) {
-        //productsViewModel.getAllProducts(roomRepo)
-        productsViewModel.getCategory(Category.ELECTRONICS)
+        viewModel.getAllProducts(roomRepo)
+        //productsViewModel.getCategory(Category.ELECTRONICS)
     }
 
 
@@ -120,13 +122,29 @@ fun Home(modifier: Modifier = Modifier ,  productsViewModel: ProductsViewModel =
 
         if(!uiProducts.fetching && uiProducts.result.isNotEmpty()){
 
-            MainProductCard(
-                product = uiProducts.result.first(),
-                onToggleCart = {  },
-                onToggleFav = { },
-                isInCart = false,
-                isInFav = false,
-            )
+
+            LazyRow {
+                val products = uiProducts.result
+                itemsIndexed(products){ index , product ->
+                    // todo add product card
+                    MainProductCard(
+                        product = product,
+                        isInFav = product.fav,
+                        onToggleFav = {
+                            runBlocking {
+                                roomRepo.toggleFav(product.id)
+                            }
+                            product.fav = !product.fav
+                            viewModel.updateList(index,product)
+                        }
+                    )
+                }
+            }
+
+
+
+
+
 
         }
         else
@@ -204,9 +222,7 @@ fun Home(modifier: Modifier = Modifier ,  productsViewModel: ProductsViewModel =
 @Composable
 fun MainProductCard(
     product: UiProductWithFieldsFromRoom,
-    onToggleCart: () -> Unit,
     onToggleFav: () -> Unit,
-    isInCart: Boolean,
     isInFav:Boolean,
 ) {
 

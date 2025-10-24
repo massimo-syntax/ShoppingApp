@@ -46,7 +46,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
 
     // it was not much pain to create a UIState also for single product..
     // so that is just the first in the list, anyways i would first ask to the senior
-    val uiState = viewModel.uiProducts.collectAsState()
+    val uiState by viewModel.uiProducts.collectAsState()
 
     LaunchedEffect(Unit) {
         inCart = roomRepo.getOneCart(id) != null
@@ -67,9 +67,9 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            if (!uiState.value.fetching && uiState.value.result.isNotEmpty()) {
+            if (!uiState.fetching && uiState.result.isNotEmpty()) {
 
-                val product = uiState.value.result.first()
+                val product = uiState.result.first()
 
                 AsyncImage(product.images, contentDescription = "image of" + product.title)
 

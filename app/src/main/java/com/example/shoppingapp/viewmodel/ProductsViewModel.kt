@@ -15,6 +15,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -23,6 +24,7 @@ class ProductsViewModel : ViewModel() {
 
     data class UIState(
         val fetching: Boolean = true,
+        val recomposition:Int = 0,
         val result: List<UiProductWithFieldsFromRoom> = emptyList()
     )
 
@@ -59,6 +61,13 @@ class ProductsViewModel : ViewModel() {
         )
     }
 
+    fun updateList(index:Int,product: UiProductWithFieldsFromRoom){
+
+        val list = _uiProducts.value.result.toMutableList()
+        list[index] = product
+        _uiProducts.update { it.copy(false, it.recomposition+1,list) }
+
+    }
 
     suspend fun getAllProducts(roomRepository: SelectedProductsRepository) {
 
@@ -67,28 +76,19 @@ class ProductsViewModel : ViewModel() {
         val favs = roomRepository.getFavs().map { it.productId }
 
         // create fill a list with product objects capable of cart-fav + toggle
-        val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
+        val uiProducts = mutableListOf<UiProductWithFieldsFromRoom>()
 
         productsRef
             .get()
             .addOnSuccessListener {
                 it.documents.forEach {
                     val ui_p = documentToProduct(it.data!!, cart, favs)
-                    ui_Products.add(ui_p)
+                    uiProducts.add(ui_p)
                 }
-                _uiProducts.value = UIState(fetching = false, result = ui_Products)
 
-
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-                Log.wtf("PRODUCTS !!", _uiProducts.value.toString())
-
-
-            }.addOnFailureListener {
+                _uiProducts.value = UIState(fetching = false, result = uiProducts)
+            }
+            .addOnFailureListener {
                 Log.wtf("ERROR FETCHING LIST", it.message.toString())
                 Log.wtf("ERROR FROM DATABASE FIREBASE", it.message.toString())
             }
@@ -101,7 +101,7 @@ class ProductsViewModel : ViewModel() {
             .get()
             .addOnSuccessListener {
                 val product = documentToProduct(it.data!!, emptyList(),emptyList())
-                _uiProducts.value = UIState(fetching = false, result = listOf(product) )
+                _uiProducts.value = UIState(fetching = false, result = mutableListOf(product) )
             }
             .addOnFailureListener { exception ->
                 Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)

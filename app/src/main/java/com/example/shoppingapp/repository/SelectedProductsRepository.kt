@@ -60,6 +60,15 @@ class SelectedProductsRepository (context: Context) {
         favDao.insert(fav)
     }
 
+    suspend fun toggleFav(id:String){
+        val fav = getOneFav(id)
+        if(fav == null){
+            addToFav(id)
+        }else{
+            deleteFromFav(id)
+        }
+    }
+
     // DELETE
     suspend fun deleteFromCart(productId:String){
         cartDao.delete(productId)
