@@ -8,6 +8,7 @@ data class UiProductWithFieldsFromRoom(
     val price:String,
     val category: String,
     val rating:String,
+    val userId:String,
     // fields used for room, cart and fav are stored locally
     var cart:Boolean = false,
     var fav: Boolean = false,

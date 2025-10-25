@@ -56,6 +56,7 @@ class ProductsViewModel : ViewModel() {
             price = map["price"].toString(),
             category = map["category"].toString(),
             rating = (map["rating"] ?: rating) as String,
+            userId = map["userId"].toString(),
             cart = cart.contains(map["id"].toString()),
             fav = favs.contains(map["id"].toString()),
         )
@@ -78,18 +79,14 @@ class ProductsViewModel : ViewModel() {
             productsRef
                 .document(it)
                 .get()
-                .addOnSuccessListener {
-                    val product = documentToProduct(it.data!!, emptyList(),emptyList())
+                .addOnSuccessListener { document ->
+                    if (document.data == null) return@addOnSuccessListener
+
+                    val product = documentToProduct(document.data!!, emptyList(),emptyList())
                     products.add(product)
                     count++
                     if(count == ids.size ){
-                        Log.wtf("count==id.size" , "$count - ${ids.size}")
-
-                        Log.wtf("count==id.size" , "$count - ${ids.size}")
-                        Log.wtf("count==id.size" , "$count - ${ids.size}")
-                        Log.wtf("count==id.size" , "$count - ${ids.size}")
-
-                        //_uiProducts.value = UIState(fetching = false, result = products)
+                        _uiProducts.value = UIState(fetching = false, result = products)
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -129,8 +126,10 @@ class ProductsViewModel : ViewModel() {
         productsRef
             .document(id)
             .get()
-            .addOnSuccessListener {
-                val product = documentToProduct(it.data!!, emptyList(),emptyList())
+            .addOnSuccessListener { document ->
+                if (document.data == null) return@addOnSuccessListener
+
+                val product = documentToProduct(document.data!!, emptyList(),emptyList())
                 _uiProducts.value = UIState(fetching = false, result = mutableListOf(product) )
             }
             .addOnFailureListener { exception ->

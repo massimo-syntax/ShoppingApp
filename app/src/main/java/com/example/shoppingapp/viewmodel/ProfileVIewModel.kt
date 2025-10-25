@@ -20,13 +20,13 @@ class ProfileVIewModel : ViewModel() {
 
 
     // cannot deserialize user with .toObject() - as User - get(User::java.class) or found in internet
-    private fun documentToUser(map:Map<String,Any>?):User?{
-        return if (map!=null)User(
+    private fun documentToUser(map: Map<String, Any>?): User? {
+        return if (map != null) User(
             id = map["id"].toString(),
             name = map["name"].toString(),
             email = "",
             image = (map["image"] ?: "") as String
-        )else null
+        ) else null
     }
 
 
@@ -34,8 +34,10 @@ class ProfileVIewModel : ViewModel() {
         DB  .collection("users")
             .document(userId)
             .get()
-            .addOnSuccessListener {
-                val user = documentToUser(it.data)
+            .addOnSuccessListener { document ->
+                if (document.data == null) return@addOnSuccessListener
+
+                val user = documentToUser(document.data)
                 _profile.value = user
             }
     }

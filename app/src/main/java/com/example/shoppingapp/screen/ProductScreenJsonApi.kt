@@ -73,6 +73,7 @@ fun ProductScreenJsonApi(id:String){
             price = remoteProduct.image,
             category = remoteProduct.category,
             rating = rating,
+            userId = "",
             cart = inCart,
             fav = inFav
         )

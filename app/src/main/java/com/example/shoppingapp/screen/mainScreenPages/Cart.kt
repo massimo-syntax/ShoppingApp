@@ -38,61 +38,13 @@ import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 @Composable
 fun Cart(modifier: Modifier = Modifier , /* viewModel: ProductsViewModel = viewModel() */ viewModel: UserSelectedViewModel = viewModel() ){
 
-    /*
-    val roomRepo = SelectedProductsRepository(LocalContext.current)
-    val remoteRepo = RemoteProductsRepository()
-
-    var jsonApiCart by remember { mutableStateOf<List<UiProductWithFieldsFromRoom>>(emptyList()) }
-
-    val firebaseProductsUiState by viewModel.uiProducts.collectAsState()
-
-    val ctx = LocalContext.current
-    fun toast( message:Any ){
-        Toast.makeText(ctx,message.toString(),Toast.LENGTH_SHORT).show()
-
-    }
-*/
-
     val uiState = viewModel.uiState.collectAsState()
-
     val roomRepo = SelectedProductsRepository(LocalContext.current)
-
-    val mMediaPlayer = MediaPlayer.create( LocalContext.current, R.raw.huddle)
 
     LaunchedEffect(Unit) {
 
-        // keep saved instance
-        if(uiState.value.list.isNullOrEmpty()){
-            viewModel.getAllCart(roomRepo)
-        }
+        viewModel.getAllCart(roomRepo)
 
-/*
-        val cartIds = roomRepo.getCart().map { it.productId }
-        val _jsonApiIds = mutableListOf<String>()
-        val _firebaseIds = mutableListOf<String>()
-        val _jsonApiCart = mutableListOf<UiProductWithFieldsFromRoom>()
-
-        cartIds.forEach {
-            if(it.length > 1){ // product is stored in fierbase
-                _firebaseIds.add(it)
-            } else { // product is from json api
-                _jsonApiIds.add(it)
-                val jsonProductRemote:RemoteProduct = remoteRepo.getProduct(it)
-                val jsonProduct = UiProductWithFieldsFromRoom(
-                    id = jsonProductRemote.id,
-                    title = jsonProductRemote.title,
-                    description = jsonProductRemote.description,
-                    images = jsonProductRemote.image,
-                    price = jsonProductRemote.price,
-                    category = jsonProductRemote.category,
-                    rating = "0.0"
-                )
-                _jsonApiCart.add(jsonProduct)
-            }
-        }
-        jsonApiCart = _jsonApiCart.toList()
-        viewModel.getDefinedListOfProducts(_firebaseIds.toList())
-*/
     }
 
 
@@ -101,42 +53,15 @@ fun Cart(modifier: Modifier = Modifier , /* viewModel: ProductsViewModel = viewM
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ){
-
         Spacer(Modifier.height(20.dp))
-/*
-        if(firebaseProductsUiState.fetching) CircularProgressIndicator()
-        if(firebaseProductsUiState.result.isNotEmpty()){
 
-            val products = firebaseProductsUiState.result
-
-            // print products from firebase
-            products.forEach {
-                CartItem(it)
-            }
-
-        }
-
-        // print products from json api
-        if(jsonApiCart.isNotEmpty()){
-            jsonApiCart.forEach {
-                CartItem(it)
-            }
-        }
-
-    }
-
- */
         if(uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded){
-            Text("itz a huddle !!")
 
             uiState.value.list.forEach {
                 CartItem(it)
             }
 
-            mMediaPlayer.start()
-
         }
-
 
     }
 
@@ -155,11 +80,8 @@ fun CartItem(product: UserSelectedProduct , quantity:Int = 0){
             contentDescription = product.title,
             modifier = Modifier.size(100.dp)
         )
-
         Spacer(Modifier.width(10.dp))
-
         Text(product.title)
-
     }
 
 }

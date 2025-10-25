@@ -1,6 +1,7 @@
 package com.example.shoppingapp.viewmodel
 
 import android.util.Log
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,8 +30,6 @@ class UserSelectedViewModel() : ViewModel() {
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
     private val remoteRepo = RemoteProductsRepository()
-    private val productsViewModel = ProductsViewModel()
-
 
     private fun documentToSelectedProduct(map: Map<String, Any>): UserSelectedProduct {
 
@@ -57,16 +56,16 @@ class UserSelectedViewModel() : ViewModel() {
     suspend fun getAllCart(roomRepo: SelectedProductsRepository) {
 
         val cartIds = roomRepo.getCart().map { it.productId }
-        val _jsonApiIds = mutableListOf<String>()
-        val _firebaseIds = mutableListOf<String>()
-        val _jsonApiCart = mutableListOf<UserSelectedProduct>()
+        val jsonApiIds = mutableListOf<String>()
+        val firebaseIds = mutableListOf<String>()
+        val jsonApiCart = mutableListOf<UserSelectedProduct>()
         val completeList = mutableListOf<UserSelectedProduct>()
 
         cartIds.forEach {
-            if (it.length > 1) { // product is stored in fierbase
-                _firebaseIds.add(it)
+            if (!it.isDigitsOnly()) { // product is stored in fierbase
+                firebaseIds.add(it)
             } else { // product is from json api
-                _jsonApiIds.add(it)
+                jsonApiIds.add(it)
                 val jsonProductRemote: RemoteProduct = remoteRepo.getProduct(it)
                 val jsonProduct = UserSelectedProduct(
                     id = jsonProductRemote.id,
@@ -75,36 +74,29 @@ class UserSelectedViewModel() : ViewModel() {
                     mainPicture = jsonProductRemote.image,
                     price = jsonProductRemote.price,
                 )
-                _jsonApiCart.add(jsonProduct)
+                jsonApiCart.add(jsonProduct)
             }
         }
-        completeList.addAll(_jsonApiCart)
+        completeList.addAll(jsonApiCart)
         _uiState.update { it.copy(roomDataLoaded = true , list = completeList.toList()) }
 
         var count = 0
         val products = mutableListOf<UserSelectedProduct>()
 
-        _firebaseIds.forEach { id ->
+        firebaseIds.forEach { id ->
             Firebase.firestore
                 .collection("products")
                 .document(id)
                 .get()
                 .addOnSuccessListener { document ->
-
+                    if (document.data == null) return@addOnSuccessListener
                     val product = documentToSelectedProduct(document.data!!)
                     products.add(product)
                     count++
-                    if (count == _firebaseIds.size) {
-                        Log.wtf("count==id.size", "$count - ${_firebaseIds.size}")
-
-                        Log.wtf("count==id.size", "$count - ${_firebaseIds.size}")
-                        Log.wtf("count==id.size", "$count - ${_firebaseIds.size}")
-                        Log.wtf("count==id.size", "$count - ${_firebaseIds.size}")
-
+                    if (count == firebaseIds.size) {
                         completeList.addAll(products)
                         _uiState.update { it.copy(firebaseDataLoaded = true , list = completeList.toList()) }
                     }
-
                 }
                 .addOnFailureListener { exception ->
                     Log.w(
@@ -114,7 +106,88 @@ class UserSelectedViewModel() : ViewModel() {
                     )
                 }
         }
+        if(firebaseIds.isEmpty()) _uiState.update { it.copy(firebaseDataLoaded = true) }
+
 
     }
+
+
+    suspend fun getAllFavs(roomRepo: SelectedProductsRepository) {
+
+
+        val favsIds = roomRepo.getFavs().map { it.productId }
+        val jsonApiIds = mutableListOf<String>()
+        val firebaseIds = mutableListOf<String>()
+        val jsonApiCart = mutableListOf<UserSelectedProduct>()
+        val completeList = mutableListOf<UserSelectedProduct>()
+
+        favsIds.forEach {
+            if (!it.isDigitsOnly()) { // product is stored in fierbase
+                firebaseIds.add(it)
+            } else { // product is from json api
+                jsonApiIds.add(it)
+                val jsonProductRemote: RemoteProduct = remoteRepo.getProduct(it)
+                val jsonProduct = UserSelectedProduct(
+                    id = jsonProductRemote.id,
+                    title = jsonProductRemote.title,
+                    description = jsonProductRemote.description,
+                    mainPicture = jsonProductRemote.image,
+                    price = jsonProductRemote.price,
+                )
+                jsonApiCart.add(jsonProduct)
+            }
+        }
+        completeList.addAll(jsonApiCart)
+        _uiState.update { it.copy(roomDataLoaded = true , list = completeList.toList()) }
+
+        var count = 0
+        val products = mutableListOf<UserSelectedProduct>()
+
+        firebaseIds.forEach { id ->
+
+            Log.wtf("firebaseid", id.toString())
+
+            Log.wtf("firebaseid", id.toString())
+
+            Log.wtf("firebaseid", id.toString())
+
+            Log.wtf("firebaseid", id.toString())
+
+            Log.wtf("firebaseid", id.toString())
+
+            Log.wtf("firebaseid", id.toString())
+
+
+            Firebase.firestore
+                .collection("products")
+                .document(id)
+                .get()
+                .addOnSuccessListener { document ->
+
+                    if (document.data == null) return@addOnSuccessListener
+
+                        val product = documentToSelectedProduct(document.data!!)
+                        products.add(product)
+                        count++
+
+                    if (count == firebaseIds.size) {
+                        completeList.addAll(products)
+                        _uiState.update { it.copy(firebaseDataLoaded = true , list = completeList.toList()) }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(
+                        "ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY",
+                        "Error getting documents: ",
+                        exception
+                    )
+                }
+        }
+        if(firebaseIds.isEmpty()) _uiState.update { it.copy(firebaseDataLoaded = true) }
+
+    }
+
+
+
 
 }

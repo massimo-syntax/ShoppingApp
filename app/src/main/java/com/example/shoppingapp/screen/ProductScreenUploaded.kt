@@ -1,5 +1,6 @@
 package com.example.shoppingapp.screen
 
+import android.text.Layout
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -38,16 +42,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.RatingBar
 import com.example.shoppingapp.viewmodel.ProductsViewModel
+import com.example.shoppingapp.viewmodel.ProfileVIewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel() ){
+fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel(), profileVIewModel: ProfileVIewModel=viewModel()){
 
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
@@ -58,11 +65,28 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
     // so that is just the first in the list, anyways i would first ask to the senior
     val uiState by viewModel.uiProducts.collectAsState()
 
+    val shop by profileVIewModel.profile
+
     LaunchedEffect(Unit) {
         inCart = roomRepo.getOneCart(id) != null
         inFav = roomRepo.getOneFav(id) != null
         viewModel.getProduct(id)
     }
+
+    // wait until the data of the product is loaded to fetch user
+    LaunchedEffect(Unit) {
+        var productFetched = false
+        while(!productFetched){
+            if( uiState.fetching ){
+                delay(200)
+            }else{
+                profileVIewModel.getProfile(uiState.result.first().userId)
+                productFetched = true
+            }
+        }
+
+    }
+
 
 
     Scaffold(
@@ -128,15 +152,48 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                     }
                 }
 
-                val pagerState2 = rememberPagerState(pageCount = {
-                    10
-                })
-                HorizontalPager(state = pagerState2) { page ->
-                    // Our page content
-                    Text(
-                        text = "Page: $page",
-                        modifier = Modifier.fillMaxWidth()
-                    )
+
+                // USER
+                //
+                //
+                //
+
+                val size = 40.dp
+
+                Row (
+                    Modifier.fillMaxWidth().height(size),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    // part left: image - title
+                    if(shop != null){
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncImage(
+                                model = shop!!.image,
+                                contentDescription = shop!!.name,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(size,size).clip(RoundedCornerShape(100))
+                            )
+                            Spacer(Modifier.width(size/3))
+                            Text(shop!!.name)
+                        }
+                    }
+                    else CircularProgressIndicator(modifier = Modifier.size(size), color = AppStyle.colors.lightBlue)
+
+                    // part right: button or whatelse
+                    OutlinedButton(
+                        onClick={
+                            // go to message page
+                        }
+                    ) {
+                        Icon(painter = painterResource(R.drawable.icon_mail), contentDescription = "message shop")
+                        Text("Message shop")
+                    }
+
+
                 }
 
 

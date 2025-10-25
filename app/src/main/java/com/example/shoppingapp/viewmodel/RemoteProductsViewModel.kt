@@ -46,6 +46,7 @@ class RemoteProductsViewModel() : ViewModel() {
                         it.price,
                         it.category,
                         rating = rating,
+                        userId = "",
                         cart.contains(it.id),
                         favs.contains(it.id)
                     )

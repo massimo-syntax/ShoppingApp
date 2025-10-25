@@ -36,12 +36,18 @@ import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
+import com.example.shoppingapp.data.model.UserSelectedProduct
 import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
+import com.example.shoppingapp.viewmodel.ProductsViewModel
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
+import com.example.shoppingapp.viewmodel.UserSelectedViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 @Composable
-fun ProfilePage( modifier: Modifier = Modifier , profileVIewModel: ProfileVIewModel = viewModel() ) {
+fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSelectedViewModel = viewModel(), profileVIewModel: ProfileVIewModel = viewModel()) {
 
     val tabs = listOf("Products", "History", "Likes")
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -49,8 +55,39 @@ fun ProfilePage( modifier: Modifier = Modifier , profileVIewModel: ProfileVIewMo
 
     var profile by remember { profileVIewModel.profile }
 
+
+    var favs = userSelectedViewModel.uiState.collectAsState()
+
+    var myProducts by remember {mutableStateOf<List<UserSelectedProduct>>(emptyList())}
+
+    val roomRepo = SelectedProductsRepository(LocalContext.current)
+
     LaunchedEffect(Unit) {
+        // get profile
         profileVIewModel.getProfile()
+        // get favs
+        userSelectedViewModel.getAllFavs(roomRepo)
+        // get my products
+        val _myProducts = mutableListOf<UserSelectedProduct>()
+        Firebase.firestore.collection("products").whereEqualTo("userId", Firebase.auth.currentUser!!.uid )
+            .get()
+            .addOnSuccessListener {
+                it.documents.forEach {
+                    val product = UserSelectedProduct(
+                        id = it["id"].toString(),
+                        title = it["title"].toString(),
+                        description = it["description"].toString(),
+                        mainPicture = it["images"].toString().split(',').first() ,
+                        price = it["price"].toString(),
+                    )
+                    _myProducts.add(product)
+                }
+                myProducts = _myProducts.toList()
+            }
+        //
+
+
+
     }
 
 
@@ -207,26 +244,19 @@ fun ProfilePage( modifier: Modifier = Modifier , profileVIewModel: ProfileVIewMo
         }
         // Tab Content
         when (selectedTab) {
-            0 -> ProductsTab()
+            0 -> ProductsTab(myProducts)
             1 -> HistoryTab()
-            2 -> FavoriteProductsTab()
+            2 -> FavoriteProductsTab(favs.value.list)
         }
     }
 }
 
 @Composable
-fun ProductsTab() {
-    // Example posts
-    val posts = listOf(
-        "Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus.",
-        "Hello, Lorem ipsum dolor sit amet consectetur adipiscing.",
-        "Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem.",
-        "Lorem ipsum dolor sit amet consectetur adipiscing elit quisque."
-    )
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        posts.forEach { post ->
+fun ProductsTab(myProducts: List<UserSelectedProduct> = emptyList()) {
+
+    LazyColumn {
+        items(myProducts){ product ->
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -235,9 +265,9 @@ fun ProductsTab() {
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Row(modifier = Modifier.padding(12.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.adaptivecarticon_foreground), // Replace with your drawable
-                        contentDescription = null,
+                    AsyncImage(
+                        model = product.mainPicture,
+                        contentDescription = product.title,
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
@@ -245,13 +275,16 @@ fun ProductsTab() {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
-                        Text("Profile Name", fontWeight = FontWeight.Bold)
-                        Text(post)
+                        Text(product.title, fontWeight = FontWeight.Bold)
+                        Text(product.description)
                     }
                 }
             }
+
         }
     }
+
+
 }
 
 @Composable
@@ -285,35 +318,7 @@ fun HistoryTab(
 }
 
 @Composable
-fun FavoriteProductsTab() {
-
-    val roomRepo = SelectedProductsRepository(LocalContext.current)
-    val remoteRepo = RemoteProductsRepository()
-
-    var favs by remember { mutableStateOf<List<UiProductWithFieldsFromRoom>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        val favRemoteProducts = roomRepo.getFavs()
-        val remoteFavourites = mutableListOf<UiProductWithFieldsFromRoom>()
-
-        favRemoteProducts.forEach {
-            val remoteProduct = remoteRepo.getProduct(it.productId)
-            // just to have a type to display for now
-            // later there will be also products in firebase
-            val p = UiProductWithFieldsFromRoom(
-                remoteProduct.id,
-                remoteProduct.title,
-                remoteProduct.description,
-                remoteProduct.image, // now is just 1, remote product has just 1
-                remoteProduct.price,
-                category = remoteProduct.category,
-                rating = "0.0"
-                // cart or fav nothing here
-            )
-            remoteFavourites.add(p)
-        }
-        favs = remoteFavourites.toList()
-    }
+fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
 
 
     Column(
