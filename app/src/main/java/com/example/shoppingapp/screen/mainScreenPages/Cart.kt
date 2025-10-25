@@ -1,5 +1,6 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
+import android.media.MediaPlayer
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,16 +25,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.shoppingapp.R
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
+import com.example.shoppingapp.data.model.UserSelectedProduct
 import com.example.shoppingapp.data.remote.RemoteProduct
 import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProductsViewModel
+import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 
 
 @Composable
-fun Cart(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewModel()){
+fun Cart(modifier: Modifier = Modifier , /* viewModel: ProductsViewModel = viewModel() */ viewModel: UserSelectedViewModel = viewModel() ){
 
+    /*
     val roomRepo = SelectedProductsRepository(LocalContext.current)
     val remoteRepo = RemoteProductsRepository()
 
@@ -46,9 +51,22 @@ fun Cart(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         Toast.makeText(ctx,message.toString(),Toast.LENGTH_SHORT).show()
 
     }
+*/
+
+    val uiState = viewModel.uiState.collectAsState()
+
+    val roomRepo = SelectedProductsRepository(LocalContext.current)
+
+    val mMediaPlayer = MediaPlayer.create( LocalContext.current, R.raw.huddle)
 
     LaunchedEffect(Unit) {
 
+        // keep saved instance
+        if(uiState.value.list.isNullOrEmpty()){
+            viewModel.getAllCart(roomRepo)
+        }
+
+/*
         val cartIds = roomRepo.getCart().map { it.productId }
         val _jsonApiIds = mutableListOf<String>()
         val _firebaseIds = mutableListOf<String>()
@@ -74,7 +92,7 @@ fun Cart(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         }
         jsonApiCart = _jsonApiCart.toList()
         viewModel.getDefinedListOfProducts(_firebaseIds.toList())
-
+*/
     }
 
 
@@ -85,7 +103,7 @@ fun Cart(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
     ){
 
         Spacer(Modifier.height(20.dp))
-
+/*
         if(firebaseProductsUiState.fetching) CircularProgressIndicator()
         if(firebaseProductsUiState.result.isNotEmpty()){
 
@@ -107,18 +125,33 @@ fun Cart(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
 
     }
 
+ */
+        if(uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded){
+            Text("itz a huddle !!")
+
+            uiState.value.list.forEach {
+                CartItem(it)
+            }
+
+            mMediaPlayer.start()
+
+        }
+
+
+    }
+
 
 
 }
 
 @Composable
-fun CartItem(product: UiProductWithFieldsFromRoom , quantity:Int = 0){
+fun CartItem(product: UserSelectedProduct , quantity:Int = 0){
 
     Row(
         modifier = Modifier.fillMaxWidth()
     ){
         AsyncImage(
-            model = product.images.split(',').first(),
+            model = product.mainPicture,
             contentDescription = product.title,
             modifier = Modifier.size(100.dp)
         )
