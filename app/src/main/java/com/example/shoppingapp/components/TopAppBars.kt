@@ -158,7 +158,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackButtonSimpleTopBar(title: String = "Title", dark:Boolean = false) {
+fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     TopAppBar(

@@ -8,6 +8,7 @@ import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.features.ImageResults
+import com.example.shoppingapp.repository.MessagesRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -137,16 +138,20 @@ class ProductsViewModel : ViewModel() {
             }
     }
 
-    fun getCategory(category: Category) {
+    suspend fun getCategory(category: Category , roomRepository: SelectedProductsRepository) {
         // create fill a list with product objects capable of cart-fav + toggle
         val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
+
+        // get list of cart and favourites
+        val cart = roomRepository.getCart().map { it.productId }
+        val favs = roomRepository.getFavs().map { it.productId }
 
         productsRef
             .whereEqualTo("category", category.enam)
             .get()
             .addOnSuccessListener {
                 it.documents.forEach {
-                    val ui_p = documentToProduct(it.data!!, emptyList(), emptyList())
+                    val ui_p = documentToProduct(it.data!!, cart, favs)
                     ui_Products.add(ui_p)
                 }
                 _uiProducts.value = UIState(fetching = false, result = ui_Products)
@@ -155,8 +160,6 @@ class ProductsViewModel : ViewModel() {
             .addOnFailureListener { exception ->
                 Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
             }
-
-
 
 
     }

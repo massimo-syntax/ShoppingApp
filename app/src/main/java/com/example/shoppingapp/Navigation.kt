@@ -6,8 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.shoppingapp.screen.AuthScreen
+import com.example.shoppingapp.screen.CategoryScreen
 import com.example.shoppingapp.screen.LoginScreen
 import com.example.shoppingapp.screen.MainScreen
+import com.example.shoppingapp.screen.MessagesScreen
 import com.example.shoppingapp.screen.NewProductUpload
 import com.example.shoppingapp.screen.ProductScreenJsonApi
 import com.example.shoppingapp.screen.ProductScreenUploaded
@@ -41,7 +43,7 @@ fun Navigation(){
         composable(Routes.main) {
             MainScreen()
         }
-        composable(Routes.UploadSinglePicture) {
+        composable(Routes.uploadSinglePicture) {
             UploadSinglePictureScreen()
         }
         composable(Routes.productJsonApi + "/{id}") { navBackStack ->
@@ -56,6 +58,19 @@ fun Navigation(){
             // Extracting the argument
             val id = navBackStack.arguments?.getString("id") ?: "0"
             ProductScreenUploaded(id)
+        }
+        composable(Routes.category + "/{${Routes.category}}") { navArgs ->
+            // get category name from argument named CATEGORY
+            val argCategory = navArgs.arguments?.getString(Routes.category)
+            // find right category name
+            val category: Category = Category.entries.first { it.enam == argCategory }
+            CategoryScreen(category)
+        }
+        composable(Routes.chat + "/{id}/{name}" ){ navArgs ->
+            val id = navArgs.arguments?.getString("id") ?: "id_not_fonund: navigation"
+            val name = navArgs.arguments?.getString("name") ?: "name_not_found: navigation"
+
+            MessagesScreen(idReceiver = id, nameReceiver=name)
         }
 
 
@@ -73,7 +88,8 @@ object Routes{
     val productJsonApi = "PRODUCT_REMOTE"
     val productUploaded = "PRODUCT_DB"
     val newProduct = "NEW_PRODUCT"
-    val UploadSinglePicture = "UPLOAD_SINGLE_PICTURE"
-    val UploadMultiplePictures = "UPLOAD_MULTIPLE_PICTURES"
+    val uploadSinglePicture = "UPLOAD_SINGLE_PICTURE"
 
+    val category = "CATEGORY"
+    val chat = "CHAT"
 }

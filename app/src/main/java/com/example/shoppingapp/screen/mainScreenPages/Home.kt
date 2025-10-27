@@ -1,62 +1,43 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Category
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.EndlessPager
-import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
+import com.example.shoppingapp.components.MainProductCard
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProductsViewModel
 import kotlinx.coroutines.runBlocking
@@ -180,7 +161,7 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
                     modifier=Modifier.padding(6.dp),
                     label = { Text(it) },
                     onClick = {
-
+                        Routes.navController.navigate( Routes.category +"/"+ it )
                     }
                 )
             }
@@ -207,119 +188,6 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
 
 }
 
-
-
-
-
-@Composable
-fun MainProductCard(
-    product: UiProductWithFieldsFromRoom,
-    onToggleFav: () -> Unit,
-    isInFav:Boolean,
-) {
-
-        Column(
-            modifier = Modifier
-                .background(Color.Transparent)
-                .width(100.dp)
-                .clickable(onClick = {
-                    Routes.navController.navigate(Routes.productUploaded+"/"+product.id)
-                })
-        ) {
-            // icon + image
-            // keep icon on the image
-            Box {
-                AsyncImage(
-                    // here from json there is only 1 image
-                    model = product.images.split(",").first(),
-                    contentDescription = product.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .width(100.dp)
-                        .height(126.dp)
-                )
-                // icon at top end of image
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(6.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(
-                        onClick = onToggleFav,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.icon_favorite),
-                            contentDescription = if (isInFav) "Added" else "Add to Favorites",
-                            tint = if (isInFav) Color.Red else Color.LightGray
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            // Title price add to cart icon
-            Column(modifier = Modifier.padding(0.dp)) {
-
-                Text(
-                    text = "€ " + product.price,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = AppStyle.colors.green,
-                    )
-                )
-                Text(
-                    text = product.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(0.dp))
-                Text(
-                    text = product.description,
-                    style = TextStyle(fontWeight = FontWeight.Light),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                /*
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    // see button
-                    OutlinedButton(
-                        onClick = {
-                            Routes.navController.navigate(Routes.product+"/"+product.id)
-                        },
-                        modifier = Modifier
-                            .height(36.dp)
-                            .width(100.dp)
-                    ) {
-                        Icon(
-                            painterResource( R.drawable.icon_settings),
-                            contentDescription = if (isInCart) "Added" else "Add to Cart",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Text("View")
-                    }
-
-                    // add to cart icon
-                    IconButton(
-                        onClick = onToggleCart,
-                    ) {
-                        Icon(
-                            painterResource( R.drawable.icon_cart_garden),
-                            contentDescription = if (isInCart) "Added" else "Add to Cart",
-                            tint = if(isInCart) Color.Blue else Color.LightGray
-                        )
-                    }
-                }*/
-            }
-        }
-
-}
 
 
 

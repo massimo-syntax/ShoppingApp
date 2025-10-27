@@ -35,11 +35,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Routes
-import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.data.model.UserSelectedProduct
-import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
-import com.example.shoppingapp.viewmodel.ProductsViewModel
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
 import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 import com.google.firebase.Firebase
@@ -141,7 +138,7 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
 
                         IconButton(
                             onClick ={
-                                Routes.navController.navigate(Routes.UploadSinglePicture)
+                                Routes.navController.navigate(Routes.uploadSinglePicture)
                             }
                         ) {
                             Icon(

@@ -46,6 +46,7 @@ import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.RatingBar
 import com.example.shoppingapp.viewmodel.ProductsViewModel
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
@@ -186,7 +187,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                     // part right: button or whatelse
                     OutlinedButton(
                         onClick={
-                            // go to message page
+                            Routes.navController.navigate(Routes.chat +"/"+ shop?.id +"/"+ shop?.name )
                         }
                     ) {
                         Icon(painter = painterResource(R.drawable.icon_mail), contentDescription = "message shop")
