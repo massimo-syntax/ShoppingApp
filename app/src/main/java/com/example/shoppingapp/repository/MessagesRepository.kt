@@ -10,12 +10,17 @@ import com.google.firebase.firestore.firestore
 import java.util.UUID
 import kotlin.collections.emptyList
 
-class MessagesRepository( conversationId:String ) {
+class MessagesRepository(conversationId : String) {
     private val DB = Firebase.firestore
 
     private val messagesCollection = DB.collection("messages")
-    private val conversation = conversationId
+
+    var conversation = conversationId
+
     private val myId = Firebase.auth.uid
+
+
+
 
     fun sendMessage(text:String) {
         val message = Message(
@@ -28,9 +33,17 @@ class MessagesRepository( conversationId:String ) {
 
     val TAG = "snapshot"
     fun getMessages(callback: (List<Message>) -> Unit) {
-        val hello = conversation
+
+        Log.wtf("snapshot", "GET MESSAGES !!!!")
+        Log.wtf("snapshot", "GET MESSAGES !!!!")
+        Log.wtf("snapshot", "GET MESSAGES !!!!")
+        Log.wtf("snapshot", "GET MESSAGES !!!!")
+        Log.wtf("snapshot", "GET MESSAGES !!!!")
+
+
         messagesCollection
-            .whereEqualTo("conversation", hello)
+            .whereEqualTo("conversation", conversation)
+            .orderBy("timestamp")
             .addSnapshotListener { snapshots, e ->
                 if (e != null) {
                     Log.w(TAG, "listen:error", e)
@@ -44,9 +57,27 @@ class MessagesRepository( conversationId:String ) {
                         DocumentChange.Type.REMOVED -> Log.d(TAG, "Removed city: ${dc.document.data}")
                     }
                 }
-            }
-        Log.w(TAG, "conversation = $hello")
 
-        //callback(messages)
+                val messages = snapshots.documents.map {
+                    it.toObject(Message::class.java)!!
+                }
+
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+                Log.wtf("snapshot", messages.toString())
+
+
+                callback(messages)
+
+            }
+
     }
 }

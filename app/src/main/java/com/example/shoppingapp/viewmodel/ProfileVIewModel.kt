@@ -27,17 +27,27 @@ class ProfileVIewModel : ViewModel() {
             name = map["name"].toString(),
             email = "",
             image = (map["image"] ?: "") as String,
-            chat = map["chat"] as MutableMap<String, String>
+            chat = (map["chat"] ?: mutableMapOf<String,String>()) as MutableMap<String, String>
         ) else null
     }
 
 
     fun getProfile(profileId:String = userId){
         DB  .collection("users")
-            .document(userId)
+            .document(profileId)
             .get()
             .addOnSuccessListener { document ->
-                if (document.data == null) return@addOnSuccessListener
+                if (document.data == null){
+                    val user = User(
+                        id = "",
+                        email = "",
+                        name = "Deleted User",
+                        image = "",
+                        chat = mutableMapOf()
+                    )
+                    _profile.value = user
+                    return@addOnSuccessListener
+                }
 
                 // val user = document.toObject(User::class.java)
                 // java.lang.RuntimeException: Could not deserialize object. Class com.example.shoppingapp.data.model.User does not define a no-argument constructor. If you are using ProGuard, make sure these constructors are not stripped
@@ -80,22 +90,26 @@ class ProfileVIewModel : ViewModel() {
 
     fun requestConversation( idReceiver:String ) : String {
 
+        var connectionId = "hello"
         // no conversations in map chat
         if(_profile.value?.chat.isNullOrEmpty()) {
-            val connectionId = connectUsers(idReceiver)
+            // write in firebase for 2th users in user.chat
+            connectionId = connectUsers(idReceiver)
+            // also in my profile just to have it
             _profile.value?.chat[idReceiver] = connectionId
             return connectionId
         }
 
-        // id receiver present in map
+        // id receiver present in map, just return conversation id otherwise do the same as above
         if( _profile.value?.chat!!.containsKey(idReceiver) )
             return _profile.value?.chat!![idReceiver]!!
         else{
-            val connectionId = connectUsers(idReceiver)
+            connectionId = connectUsers(idReceiver)
             _profile.value?.chat[idReceiver] = connectionId
             return connectionId
         }
 
+        return connectionId
     }
 
 }
