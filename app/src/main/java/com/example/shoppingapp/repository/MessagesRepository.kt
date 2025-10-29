@@ -33,14 +33,6 @@ class MessagesRepository(conversationId : String) {
 
     val TAG = "snapshot"
     fun getMessages(callback: (List<Message>) -> Unit) {
-
-        Log.wtf("snapshot", "GET MESSAGES !!!!")
-        Log.wtf("snapshot", "GET MESSAGES !!!!")
-        Log.wtf("snapshot", "GET MESSAGES !!!!")
-        Log.wtf("snapshot", "GET MESSAGES !!!!")
-        Log.wtf("snapshot", "GET MESSAGES !!!!")
-
-
         messagesCollection
             .whereEqualTo("conversation", conversation)
             .orderBy("timestamp")
@@ -62,21 +54,7 @@ class MessagesRepository(conversationId : String) {
                     it.toObject(Message::class.java)!!
                 }
 
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-                Log.wtf("snapshot", messages.toString())
-
-
                 callback(messages)
-
             }
 
     }

@@ -5,8 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenu
@@ -25,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +36,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
@@ -41,42 +46,60 @@ import com.google.firebase.auth.auth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarHome() {
+fun MessagesTopBar(image: String = "", name: String = "") {
     var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     TopAppBar(
-        modifier = Modifier.border(5.dp, Color.Cyan),
-        title = { if(false)Text("Logout")else null },
+        title = {
+            Row {
+                AsyncImage(
+                    image,
+                    "user image",
+                    Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(name)
+            }
+        },
+        navigationIcon = {
+            // NO RIPPLE ON BUTTON CLICK
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                IconButton(onClick = {
+                    Routes.navController.popBackStack()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_back),
+                        contentDescription = "menu",
+                        tint = AppStyle.colors.darkBlule,
+                    )
+                }
+            }
+        },
         actions = {
-            IconButton(onClick = {
-                Firebase.auth.signOut()
-                Toast.makeText(context, "SIGNED OUT", Toast.LENGTH_SHORT).show()
-            }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = "cart icon"
-                )
-            }
+            // open dropdown menu
             IconButton(onClick = { expanded = !expanded }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = "cart icon"
+                Icon(
+                    painter = painterResource(R.drawable.icon_menu),
+                    contentDescription = "menu",
+                    tint = AppStyle.colors.darkBlule
                 )
             }
+
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 1") }
                 )
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 2") }
                 )
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 3") }
                 )
             }
@@ -84,20 +107,21 @@ fun TopBarHome() {
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
+fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     TopAppBar(
         colors = TopAppBarColors(
             containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            scrolledContainerColor = if(dark) AppStyle.colors.darkBlule else Color.White,
+            scrolledContainerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
             titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
             subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
             actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
             navigationIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            ),
+        ),
         modifier = Modifier,
         title = { Text(title) },
         actions = {
@@ -107,14 +131,14 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
                 Icon(
                     painter = painterResource(R.drawable.icon_settings),
                     contentDescription = "menu",
-                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
                 )
             }
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     painter = painterResource(R.drawable.icon_menu),
                     contentDescription = "menu",
-                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
                 )
             }
             DropdownMenu(
@@ -122,7 +146,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 1") },
                     leadingIcon = {
                         Icon(
@@ -133,13 +157,13 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
                     }
                 )
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 2") }
                 )
                 DropdownMenuItem(
                     onClick = {
                         Firebase.auth.signOut()
-                              },
+                    },
                     text = { Text("Sign Out") },
                     leadingIcon = {
                         Icon(
@@ -155,16 +179,15 @@ fun SimpleStandardTopBar(title: String = "Title", dark:Boolean = false) {
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
+fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     TopAppBar(
         colors = TopAppBarColors(
             containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            scrolledContainerColor = if(dark) AppStyle.colors.darkBlule else Color.White,
+            scrolledContainerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
             titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
             subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
             actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
@@ -193,14 +216,14 @@ fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
                 Icon(
                     painter = painterResource(R.drawable.icon_settings),
                     contentDescription = "menu",
-                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
                 )
             }
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     painter = painterResource(R.drawable.icon_menu),
                     contentDescription = "menu",
-                    tint = if(dark)Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
                 )
             }
             DropdownMenu(
@@ -208,7 +231,7 @@ fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 1") },
                     leadingIcon = {
                         Icon(
@@ -219,7 +242,7 @@ fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
                     }
                 )
                 DropdownMenuItem(
-                    onClick = {expanded = false},
+                    onClick = { expanded = false },
                     text = { Text("option 2") }
                 )
                 DropdownMenuItem(
@@ -239,24 +262,6 @@ fun BackButtonSimpleTopBar(title: String, dark:Boolean = false) {
         },
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // NOT POSSIBLE TO DO: NO TEXTFIELD POPPING UP

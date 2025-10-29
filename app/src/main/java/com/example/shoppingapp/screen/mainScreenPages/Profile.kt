@@ -2,12 +2,14 @@ package com.example.shoppingapp.screen.mainScreenPages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AppBarRow
 import com.example.shoppingapp.R
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,36 +37,49 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Routes
+import com.example.shoppingapp.data.local.Fav
+import com.example.shoppingapp.data.model.Contact
+import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UserSelectedProduct
 import com.example.shoppingapp.repository.SelectedProductsRepository
+import com.example.shoppingapp.viewmodel.MessagesViewModel
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
 import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSelectedViewModel = viewModel(), profileVIewModel: ProfileVIewModel = viewModel()) {
+fun ProfilePage(
+    modifier: Modifier = Modifier,
+    userSelectedViewModel: UserSelectedViewModel = viewModel(),
+    profileViewModel: ProfileVIewModel = viewModel(),
+    messagesViewModel: MessagesViewModel = viewModel()
+) {
 
-    val tabs = listOf("Products", "History", "Likes")
+    val tabs = listOf("Products", "Messages", "Favorites")
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    var profile by remember { profileViewModel.profile }
 
-    var profile by remember { profileVIewModel.profile }
-
-
-    var favs = userSelectedViewModel.uiState.collectAsState()
+    val favs = userSelectedViewModel.uiStateFavs.collectAsState()
 
     var myProducts by remember {mutableStateOf<List<UserSelectedProduct>>(emptyList())}
+
+    val contacts by remember { messagesViewModel.contacts }
 
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
     LaunchedEffect(Unit) {
         // get profile
-        profileVIewModel.getProfile()
+        profileViewModel.getProfile()
         // get favs
         userSelectedViewModel.getAllFavs(roomRepo)
-        // get my products
+        // get my products, for products tab
         val _myProducts = mutableListOf<UserSelectedProduct>()
         Firebase.firestore.collection("products").whereEqualTo("userId", Firebase.auth.currentUser!!.uid )
             .get()
@@ -81,9 +96,12 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
                 }
                 myProducts = _myProducts.toList()
             }
-        //
 
-
+        // wait for profile
+        while(profile == null) delay(100)
+        // get contacts
+        val conversations = profile!!.chat
+        messagesViewModel.getContacts(conversations)
 
     }
 
@@ -129,13 +147,13 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Followers / Following
+                    // products - favs
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-
+                        // Upload new image button
                         IconButton(
                             onClick ={
                                 Routes.navController.navigate(Routes.uploadSinglePicture)
@@ -148,12 +166,13 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
                                 modifier = Modifier.size(32.dp)
                             )
                         }
-
+                        // stats : products , favs
                         Row {
-
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                var products = "0"
+                                if(myProducts.isNotEmpty()) products = myProducts.size.toString()
                                 Text(
-                                    "128",
+                                    products,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
@@ -162,13 +181,15 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
                             }
                             Spacer(Modifier.width(8.dp))
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                var favCount = "0"
+                                if( favs.value.list.isNotEmpty() ) favCount = favs.value.list.size.toString()
                                 Text(
-                                    "562",
+                                    favCount,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
                                 )
-                                Text("Favourited", color = Color.LightGray, fontSize = 14.sp)
+                                Text("Favorited", color = Color.LightGray, fontSize = 14.sp)
                             }
                         }
 
@@ -242,7 +263,7 @@ fun ProfilePage( modifier: Modifier = Modifier , userSelectedViewModel: UserSele
         // Tab Content
         when (selectedTab) {
             0 -> ProductsTab(myProducts)
-            1 -> HistoryTab()
+            1 -> Chat(contacts)
             2 -> FavoriteProductsTab(favs.value.list)
         }
     }
@@ -285,16 +306,15 @@ fun ProductsTab(myProducts: List<UserSelectedProduct> = emptyList()) {
 }
 
 @Composable
-fun HistoryTab(
-    items: List<String> = emptyList()
+fun Chat(
+    contacts: List<Contact> = emptyList(),
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (items.isEmpty()) {
+        if (contacts.isEmpty()) {
             Card(
                 modifier = Modifier.size(120.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -308,15 +328,60 @@ fun HistoryTab(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text("you didnt buy or sell anything yet")
+
         } else {
-            // @TODO show list of items
+
+            LazyColumn {
+                items(contacts){
+                    ContactItem(it)
+                    HorizontalDivider(Modifier.height(2.dp), color = AppStyle.colors.middleBlue)
+                }
+            }
         }
     }
 }
 
 @Composable
-fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
+fun ContactItem(contact:Contact){
 
+    Column (
+        modifier = Modifier
+            .padding(6.dp)
+            .clickable{
+                Routes.navController.navigate(Routes.chat+"/"+contact.userId+"/"+contact.userName)
+            }
+    ) {
+        Row {
+            AsyncImage(
+                model = contact.image,
+                contentDescription = contact.userName,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(contact.userName, fontWeight = FontWeight.Bold)
+                Text(contact.lastMessage)
+            }
+        }
+        Row {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val date = Date(contact.lastMessageDatetime)
+            val text = sdf.format(date)
+            Text(text, color = AppStyle.colors.lightBlue)
+        }
+
+    }
+
+
+
+
+}
+
+@Composable
+fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
 
     Column(
         modifier = Modifier
@@ -331,14 +396,48 @@ fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
                 tint = Color.Red,
                 modifier = Modifier.size(48.dp)
             )
-            Text("No avorites yet.")
+            Text("No favorites yet.")
         } else {
             LazyColumn {
                 items(favs) {
-                    Text(it.title)
-                    Spacer(Modifier.height(16.dp))
+                    FavoritedItem(it)
                 }
             }
         }
     }
+}
+@Composable
+fun FavoritedItem(favItem: UserSelectedProduct){
+
+    Row{
+        AsyncImage(
+            model = favItem.mainPicture,
+            contentDescription = favItem.title,
+            modifier = Modifier.size(64.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(Color.White)
+        )
+        Text(favItem.title, modifier = Modifier.weight(1f))
+
+        Column (
+            Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            IconButton(
+                onClick = {
+
+                }
+            ){
+                Icon(
+                    painter = painterResource(R.drawable.icon_favorite),
+                    contentDescription = "delete form favorites",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Red
+                )
+            }
+        }
+
+    }
+
+
 }

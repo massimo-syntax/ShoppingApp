@@ -2,9 +2,13 @@ package com.example.shoppingapp.screen.mainScreenPages
 
 import android.media.MediaPlayer
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -20,7 +24,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,11 +44,15 @@ import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 @Composable
 fun Cart(modifier: Modifier = Modifier , /* viewModel: ProductsViewModel = viewModel() */ viewModel: UserSelectedViewModel = viewModel() ){
 
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiStateCart.collectAsState()
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
     LaunchedEffect(Unit) {
+        if(uiState.value.list.isEmpty()){
 
+            viewModel.getAllCart(roomRepo)
+
+        }
         viewModel.getAllCart(roomRepo)
 
     }
@@ -55,12 +65,22 @@ fun Cart(modifier: Modifier = Modifier , /* viewModel: ProductsViewModel = viewM
     ){
         Spacer(Modifier.height(20.dp))
 
-        if(uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded){
+        if(uiState.value.list.isEmpty()){
+            Column(
+                Modifier.fillMaxSize().background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("no items in the cart")
+            }
+        }
 
+        if(uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded){
             uiState.value.list.forEach {
                 CartItem(it)
             }
-
+        }else{
+            CircularProgressIndicator()
         }
 
     }

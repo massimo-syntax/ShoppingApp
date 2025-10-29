@@ -26,8 +26,11 @@ class UserSelectedViewModel() : ViewModel() {
         val list: List<UserSelectedProduct> = emptyList()
     )
 
-    private val _uiState = MutableStateFlow(UIState())
-    val uiState: StateFlow<UIState> = _uiState.asStateFlow()
+    private val _uiStateCart = MutableStateFlow(UIState())
+    val uiStateCart: StateFlow<UIState> = _uiStateCart.asStateFlow()
+
+    private val _uiStateFavs = MutableStateFlow(UIState())
+    val uiStateFavs: StateFlow<UIState> = _uiStateFavs.asStateFlow()
 
     private val remoteRepo = RemoteProductsRepository()
 
@@ -78,10 +81,16 @@ class UserSelectedViewModel() : ViewModel() {
             }
         }
         completeList.addAll(jsonApiCart)
-        _uiState.update { it.copy(roomDataLoaded = true , list = completeList.toList()) }
+        _uiStateCart.update { it.copy(roomDataLoaded = true, list = completeList.toList()) }
 
         var count = 0
-        val products = mutableListOf<UserSelectedProduct>()
+        val firebasePproducts = mutableListOf<UserSelectedProduct>()
+
+        // also when there is no
+        if (firebaseIds.isEmpty()){
+            _uiStateCart.update { it.copy(firebaseDataLoaded = true) }
+            return
+        }
 
         firebaseIds.forEach { id ->
             Firebase.firestore
@@ -91,11 +100,16 @@ class UserSelectedViewModel() : ViewModel() {
                 .addOnSuccessListener { document ->
                     if (document.data == null) return@addOnSuccessListener
                     val product = documentToSelectedProduct(document.data!!)
-                    products.add(product)
+                    firebasePproducts.add(product)
                     count++
                     if (count == firebaseIds.size) {
-                        completeList.addAll(products)
-                        _uiState.update { it.copy(firebaseDataLoaded = true , list = completeList.toList()) }
+                        completeList.addAll(firebasePproducts)
+                        _uiStateCart.update {
+                            it.copy(
+                                firebaseDataLoaded = true,
+                                list = completeList.toList()
+                            )
+                        }
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -106,7 +120,6 @@ class UserSelectedViewModel() : ViewModel() {
                     )
                 }
         }
-        if(firebaseIds.isEmpty()) _uiState.update { it.copy(firebaseDataLoaded = true) }
 
 
     }
@@ -138,26 +151,18 @@ class UserSelectedViewModel() : ViewModel() {
             }
         }
         completeList.addAll(jsonApiCart)
-        _uiState.update { it.copy(roomDataLoaded = true , list = completeList.toList()) }
+
+        _uiStateFavs.update { it.copy(roomDataLoaded = true, list = completeList.toList()) }
+
+        if (firebaseIds.isEmpty()){
+            _uiStateFavs.update { it.copy(firebaseDataLoaded = true) }
+            return
+        }
 
         var count = 0
         val products = mutableListOf<UserSelectedProduct>()
 
         firebaseIds.forEach { id ->
-
-            Log.wtf("firebaseid", id.toString())
-
-            Log.wtf("firebaseid", id.toString())
-
-            Log.wtf("firebaseid", id.toString())
-
-            Log.wtf("firebaseid", id.toString())
-
-            Log.wtf("firebaseid", id.toString())
-
-            Log.wtf("firebaseid", id.toString())
-
-
             Firebase.firestore
                 .collection("products")
                 .document(id)
@@ -166,13 +171,18 @@ class UserSelectedViewModel() : ViewModel() {
 
                     if (document.data == null) return@addOnSuccessListener
 
-                        val product = documentToSelectedProduct(document.data!!)
-                        products.add(product)
-                        count++
+                    val product = documentToSelectedProduct(document.data!!)
+                    products.add(product)
+                    count++
 
                     if (count == firebaseIds.size) {
                         completeList.addAll(products)
-                        _uiState.update { it.copy(firebaseDataLoaded = true , list = completeList.toList()) }
+                        _uiStateFavs.update {
+                            it.copy(
+                                firebaseDataLoaded = true,
+                                list = completeList.toList()
+                            )
+                        }
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -183,11 +193,8 @@ class UserSelectedViewModel() : ViewModel() {
                     )
                 }
         }
-        if(firebaseIds.isEmpty()) _uiState.update { it.copy(firebaseDataLoaded = true) }
 
     }
-
-
 
 
 }

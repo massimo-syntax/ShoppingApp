@@ -1,6 +1,5 @@
 package com.example.shoppingapp.screen
 
-import android.content.Context
 import android.media.MediaPlayer
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -11,15 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,8 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -39,18 +33,24 @@ import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.components.CustomTextField
+import com.example.shoppingapp.components.MessagesTopBar
 import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.repository.MessagesRepository
-import com.example.shoppingapp.viewmodel.MessagingViewModel
+import com.example.shoppingapp.viewmodel.MessagesViewModel
 import com.example.shoppingapp.viewmodel.ProfileVIewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: MessagingViewModel = viewModel() , profileViewModel: ProfileVIewModel = viewModel() ) {
+fun MessagesScreen(
+    idReceiver: String,
+    nameReceiver: String,
+    viewModel: MessagesViewModel = viewModel(),
+    profileViewModel: ProfileVIewModel = viewModel()
+) {
 
     val ctx = LocalContext.current
-    fun tst(any:Any?){
-        Toast.makeText(ctx,any.toString(),Toast.LENGTH_SHORT).show()
+    fun tst(any: Any?) {
+        Toast.makeText(ctx, any.toString(), Toast.LENGTH_SHORT).show()
     }
 
     val messages = viewModel.messages
@@ -67,12 +67,12 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
 
     var pleaseRecomposeLastTime by remember { mutableStateOf(false) }
 
-    var messagesRepo by remember { mutableStateOf <MessagesRepository?>(null) }
+    var messagesRepo by remember { mutableStateOf<MessagesRepository?>(null) }
 
-    val mMediaPlayer = MediaPlayer.create( LocalContext.current, R.raw.huddle)
+    val mMediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.huddle)
 
 
-    fun recomposeLastTime(){
+    fun recomposeLastTime() {
         pleaseRecomposeLastTime = true
     }
 
@@ -81,7 +81,7 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
         profileViewModel.getProfile()
 
         // wait until profile is here
-        while (profileCollect == null){
+        while (profileCollect == null) {
             delay(200)
         }
         myProfile = profileCollect!!.copy()
@@ -94,7 +94,7 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
 
         // then load a new profile to change profile collect
         profileViewModel.getProfile(idReceiver)
-        while(receiverProfile == null){
+        while (receiverProfile == null) {
             delay(200)
         }
         // what is strange is that now receiver profile is not updated yet at last recomposition
@@ -113,16 +113,17 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
 
 
 
-    fun sendMessage(messagesRepo: MessagesRepository, text:String){
+    fun sendMessage(messagesRepo: MessagesRepository, text: String) {
         viewModel.sendMessage(messagesRepo, text)
     }
 
 
     Scaffold(
         topBar = {
-            if(pleaseRecomposeLastTime){
-                BackButtonSimpleTopBar(profileCollect?.name.toString()  ) } // add image
+            if (pleaseRecomposeLastTime) {
+                MessagesTopBar(profileCollect?.image ?: "", profileCollect?.name ?: "")
             }
+        }
     ) { scffoldPadding ->
 
         Column(
@@ -131,49 +132,33 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
                 .padding(scffoldPadding)
                 .padding(10.dp)
                 .fillMaxSize()
-        ){
-            Column(
-
-            ) {
-                val text = profileCollect.toString()
-                val id = messagesRepo?.conversation
-                Text( text )
-
-                //tst(text+"-----> ----->" + receiverProfile?.name +"  "+ receiverProfile?.chat )
-
-
-                if( messagesRepo != null ){
-                    viewModel.getAndListenMessages(messagesRepo!!)
-                    // this is going to update the topBar
-                    recomposeLastTime()
-                }else{
-                    // the text stays somehow..
-                    // listening works, the topBar is updated withut null pointer exception but the text remains
-                    Text("no messages repo")
-                }
-
-                // this never happens, the text is no receiver profile, he has to stay in profile collect..
-                if (receiverProfile != null){
-                    Text( receiverProfile?.name ?: " no receiverProfile" )
-                }else{
-                    Text("no receiver profile")
-                }
-
+        ) {
+            if (messagesRepo != null) {
+                viewModel.getAndListenMessages(messagesRepo!!)
+                // this is going to update the topBar
+                recomposeLastTime()
             }
 
-            LazyColumn (
+            LazyColumn(
                 Modifier.weight(1f)
             ) {
-                items(messages){
-                    Text(it.content, modifier = Modifier.padding(6.dp).border(1.dp, AppStyle.colors.lightBlue))
+                items(messages) {
+                    Text(
+                        it.content,
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .border(1.dp, AppStyle.colors.lightBlue)
+                    )
                 }
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth().border(1.dp,AppStyle.colors.lightBlue),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, AppStyle.colors.lightBlue),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
 
                 CustomTextField(text = messageText, modifier = Modifier.weight(1f))
 
@@ -181,7 +166,7 @@ fun MessagesScreen( idReceiver:String, nameReceiver:String, viewModel: Messaging
                     onClick = {
                         // send message
                         mMediaPlayer.start()
-                        sendMessage(messagesRepo!! ,messageText.value)
+                        sendMessage(messagesRepo!!, messageText.value)
                         focusManager.clearFocus()
                         messageText.value = ""
                     }

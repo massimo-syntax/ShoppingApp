@@ -90,26 +90,24 @@ class ProfileVIewModel : ViewModel() {
 
     fun requestConversation( idReceiver:String ) : String {
 
-        var connectionId = "hello"
         // no conversations in map chat
         if(_profile.value?.chat.isNullOrEmpty()) {
             // write in firebase for 2th users in user.chat
-            connectionId = connectUsers(idReceiver)
+            val connectionId = connectUsers(idReceiver)
             // also in my profile just to have it
             _profile.value?.chat[idReceiver] = connectionId
             return connectionId
         }
 
-        // id receiver present in map, just return conversation id otherwise do the same as above
+        // id receiver present in map, just return conversation id otherwise same as above
         if( _profile.value?.chat!!.containsKey(idReceiver) )
             return _profile.value?.chat!![idReceiver]!!
         else{
-            connectionId = connectUsers(idReceiver)
+            val connectionId = connectUsers(idReceiver)
             _profile.value?.chat[idReceiver] = connectionId
             return connectionId
         }
 
-        return connectionId
     }
 
 }
