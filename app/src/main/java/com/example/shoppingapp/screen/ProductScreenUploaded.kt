@@ -1,7 +1,5 @@
 package com.example.shoppingapp.screen
 
-import android.text.Layout
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,13 +47,13 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.RatingBar
 import com.example.shoppingapp.viewmodel.ProductsViewModel
-import com.example.shoppingapp.viewmodel.ProfileVIewModel
+import com.example.shoppingapp.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel(), profileVIewModel: ProfileVIewModel=viewModel()){
+fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel(), profileVIewModel: ProfileViewModel=viewModel()){
 
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
@@ -187,7 +185,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                     // part right: button or whatelse
                     OutlinedButton(
                         onClick={
-                            Routes.navController.navigate(Routes.chat +"/"+ shop?.id +"/"+ shop?.name )
+                            Routes.navController.navigate(Routes.chat +"/"+ shop?.id)
                         }
                     ) {
                         Icon(painter = painterResource(R.drawable.icon_mail), contentDescription = "message shop")

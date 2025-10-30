@@ -1,5 +1,6 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AppBarRow
 import com.example.shoppingapp.R
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -27,23 +27,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Routes
-import com.example.shoppingapp.data.local.Fav
 import com.example.shoppingapp.data.model.Contact
-import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UserSelectedProduct
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.MessagesViewModel
-import com.example.shoppingapp.viewmodel.ProfileVIewModel
+import com.example.shoppingapp.viewmodel.ProfileViewModel
 import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -57,8 +58,8 @@ import java.util.Locale
 fun ProfilePage(
     modifier: Modifier = Modifier,
     userSelectedViewModel: UserSelectedViewModel = viewModel(),
-    profileViewModel: ProfileVIewModel = viewModel(),
-    messagesViewModel: MessagesViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    messagesViewModel: MessagesViewModel = viewModel(),
 ) {
 
     val tabs = listOf("Products", "Messages", "Favorites")
@@ -68,7 +69,7 @@ fun ProfilePage(
 
     val favs = userSelectedViewModel.uiStateFavs.collectAsState()
 
-    var myProducts by remember {mutableStateOf<List<UserSelectedProduct>>(emptyList())}
+    var myProducts by remember { mutableStateOf<List<UserSelectedProduct>>(emptyList()) }
 
     val contacts by remember { messagesViewModel.contacts }
 
@@ -81,7 +82,8 @@ fun ProfilePage(
         userSelectedViewModel.getAllFavs(roomRepo)
         // get my products, for products tab
         val _myProducts = mutableListOf<UserSelectedProduct>()
-        Firebase.firestore.collection("products").whereEqualTo("userId", Firebase.auth.currentUser!!.uid )
+        Firebase.firestore.collection("products")
+            .whereEqualTo("userId", Firebase.auth.currentUser!!.uid)
             .get()
             .addOnSuccessListener {
                 it.documents.forEach {
@@ -89,7 +91,7 @@ fun ProfilePage(
                         id = it["id"].toString(),
                         title = it["title"].toString(),
                         description = it["description"].toString(),
-                        mainPicture = it["images"].toString().split(',').first() ,
+                        mainPicture = it["images"].toString().split(',').first(),
                         price = it["price"].toString(),
                     )
                     _myProducts.add(product)
@@ -98,13 +100,25 @@ fun ProfilePage(
             }
 
         // wait for profile
-        while(profile == null) delay(100)
+        while (profile == null) delay(100)
         // get contacts
         val conversations = profile!!.chat
         messagesViewModel.getContacts(conversations)
 
     }
 
+    // change status bar icon color hence background of header is dark, only in this composable
+    val view = LocalView.current
+    DisposableEffect(true) {
+        if (!view.isInEditMode) {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+        }
+        onDispose {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+        }
+    }
 
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -125,8 +139,8 @@ fun ProfilePage(
                         .padding(horizontal = 16.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if(profile == null || profile?.image!!.isEmpty())
-                        // Avatar
+                    if (profile == null || profile?.image!!.isEmpty())
+                    // Avatar
                         Image(
                             painter = painterResource(R.drawable.icon_profile), // Replace with your drawable
                             contentDescription = "Profile Picture",
@@ -142,7 +156,7 @@ fun ProfilePage(
                             .size(96.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.FillBounds,
-                        )
+                    )
 
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -155,7 +169,7 @@ fun ProfilePage(
                     ) {
                         // Upload new image button
                         IconButton(
-                            onClick ={
+                            onClick = {
                                 Routes.navController.navigate(Routes.uploadSinglePicture)
                             }
                         ) {
@@ -170,7 +184,7 @@ fun ProfilePage(
                         Row {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 var products = "0"
-                                if(myProducts.isNotEmpty()) products = myProducts.size.toString()
+                                if (myProducts.isNotEmpty()) products = myProducts.size.toString()
                                 Text(
                                     products,
                                     color = Color.White,
@@ -182,7 +196,8 @@ fun ProfilePage(
                             Spacer(Modifier.width(8.dp))
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 var favCount = "0"
-                                if( favs.value.list.isNotEmpty() ) favCount = favs.value.list.size.toString()
+                                if (favs.value.list.isNotEmpty()) favCount =
+                                    favs.value.list.size.toString()
                                 Text(
                                     favCount,
                                     color = Color.White,
@@ -210,7 +225,7 @@ fun ProfilePage(
                 ) {
                     // Name & Username
                     Text(
-                        if(profile!=null)profile!!.name else "",
+                        if (profile != null) profile!!.name else "",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp,
@@ -264,7 +279,7 @@ fun ProfilePage(
         when (selectedTab) {
             0 -> ProductsTab(myProducts)
             1 -> Chat(contacts)
-            2 -> FavoriteProductsTab(favs.value.list)
+            2 -> FavoriteProductsTab(favs.value.list, roomRepo)
         }
     }
 }
@@ -273,7 +288,7 @@ fun ProfilePage(
 fun ProductsTab(myProducts: List<UserSelectedProduct> = emptyList()) {
 
     LazyColumn {
-        items(myProducts){ product ->
+        items(myProducts) { product ->
 
             Card(
                 modifier = Modifier
@@ -332,7 +347,7 @@ fun Chat(
         } else {
 
             LazyColumn {
-                items(contacts){
+                items(contacts) {
                     ContactItem(it)
                     HorizontalDivider(Modifier.height(2.dp), color = AppStyle.colors.middleBlue)
                 }
@@ -342,13 +357,13 @@ fun Chat(
 }
 
 @Composable
-fun ContactItem(contact:Contact){
+fun ContactItem(contact: Contact) {
 
-    Column (
+    Column(
         modifier = Modifier
             .padding(6.dp)
-            .clickable{
-                Routes.navController.navigate(Routes.chat+"/"+contact.userId+"/"+contact.userName)
+            .clickable {
+                Routes.navController.navigate(Routes.chat + "/" + contact.userId)
             }
     ) {
         Row {
@@ -376,12 +391,13 @@ fun ContactItem(contact:Contact){
     }
 
 
-
-
 }
 
 @Composable
-fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
+fun FavoriteProductsTab(
+    favs: List<UserSelectedProduct> = emptyList(),
+    roomRepo: SelectedProductsRepository
+) {
 
     Column(
         modifier = Modifier
@@ -400,34 +416,39 @@ fun FavoriteProductsTab(favs: List<UserSelectedProduct> = emptyList() ) {
         } else {
             LazyColumn {
                 items(favs) {
-                    FavoritedItem(it)
+                    FavoritedItem(it, roomRepo)
                 }
             }
         }
     }
 }
-@Composable
-fun FavoritedItem(favItem: UserSelectedProduct){
 
-    Row{
+@Composable
+fun FavoritedItem(
+    favItem: UserSelectedProduct,
+    roomRepo: SelectedProductsRepository,
+    viewModel: UserSelectedViewModel = viewModel()
+) {
+    Row {
         AsyncImage(
             model = favItem.mainPicture,
             contentDescription = favItem.title,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier
+                .size(64.dp)
                 .clip(RoundedCornerShape(6.dp))
                 .background(Color.White)
         )
         Text(favItem.title, modifier = Modifier.weight(1f))
 
-        Column (
+        Column(
             Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.Center
         ) {
             IconButton(
                 onClick = {
-
+                    viewModel.deleteFromFav(roomRepo, favItem.id)
                 }
-            ){
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_favorite),
                     contentDescription = "delete form favorites",

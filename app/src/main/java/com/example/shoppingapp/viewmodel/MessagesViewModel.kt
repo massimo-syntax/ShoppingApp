@@ -1,8 +1,6 @@
 package com.example.shoppingapp.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -11,7 +9,9 @@ import com.example.shoppingapp.data.model.Message
 import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.repository.MessagesRepository
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import java.util.UUID
 
 
 class MessagesViewModel : ViewModel() {
@@ -19,6 +19,36 @@ class MessagesViewModel : ViewModel() {
     var messages by mutableStateOf<List<Message>>(emptyList())
         private set
 
+    var receiverProfile by mutableStateOf(User(name = ""))
+        private set
+    var myProfile by mutableStateOf(User(name = ""))
+        private set
+
+    private lateinit var messagesRepo: MessagesRepository
+
+    fun sendMessage(text: String) {
+        // getUserProfilesAndRequestConversation initializes the repository
+        messagesRepo.sendMessage(text)
+    }
+
+    fun getUserProfilesAndRequestConversation(receiverId:String ){
+        // request receiver profile, then my profile. receiver profile influences the ui, has to be first
+        Firebase.firestore.collection("users").document(receiverId).get()
+            .addOnSuccessListener {
+                receiverProfile = it.toObject(User::class.java)!!
+                // get my profile
+                val myId = Firebase.auth.uid!!
+                Firebase.firestore.collection("users").document(myId).get()
+                    .addOnSuccessListener {
+                        myProfile = it.toObject(User::class.java)!!
+                        val conversationId =requestConversation(receiverProfile.id)
+                        // init repository with conversation id
+                        messagesRepo = MessagesRepository(conversationId)
+                        getAndListenMessages(messagesRepo)
+                    }
+
+            }
+    }
 
     fun getAndListenMessages(messageRepo: MessagesRepository){
         messageRepo.getMessages { newMessages ->
@@ -26,11 +56,43 @@ class MessagesViewModel : ViewModel() {
         }
     }
 
-    fun sendMessage(messageRepo: MessagesRepository , text: String) {
-        messageRepo.sendMessage(text)
+
+    private fun connectUsers( foreignId:String ) :String {
+        val myId = Firebase.auth.uid!!
+        val newChatId = UUID.randomUUID().toString()
+
+        Firebase.firestore.collection("users")
+            .document(myId)
+            .update(
+                mapOf("chat.$foreignId" to newChatId)
+            )
+        Firebase.firestore.collection("users")
+            .document(foreignId)
+            .update(
+                mapOf("chat.$myId" to newChatId)
+            )
+        return newChatId
     }
 
+    fun requestConversation( idReceiver:String ) : String {
+        // no conversations in map chat
+        if(myProfile.chat.isNullOrEmpty()) {
+            // write in firebase for 2th users in user.chat
+            val connectionId = connectUsers(idReceiver)
+            // also in my profile just to have it
+            myProfile.chat[idReceiver] = connectionId
+            return connectionId
+        }
+        // id receiver present in map, just return conversation id otherwise same as above
+        if( myProfile.chat.containsKey(idReceiver) )
+            return myProfile.chat[idReceiver]!! // return conversation id
+        else{
+            val connectionId = connectUsers(idReceiver)
+            myProfile.chat[idReceiver] = connectionId
+            return connectionId
+        }
 
+    }
 
     var contacts = mutableStateOf <List<Contact>> (emptyList())
 
@@ -38,12 +100,6 @@ class MessagesViewModel : ViewModel() {
 
         val users : List<String> = conversationsMap.map { it.key }
         val allContacts = mutableListOf<Contact>()
-
-        fun log(it:Any?){
-            val tag:String = "messages"
-            Log.wtf(tag,it.toString())
-        }
-
         // the messaging feature is just an option of this app..
         // this function is goig to be called just once int the profile
         // so is going to be very cody instead to use existing functions that i have to search in internet
@@ -62,18 +118,11 @@ class MessagesViewModel : ViewModel() {
             lastMessageOfConversationId.add("")
         }
 
-        log(conversationId.size)
-        log(lastTimestampOfConversationId.size)
-        log(lastTimestampOfConversationId)
-
         Firebase.firestore.collection("messages").get().addOnSuccessListener { messages ->
 
             val allMessages = messages.toObjects(Message::class.java)
             // then loop through the messages, because the list of conversation id is defined, and also smaller..
             allMessages.forEach { message ->
-                log(message.conversation)
-                log(conversationId)
-
                 // [convId0][convId1][convId2]
                 // [       ][       ][       ] --> timestamps list
                 //              ^----- it was that, this message has the same conversation id!
@@ -123,17 +172,9 @@ class MessagesViewModel : ViewModel() {
                         }
                     }
             }
-
-
-
-
-
-
         }
 
-
-
-
     }
+
 
 }

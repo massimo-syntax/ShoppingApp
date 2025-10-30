@@ -8,7 +8,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,17 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,8 +46,7 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.features.UIEvent
 import com.example.shoppingapp.features.UIViewModel
-import com.example.shoppingapp.viewmodel.ProfileVIewModel
-import kotlinx.coroutines.flow.compose
+import com.example.shoppingapp.viewmodel.ProfileViewModel
 
 
 @Composable
@@ -70,7 +63,7 @@ fun UploadSinglePictureScreen(){
 }
 
 @Composable
-fun PhotoScreen(viewModel: UIViewModel = viewModel() , profileViewModel: ProfileVIewModel = viewModel()) {
+fun PhotoScreen(viewModel: UIViewModel = viewModel() , profileViewModel: ProfileViewModel = viewModel()) {
     // Collects and observes the UI state using the ViewModel
     val uiState by viewModel.uiState.collectAsState()
     val progress by viewModel.uploadProgress.collectAsState()

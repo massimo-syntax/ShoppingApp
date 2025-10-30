@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import com.example.shoppingapp.components.CustomTextField
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.RemoteProductsViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
@@ -70,6 +72,9 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
 
     // query from textfield
     val searchQuery = remember { mutableStateOf("") }
+
+    // update room and ui when cart or fav is pressed,
+    val coroutineScope = rememberCoroutineScope()
 
     // get products async, request also cart and favourites from room
     LaunchedEffect(Unit) {
@@ -135,7 +140,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
                         product = product,
                         isInCart = product.cart,
                         onToggleCart = {
-                            runBlocking {
+                            coroutineScope.launch {
                                 if(!product.cart){
                                     roomRepo.dropInCart(product.id)
                                     cartCount++
@@ -145,28 +150,32 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
                                     cartCount--
                                 }
                                 onBadge(cartCount)
+
+                                // UPDATE LIST UI, TRIGGER RECOMPOSITION
+                                // new List
+                                val newList = uiProducts.toMutableList()
+                                // toggle cart boolean of UI product object
+                                newList[index] = product.copy(cart = !product.cart)
+                                // recompose hence list not same
+                                uiProducts = newList
+
                             }
-                            // UPDATE LIST UI, TRIGGER RECOMPOSITION
-                            // new List
-                            val newList = uiProducts.toMutableList()
-                            // toggle cart boolean of UI product object
-                            newList[index] = product.copy(cart = !product.cart)
-                            // recompose hence list not same
-                            uiProducts = newList
+
                         },
                         isInFav = product.fav,
                         onToggleFav = {
-                            runBlocking {
+                            coroutineScope.launch {
                                 if(!product.fav) roomRepo.addToFav(product.id)
                                 else roomRepo.deleteFromFav(product.id)
+                                // UPDATE LIST UI, TRIGGER RECOMPOSITION
+                                // new List
+                                val newList = uiProducts.toMutableList()
+                                // toggle fav boolean of UI product object
+                                newList[index] = product.copy(fav= !product.fav)
+                                // recompose hence list not same
+                                uiProducts = newList
                             }
-                            // UPDATE LIST UI, TRIGGER RECOMPOSITION
-                            // new List
-                            val newList = uiProducts.toMutableList()
-                            // toggle fav boolean of UI product object
-                            newList[index] = product.copy(fav= !product.fav)
-                            // recompose hence list not same
-                            uiProducts = newList
+
                         }
                     )
                 }

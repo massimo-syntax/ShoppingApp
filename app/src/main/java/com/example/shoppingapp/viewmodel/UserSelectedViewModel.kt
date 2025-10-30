@@ -2,8 +2,10 @@ package com.example.shoppingapp.viewmodel
 
 import android.util.Log
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.data.model.UserSelectedProduct
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class UserSelectedViewModel() : ViewModel() {
 
@@ -84,7 +87,7 @@ class UserSelectedViewModel() : ViewModel() {
         _uiStateCart.update { it.copy(roomDataLoaded = true, list = completeList.toList()) }
 
         var count = 0
-        val firebasePproducts = mutableListOf<UserSelectedProduct>()
+        val firebaseProducts = mutableListOf<UserSelectedProduct>()
 
         // also when there is no
         if (firebaseIds.isEmpty()){
@@ -100,10 +103,10 @@ class UserSelectedViewModel() : ViewModel() {
                 .addOnSuccessListener { document ->
                     if (document.data == null) return@addOnSuccessListener
                     val product = documentToSelectedProduct(document.data!!)
-                    firebasePproducts.add(product)
+                    firebaseProducts.add(product)
                     count++
                     if (count == firebaseIds.size) {
-                        completeList.addAll(firebasePproducts)
+                        completeList.addAll(firebaseProducts)
                         _uiStateCart.update {
                             it.copy(
                                 firebaseDataLoaded = true,
@@ -126,7 +129,6 @@ class UserSelectedViewModel() : ViewModel() {
 
 
     suspend fun getAllFavs(roomRepo: SelectedProductsRepository) {
-
 
         val favsIds = roomRepo.getFavs().map { it.productId }
         val jsonApiIds = mutableListOf<String>()
@@ -194,6 +196,18 @@ class UserSelectedViewModel() : ViewModel() {
                 }
         }
 
+    }
+
+
+    fun deleteFromFav(repo: SelectedProductsRepository , id:String){
+        viewModelScope.launch {
+            repo.deleteFromFav(id)
+            val list = _uiStateFavs.value.list
+            val fav = list.find { it.id == id }
+            val newList = list.toMutableList()
+            newList.remove(fav)
+            _uiStateFavs.update { it.copy(list = newList.toList()) }
+        }
     }
 
 

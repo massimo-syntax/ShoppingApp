@@ -66,13 +66,11 @@ fun Navigation(){
             val category: Category = Category.entries.first { it.enam == argCategory }
             CategoryScreen(category)
         }
-        composable(Routes.chat + "/{id}/{name}" ){ navArgs ->
+        composable(Routes.chat + "/{id}" ){ navArgs ->
             val id = navArgs.arguments?.getString("id") ?: "id_not_fonund: navigation"
-            val name = navArgs.arguments?.getString("name") ?: "name_not_found: navigation"
 
-            MessagesScreen(idReceiver = id, nameReceiver=name)
+            MessagesScreen(idReceiver = id)
         }
-
 
 
     }

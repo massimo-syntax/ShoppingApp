@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,12 +41,11 @@ import com.example.shoppingapp.components.EndlessPager
 import com.example.shoppingapp.components.MainProductCard
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProductsViewModel
-import kotlinx.coroutines.runBlocking
-
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewModel()) {
-
 
     val context = LocalContext.current
     fun toast(message:Any){
@@ -59,7 +59,6 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
 
     // products from Firebase
     val uiProducts by viewModel.uiProducts.collectAsState()
-
 
     val imagesForBanner = listOf(
         "https://thumbs.wbm.im/pw/small/92c2fbe5257623fe6d57a3399ffcd286.jpg",
@@ -75,10 +74,11 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         "https://thumbs.wbm.im/pw/medium/d162945b80040f050d8541c09f9e85e2.jpg",
         )
 
+    // update room and ui when fav is pressed
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getAllProducts(roomRepo)
-        //productsViewModel.getCategory(Category.ELECTRONICS)
     }
 
 
@@ -110,11 +110,12 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
                         product = product,
                         isInFav = product.fav,
                         onToggleFav = {
-                            runBlocking {
+                            coroutineScope.launch{
                                 roomRepo.toggleFav(product.id)
+                                product.fav = !product.fav
+                                viewModel.updateList(index,product)
                             }
-                            product.fav = !product.fav
-                            viewModel.updateList(index,product)
+
                         }
                     )
                 }
@@ -167,13 +168,7 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
             }
         }
 
-
-
-
-
         Spacer(Modifier.height(36.dp))
-
-
 
         Text("Perfect to buy now", style = TextStyle(color = AppStyle.colors.middleBlue , fontWeight = FontWeight.Bold ))
         Text("Perfect to buy now", style = TextStyle(color = AppStyle.colors.middleBlue , fontWeight = FontWeight.Medium ))
@@ -181,8 +176,6 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         Text("Perfect to buy now", style = TextStyle(color = AppStyle.colors.middleBlue , fontWeight = FontWeight.Thin ))
         Text("Perfect to buy now", style = TextStyle(color = AppStyle.colors.middleBlue , fontWeight = FontWeight.Light ))
         Text("Perfect to buy now", style = TextStyle(color = AppStyle.colors.middleBlue , fontWeight = FontWeight.ExtraLight ))
-
-
 
     }
 
