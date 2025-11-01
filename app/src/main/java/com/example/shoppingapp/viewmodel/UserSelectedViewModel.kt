@@ -20,13 +20,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class UserSelectedViewModel() : ViewModel() {
 
     data class UIState(
         val roomDataLoaded: Boolean = false,
         val firebaseDataLoaded: Boolean = false,
-        val list: List<UserSelectedProduct> = emptyList()
+        val list: List<UserSelectedProduct> = emptyList(),
     )
 
     private val _uiStateCart = MutableStateFlow(UIState())
@@ -207,6 +208,32 @@ class UserSelectedViewModel() : ViewModel() {
             val newList = list.toMutableList()
             newList.remove(fav)
             _uiStateFavs.update { it.copy(list = newList.toList()) }
+        }
+    }
+
+    fun temporaryDeleteFromCart(repo: SelectedProductsRepository , id:String){
+        viewModelScope.launch {
+            //repo.deleteFromCart(id)
+            val list = _uiStateCart.value.list
+            val cart = list.find { it.id == id }
+            val newList = list.toMutableList()
+            // instead of remove
+            val idx = newList.indexOf(cart)
+            newList[idx] = cart!!.copy(description = "inactive")
+            _uiStateCart.update { it.copy(list = newList.toList()) }
+        }
+    }
+
+    fun temporaryRestoreToCart(repo: SelectedProductsRepository , id:String){
+        viewModelScope.launch {
+            //repo.deleteFromCart(id)
+            val list = _uiStateCart.value.list
+            val cart = list.find { it.id == id }
+            val newList = list.toMutableList()
+            // instead of remove
+            val idx = newList.indexOf(cart)
+            newList[idx] = cart!!.copy(description = "active")
+            _uiStateCart.update { it.copy(list = newList.toList()) }
         }
     }
 
