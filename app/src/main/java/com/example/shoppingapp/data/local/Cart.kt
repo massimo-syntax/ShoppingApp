@@ -10,5 +10,6 @@ data class Cart(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "product_id") val productId: String,
     @ColumnInfo(name = "user_id") val userId: String,
+    @ColumnInfo(name = "quantitiy") val quantity:Int
     )
 

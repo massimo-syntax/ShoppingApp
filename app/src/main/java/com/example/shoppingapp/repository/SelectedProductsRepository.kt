@@ -46,7 +46,19 @@ class SelectedProductsRepository (context: Context) {
         val cart = Cart(
             productId = productId,
             userId = userId,
-            id = 0 // from room
+            id = 0, // from room
+            quantity = 1
+            )
+        cartDao.insert(cart)
+    }
+
+    suspend fun updateQuantity(productId: String , newQuantitiy:Int){
+        cartDao.delete(productId)
+        val cart = Cart(
+            productId = productId,
+            userId = userId,
+            id = 0, // from room
+            quantity = newQuantitiy
         )
         cartDao.insert(cart)
     }

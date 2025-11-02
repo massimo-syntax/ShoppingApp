@@ -111,18 +111,6 @@ fun ProductScreenJsonApi(id:String){
                     text = product.description,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
 
 
                 Row(

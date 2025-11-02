@@ -2,15 +2,11 @@ package com.example.shoppingapp.viewmodel
 
 import android.util.Log
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
+import com.example.shoppingapp.data.model.UiCart
 import com.example.shoppingapp.data.model.UserSelectedProduct
 import com.example.shoppingapp.data.remote.RemoteProduct
-import com.example.shoppingapp.features.UIState
 import com.example.shoppingapp.repository.RemoteProductsRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.google.firebase.Firebase
@@ -20,18 +16,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class UserSelectedViewModel() : ViewModel() {
 
     data class UIState(
         val roomDataLoaded: Boolean = false,
         val firebaseDataLoaded: Boolean = false,
-        val list: List<UserSelectedProduct> = emptyList(),
+        val list: List<UserSelectedProduct> = emptyList()
     )
 
-    private val _uiStateCart = MutableStateFlow(UIState())
-    val uiStateCart: StateFlow<UIState> = _uiStateCart.asStateFlow()
+    data class CartUiState(
+        val roomDataLoaded: Boolean = false,
+        val firebaseDataLoaded: Boolean = false,
+        val list: List<UiCart> = emptyList()
+    )
+
+    private val _uiStateCart = MutableStateFlow(CartUiState())
+    val uiStateCart: StateFlow<CartUiState> = _uiStateCart.asStateFlow()
 
     private val _uiStateFavs = MutableStateFlow(UIState())
     val uiStateFavs: StateFlow<UIState> = _uiStateFavs.asStateFlow()
@@ -60,51 +61,69 @@ class UserSelectedViewModel() : ViewModel() {
         )
     }
 
-    suspend fun getAllCart(roomRepo: SelectedProductsRepository) {
 
-        val cartIds = roomRepo.getCart().map { it.productId }
+
+    suspend fun getAllCart(roomRepo: SelectedProductsRepository) {
+        // query room database
+        val repoCart = roomRepo.getCart()
+        val cartIds = repoCart.map { it.productId }
+        val cartQuantities = repoCart.map{ it.quantity }
+        // separated lists of id s to query source
         val jsonApiIds = mutableListOf<String>()
         val firebaseIds = mutableListOf<String>()
-        val jsonApiCart = mutableListOf<UserSelectedProduct>()
-        val completeList = mutableListOf<UserSelectedProduct>()
+        // separated list from separated source to join
+        val jsonApiCart = mutableListOf<UiCart>()
+        val firebaseProducts = mutableListOf<UiCart>()
+        // joined list
+        val completeList = mutableListOf<UiCart>()
 
-        cartIds.forEach {
-            if (!it.isDigitsOnly()) { // product is stored in fierbase
-                firebaseIds.add(it)
+        cartIds.forEachIndexed { index, id ->
+            if (!id.isDigitsOnly()) { // product is stored in fierbase
+                firebaseIds.add(id)
             } else { // product is from json api
-                jsonApiIds.add(it)
-                val jsonProductRemote: RemoteProduct = remoteRepo.getProduct(it)
-                val jsonProduct = UserSelectedProduct(
+                jsonApiIds.add(id)
+                val jsonProductRemote: RemoteProduct = remoteRepo.getProduct(id)
+                val quantity = cartQuantities[cartIds.indexOf(id)]
+                val jsonProduct = UiCart(
                     id = jsonProductRemote.id,
                     title = jsonProductRemote.title,
                     description = jsonProductRemote.description,
                     mainPicture = jsonProductRemote.image,
-                    price = jsonProductRemote.price,
+                    price = jsonProductRemote.price.toFloat(),
+                    quantity = quantity
                 )
                 jsonApiCart.add(jsonProduct)
             }
         }
         completeList.addAll(jsonApiCart)
-        _uiStateCart.update { it.copy(roomDataLoaded = true, list = completeList.toList()) }
+        _uiStateCart.update { it.copy(roomDataLoaded = true) }
 
-        var count = 0
-        val firebaseProducts = mutableListOf<UserSelectedProduct>()
-
-        // also when there is no
         if (firebaseIds.isEmpty()){
-            _uiStateCart.update { it.copy(firebaseDataLoaded = true) }
+            _uiStateCart.update { it.copy(firebaseDataLoaded = true , list = completeList.toList()) }
             return
         }
-
-        firebaseIds.forEach { id ->
+        var count = 0
+        firebaseIds.forEachIndexed { index , id ->
             Firebase.firestore
                 .collection("products")
                 .document(id)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.data == null) return@addOnSuccessListener
-                    val product = documentToSelectedProduct(document.data!!)
+                    val map = document.data!!
+                    //val product = documentToSelectedProduct(document.data!!)
+                    val quantity = cartQuantities[cartIds.indexOf(id)]
+                    val product = UiCart(
+                        id = map["id"].toString(),
+                        title = map["title"].toString(),
+                        description = map["description"].toString(),
+                        price = map["price"].toString().toFloat(),
+                        mainPicture = map["images"].toString().split(',').first(),
+                        quantity = quantity,
+                    )
+
                     firebaseProducts.add(product)
+
                     count++
                     if (count == firebaseIds.size) {
                         completeList.addAll(firebaseProducts)
@@ -211,28 +230,25 @@ class UserSelectedViewModel() : ViewModel() {
         }
     }
 
-    fun temporaryDeleteFromCart(repo: SelectedProductsRepository , id:String){
+    fun deleteFromCart(repo: SelectedProductsRepository, id:String){
         viewModelScope.launch {
-            //repo.deleteFromCart(id)
+            repo.deleteFromCart(id)
             val list = _uiStateCart.value.list
             val cart = list.find { it.id == id }
             val newList = list.toMutableList()
-            // instead of remove
-            val idx = newList.indexOf(cart)
-            newList[idx] = cart!!.copy(description = "inactive")
+            newList.remove(cart)
             _uiStateCart.update { it.copy(list = newList.toList()) }
         }
     }
 
-    fun temporaryRestoreToCart(repo: SelectedProductsRepository , id:String){
+    fun updateQuantity(repo: SelectedProductsRepository , id:String , newQuantity:Int){
         viewModelScope.launch {
-            //repo.deleteFromCart(id)
+            repo.updateQuantity(id, newQuantity)
             val list = _uiStateCart.value.list
             val cart = list.find { it.id == id }
             val newList = list.toMutableList()
-            // instead of remove
             val idx = newList.indexOf(cart)
-            newList[idx] = cart!!.copy(description = "active")
+            newList[idx] = cart!!.copy(quantity = newQuantity)
             _uiStateCart.update { it.copy(list = newList.toList()) }
         }
     }

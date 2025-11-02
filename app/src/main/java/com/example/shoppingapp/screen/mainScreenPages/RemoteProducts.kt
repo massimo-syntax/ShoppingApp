@@ -52,19 +52,13 @@ import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.RemoteProductsViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewModel: RemoteProductsViewModel = viewModel()) {
-
-    val context = LocalContext.current
-    fun toast(message:Any){
-        Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show()
-    }
+fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, viewModel: RemoteProductsViewModel = viewModel()) {
 
     // get cart and fav from ROOM
-    val roomRepo = SelectedProductsRepository(context)
+    val roomRepo = SelectedProductsRepository(LocalContext.current)
     var cartCount by remember { mutableStateOf(0) }
 
     // products from JSON api
@@ -83,12 +77,10 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
     }
 
 
-    Column (
-        modifier.padding(horizontal = 8.dp),
-    ) {
+    Column(modifier = modifier.padding(horizontal = 10.dp).background(Color.White)) {
         // SEARCH text field
         val focusManager = LocalFocusManager.current
-        Row (Modifier.padding(10.dp)) {
+        Row {
             CustomTextField(
                 trailingIcon = {
                     IconButton(
@@ -116,11 +108,12 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
                 text = searchQuery
             )
         }
-        // LIST of result
-        //if (products.isEmpty()) {
+
+        Spacer(Modifier.height(8.dp))
+
         if (uiProducts.isEmpty()) {
             Row (
-                Modifier.padding(32.dp).fillMaxWidth(),
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator(
@@ -129,6 +122,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
                 )
             }
         } else {
+            // result grid
             LazyVerticalGrid (
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp),
@@ -149,7 +143,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, onBadge:(n:Int)->Unit, viewMod
                                     roomRepo.deleteFromCart(product.id)
                                     cartCount--
                                 }
-                                onBadge(cartCount)
+                                updateBadge(cartCount)
 
                                 // UPDATE LIST UI, TRIGGER RECOMPOSITION
                                 // new List

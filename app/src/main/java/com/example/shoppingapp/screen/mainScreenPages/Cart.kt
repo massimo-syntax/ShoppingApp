@@ -1,16 +1,8 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
-import android.widget.Toast
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,8 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,22 +26,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,19 +41,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
-import com.example.shoppingapp.data.model.UserSelectedProduct
+import com.example.shoppingapp.data.model.UiCart
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.UserSelectedViewModel
 
 
 @Composable
-fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewModel()) {
+fun Cart(modifier: Modifier = Modifier, updateBadge: (Int) -> Unit , viewModel: UserSelectedViewModel = viewModel()) {
 
     val uiState = viewModel.uiStateCart.collectAsState()
     val roomRepo = SelectedProductsRepository(LocalContext.current)
-
-    // init a list for quantities
-    var quantities by rememberSaveable { mutableStateOf<List<Int>>(listOf()) }
 
     LaunchedEffect(Unit) {
         viewModel.getAllCart(roomRepo)
@@ -81,7 +61,6 @@ fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewM
             .fillMaxWidth()
             .background(Color.White)
     ) {
-
         if (uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded) {
             if (uiState.value.list.isEmpty()) {
                 Column(
@@ -96,45 +75,23 @@ fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewM
             }
 
             val products = uiState.value.list
-            // init quantities
-            val q = mutableListOf<Int>()
-            products.forEachIndexed { index , _ ->
-                if(index < quantities.size){
-                    q.add(quantities[index])
-                }else{
-                    q.add(1)
-                }
-            }
-            quantities = q.toList()
-
-            // calculate subtotal on recomposition
-            var subtotal = 0.0f
-            products.forEachIndexed { index, product ->
-                subtotal += (product.price.toFloat() * quantities[index])
-            }
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                itemsIndexed(products) { index, product ->
+                items(products) {
                     ProductCartItem(
-                        product = product,
-                        quantity = quantities[index],
+                        product = it,
+                        quantity = it.quantity,
                         onQuantityChange = { newQty ->
-                            if (newQty > 0) {
-                                quantities = quantities.toMutableList().apply { set(index, newQty) }
-                                viewModel.temporaryRestoreToCart(roomRepo, product.id)
-                            }
+                            viewModel.updateQuantity(roomRepo, it.id, newQty)
                         },
                         onDelete = {
-
-                            viewModel.temporaryDeleteFromCart(roomRepo, product.id)
-                            quantities = quantities.toMutableList().apply { set(index, 0) }
-
-                        },
-                        active = product.description != "inactive"
+                            viewModel.deleteFromCart(roomRepo, it.id)
+                            updateBadge(products.size-1)
+                        }
                     )
                     HorizontalDivider(color = Color(0xFFECECEC), thickness = 1.dp)
                 }
@@ -142,6 +99,10 @@ fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewM
 
             val deliveryFee = 5.00f
             val discount = 6.04f
+            var subtotal = 0.0f
+            products.forEach {
+                subtotal += (it.price.toFloat() * it.quantity)
+            }
             // Price Summary
             PriceSummary(
                 subtotal = subtotal,
@@ -154,7 +115,7 @@ fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewM
             )
 
 
-        }else{
+        } else {
             CircularProgressIndicator()
         }
 
@@ -165,11 +126,10 @@ fun Cart(modifier: Modifier = Modifier, viewModel: UserSelectedViewModel = viewM
 
 @Composable
 fun ProductCartItem(
-    product: UserSelectedProduct,
+    product: UiCart,
     quantity: Int,
     onQuantityChange: (Int) -> Unit,
     onDelete: () -> Unit,
-    active: Boolean = true
 ) {
     Row(
         modifier = Modifier
@@ -196,10 +156,9 @@ fun ProductCartItem(
                     text = product.title,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-                    color = if (active) Color.Black else AppStyle.colors.red,
+                    color = AppStyle.colors.darkBlule,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(textDecoration = if (!active) TextDecoration.LineThrough else null),
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = { onDelete() }) {
@@ -218,15 +177,14 @@ fun ProductCartItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "$${"%.2f".format(product.price.toFloat())}",
+                    text = "$${"%.2f".format(product.price)}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = if (active) Color.Black else AppStyle.colors.red,
-                    style = TextStyle(textDecoration = if (!active) TextDecoration.LineThrough else null)
+                    color = AppStyle.colors.middleBlue,
                 )
                 Row {
                     QuantitySelector(quantity, onQuantityChange)
-                    Spacer(Modifier.width( (36+12).dp) )
+                    Spacer(Modifier.width((36 + 12).dp))
                 }
 
             }

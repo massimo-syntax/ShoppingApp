@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,14 +52,13 @@ private val MyRippleConfiguration =
 fun MainScreen(page:Pages = Pages.ONE){
 
     var selectedPage by rememberSaveable { mutableStateOf(page) }
-    var cart by rememberSaveable { mutableStateOf(0) }
+    var cart by rememberSaveable { mutableIntStateOf(0) }
 
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         cart = SelectedProductsRepository(context).getCart().size
     }
-
 
     fun updateBadge(n:Int){
         cart = n
@@ -119,7 +119,7 @@ fun MainScreen(page:Pages = Pages.ONE){
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if(cart > 0 && it.first == Pages.CART)
+                                            if(it.first == Pages.CART && cart > 0 )
                                                 Badge(
                                                     containerColor = Color.White,
                                                     contentColor = AppStyle.colors.darkBlule
@@ -173,7 +173,7 @@ fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, updateBadge:(n
     when(page){
         Pages.ONE -> Home(modifier)
         Pages.TWO -> RemoteProducts(modifier, updateBadge)
-        Pages.CART -> Cart(modifier)
+        Pages.CART -> Cart(modifier, updateBadge)
         Pages.FOUR -> ProfilePage(modifier)
     }
 
