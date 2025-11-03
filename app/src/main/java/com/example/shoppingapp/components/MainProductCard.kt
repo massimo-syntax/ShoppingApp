@@ -33,13 +33,14 @@ import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
 
 @Composable
 fun MainProductCard(
+    modifier:Modifier = Modifier,
     product: UiProductWithFieldsFromRoom,
     onToggleFav: () -> Unit,
     isInFav:Boolean,
 ) {
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.Transparent)
             .width(100.dp)
             .clickable(onClick = {

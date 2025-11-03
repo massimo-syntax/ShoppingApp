@@ -3,6 +3,7 @@ package com.example.shoppingapp.screen.mainScreenPages
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,6 +63,7 @@ fun Cart(modifier: Modifier = Modifier, updateBadge: (Int) -> Unit , viewModel: 
         modifier = modifier
             .fillMaxWidth()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
     ) {
         if (uiState.value.roomDataLoaded && uiState.value.firebaseDataLoaded) {
             if (uiState.value.list.isEmpty()) {
@@ -72,16 +76,17 @@ fun Cart(modifier: Modifier = Modifier, updateBadge: (Int) -> Unit , viewModel: 
                 ) {
                     Text("no items in the cart")
                 }
+                return
             }
 
             val products = uiState.value.list
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
             ) {
-                items(products) {
+
+                products.forEach {
                     ProductCartItem(
                         product = it,
                         quantity = it.quantity,
@@ -96,6 +101,8 @@ fun Cart(modifier: Modifier = Modifier, updateBadge: (Int) -> Unit , viewModel: 
                     HorizontalDivider(color = Color(0xFFECECEC), thickness = 1.dp)
                 }
             }
+
+            Spacer(Modifier.weight(1f))
 
             val deliveryFee = 5.00f
             val discount = 6.04f
@@ -263,15 +270,16 @@ fun CheckoutBar(total: Float) {
             text = "$${"%.2f".format(total)}",
             fontWeight = FontWeight.Bold,
             fontSize = 22.sp,
-            color = Color.Black
+            color = AppStyle.colors.green
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = { /* Checkout logic */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
             modifier = Modifier
                 .height(48.dp)
-                .width(160.dp)
+                .width(160.dp),
+            shape = RoundedCornerShape(6.dp)
         ) {
             Text(
                 text = "Checkout",

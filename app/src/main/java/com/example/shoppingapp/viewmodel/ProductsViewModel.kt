@@ -3,6 +3,8 @@ package com.example.shoppingapp.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.Category
 import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
@@ -17,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -25,7 +29,6 @@ class ProductsViewModel : ViewModel() {
 
     data class UIState(
         val fetching: Boolean = true,
-        val recomposition:Int = 0,
         val result: List<UiProductWithFieldsFromRoom> = emptyList()
     )
 
@@ -63,42 +66,18 @@ class ProductsViewModel : ViewModel() {
         )
     }
 
-    fun updateList(index:Int,product: UiProductWithFieldsFromRoom){
 
-        val list = _uiProducts.value.result.toMutableList()
-        list[index] = product
-        _uiProducts.update { it.copy(false, it.recomposition+1,list) }
-
-    }
-
-
-    fun getDefinedListOfProducts(ids:List<String>){
-        var count = 0
-        val products = mutableListOf<UiProductWithFieldsFromRoom>()
-
-        ids.forEach {
-            productsRef
-                .document(it)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document.data == null) return@addOnSuccessListener
-
-                    val product = documentToProduct(document.data!!, emptyList(),emptyList())
-                    products.add(product)
-                    count++
-                    if(count == ids.size ){
-                        _uiProducts.value = UIState(fetching = false, result = products)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
-                }
+    fun toggleFav(roomRepo: SelectedProductsRepository, product: UiProductWithFieldsFromRoom){
+        viewModelScope.launch {
+            val index = _uiProducts.value.result.indexOf(product)
+            val newList = _uiProducts.value.result.toMutableList()
+            newList[index] = product.copy(fav = !product.fav)
+            roomRepo.toggleFav(product.id)
+            _uiProducts.update { it.copy(result = newList.toList()) }
         }
-
     }
 
     suspend fun getAllProducts(roomRepository: SelectedProductsRepository) {
-
         // get list of cart and favourites
         val cart = roomRepository.getCart().map { it.productId }
         val favs = roomRepository.getFavs().map { it.productId }
@@ -113,14 +92,12 @@ class ProductsViewModel : ViewModel() {
                     val ui_p = documentToProduct(it.data!!, cart, favs)
                     uiProducts.add(ui_p)
                 }
-
                 _uiProducts.value = UIState(fetching = false, result = uiProducts)
             }
             .addOnFailureListener {
                 Log.wtf("ERROR FETCHING LIST", it.message.toString())
                 Log.wtf("ERROR FROM DATABASE FIREBASE", it.message.toString())
             }
-
     }
 
     fun getProduct(id:String){
@@ -140,7 +117,7 @@ class ProductsViewModel : ViewModel() {
 
     suspend fun getCategory(category: Category , roomRepository: SelectedProductsRepository) {
         // create fill a list with product objects capable of cart-fav + toggle
-        val ui_Products = mutableListOf<UiProductWithFieldsFromRoom>()
+        val uiProducts = mutableListOf<UiProductWithFieldsFromRoom>()
 
         // get list of cart and favourites
         val cart = roomRepository.getCart().map { it.productId }
@@ -152,20 +129,41 @@ class ProductsViewModel : ViewModel() {
             .addOnSuccessListener {
                 it.documents.forEach {
                     val ui_p = documentToProduct(it.data!!, cart, favs)
-                    ui_Products.add(ui_p)
+                    uiProducts.add(ui_p)
                 }
-                _uiProducts.value = UIState(fetching = false, result = ui_Products)
-
+                _uiProducts.value = UIState(fetching = false, result = uiProducts.toList())
             }
             .addOnFailureListener { exception ->
                 Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
             }
 
+    }
 
+    fun getDefinedListOfProducts(ids:List<String>){
+        var count = 0
+        val products = mutableListOf<UiProductWithFieldsFromRoom>()
+        ids.forEach {
+            productsRef
+                .document(it)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.data == null) return@addOnSuccessListener
+
+                    val product = documentToProduct(document.data!!, emptyList(),emptyList())
+                    products.add(product)
+                    count++
+                    if(count == ids.size ){
+                        _uiProducts.value = UIState(fetching = false, result = products)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("ERROR FETCHING DATA FORM FIREBASE, CATEGORY QUERY", "Error getting documents: ", exception)
+                }
+        }
     }
 
 
-    @OptIn(ExperimentalUuidApi::class)
+   // @OptIn(ExperimentalUuidApi::class)
     fun uploadProduct(
         title: String,
         description: String,
@@ -174,7 +172,7 @@ class ProductsViewModel : ViewModel() {
         category: String,
         onSuccess: () -> Unit
     ) {
-        val uuid = Uuid.random().toString()
+        val uuid = UUID.randomUUID().toString()
         val p = Product(
             id = uuid,
             title = title,

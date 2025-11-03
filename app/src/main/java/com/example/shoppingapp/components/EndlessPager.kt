@@ -90,25 +90,14 @@ fun BannerItem(image: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppStyle.colors.green),
+            .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
-
         AsyncImage(
             model = image,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillWidth,
             contentDescription = "Banner Image"
         )
-
-        /*
-        Image(
-            painter = painterResource(id = image),
-            contentScale = ContentScale.Crop,
-            contentDescription = "Banner Image"
-        )
-        */
-
     }
 }

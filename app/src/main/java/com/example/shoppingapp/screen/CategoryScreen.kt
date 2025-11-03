@@ -63,11 +63,7 @@ fun CategoryScreen(category: Category, viewModel: ProductsViewModel = viewModel 
                             product = product,
                             isInFav = product.fav,
                             onToggleFav = {
-                                runBlocking {
-                                    roomRepo.toggleFav(product.id)
-                                }
-                                product.fav = !product.fav
-                                viewModel.updateList(index,product)
+                                viewModel.toggleFav(roomRepo,product)
                             }
                         )
                     }
