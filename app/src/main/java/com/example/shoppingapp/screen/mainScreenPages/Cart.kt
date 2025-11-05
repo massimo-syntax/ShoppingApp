@@ -1,9 +1,9 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,9 +39,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.Navigator
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
+import com.example.shoppingapp.Routes
 import com.example.shoppingapp.data.model.UiCart
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.UserSelectedViewModel
@@ -119,6 +119,7 @@ fun Cart(modifier: Modifier = Modifier, updateBadge: (Int) -> Unit , viewModel: 
             // Checkout Bar
             CheckoutBar(
                 total = subtotal + deliveryFee - discount,
+                products.toSet()
             )
 
 
@@ -146,7 +147,7 @@ fun ProductCartItem(
     ) {
         // image
         AsyncImage(
-            model = product.mainPicture,
+            model = product.image,
             contentDescription = product.title,
             modifier = Modifier
                 .size(60.dp)
@@ -258,7 +259,8 @@ fun SummaryRow(label: String, value: String, bold: Boolean = false) {
 }
 
 @Composable
-fun CheckoutBar(total: Float) {
+fun CheckoutBar(total: Float , cart : Set<UiCart>) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -274,7 +276,11 @@ fun CheckoutBar(total: Float) {
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { /* Checkout logic */ },
+            onClick = {
+                Routes.checkoutPayload = cart
+                Routes.navController.navigate(Routes.checkout+"/"+total )
+
+            },
             colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
             modifier = Modifier
                 .height(48.dp)

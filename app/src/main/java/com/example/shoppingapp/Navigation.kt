@@ -5,8 +5,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.shoppingapp.data.model.UiCart
 import com.example.shoppingapp.screen.AuthScreen
 import com.example.shoppingapp.screen.CategoryScreen
+import com.example.shoppingapp.screen.CheckoutPage
 import com.example.shoppingapp.screen.LoginScreen
 import com.example.shoppingapp.screen.MainScreen
 import com.example.shoppingapp.screen.MessagesScreen
@@ -68,8 +70,11 @@ fun Navigation(){
         }
         composable(Routes.chat + "/{id}" ){ navArgs ->
             val id = navArgs.arguments?.getString("id") ?: "id_not_fonund: navigation"
-
             MessagesScreen(idReceiver = id)
+        }
+        composable(Routes.checkout + "/{total}"){ navArgs ->
+            val total = navArgs.arguments?.getString("total")!!.toFloat()
+            CheckoutPage(total)
         }
 
 
@@ -90,4 +95,6 @@ object Routes{
 
     val category = "CATEGORY"
     val chat = "CHAT"
+    val checkout = "CHECKOUT"
+    var checkoutPayload : Set<UiCart> = emptySet()
 }

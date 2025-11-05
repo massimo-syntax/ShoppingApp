@@ -88,7 +88,7 @@ class UserSelectedViewModel() : ViewModel() {
                     id = jsonProductRemote.id,
                     title = jsonProductRemote.title,
                     description = jsonProductRemote.description,
-                    mainPicture = jsonProductRemote.image,
+                    image = jsonProductRemote.image,
                     price = jsonProductRemote.price.toFloat(),
                     quantity = quantity
                 )
@@ -118,7 +118,7 @@ class UserSelectedViewModel() : ViewModel() {
                         title = map["title"].toString(),
                         description = map["description"].toString(),
                         price = map["price"].toString().toFloat(),
-                        mainPicture = map["images"].toString().split(',').first(),
+                        image = map["images"].toString().split(',').first(),
                         quantity = quantity,
                     )
 

@@ -68,7 +68,7 @@ fun CustomTextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier
-                    .border(2.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(16.dp))
+                    .border(1.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(6.dp))
                     .padding(horizontal = 10.dp , vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

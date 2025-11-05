@@ -6,6 +6,6 @@ data class UiCart(
     val title:String,
     val description:String,
     val price:Float,
-    val mainPicture:String,
+    val image:String,
     val quantity:Int = 0
 )
