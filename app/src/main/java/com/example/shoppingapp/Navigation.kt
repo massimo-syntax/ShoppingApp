@@ -13,6 +13,7 @@ import com.example.shoppingapp.screen.LoginScreen
 import com.example.shoppingapp.screen.MainScreen
 import com.example.shoppingapp.screen.MessagesScreen
 import com.example.shoppingapp.screen.NewProductUpload
+import com.example.shoppingapp.screen.Pages
 import com.example.shoppingapp.screen.ProductScreenJsonApi
 import com.example.shoppingapp.screen.ProductScreenUploaded
 import com.example.shoppingapp.screen.SignupScreen
@@ -26,12 +27,12 @@ fun Navigation(){
     // redirect to main screen if user is already/still logged in
 
     val login:Boolean = Firebase.auth.currentUser != null
-    val startDestination = if(login) Routes.main else Routes.auth
+    val startDestination = if(login) Routes.main+"/"+Pages.ONE.str else Routes.auth
 
     val navController = rememberNavController()
     Routes.navController = navController
 
-    NavHost(navController = navController , startDestination = startDestination) {
+    NavHost(navController = navController , startDestination = startDestination ) {
 
         composable(Routes.auth) {
             AuthScreen(navController)
@@ -42,8 +43,13 @@ fun Navigation(){
         composable(Routes.signup) {
             SignupScreen(navController)
         }
-        composable(Routes.main) {
-            MainScreen()
+        composable(Routes.main+"/{page}") {  navArgs ->
+            val arg = navArgs.arguments?.getString("page")
+            val page = when(arg){
+                "Profile" -> Pages.FOUR
+                else -> {Pages.ONE}
+            }
+            MainScreen(page)
         }
         composable(Routes.uploadSinglePicture) {
             UploadSinglePictureScreen()

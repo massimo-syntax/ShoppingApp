@@ -2,8 +2,6 @@ package com.example.shoppingapp.screen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -46,10 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +59,7 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.components.CustomTextField
+import com.example.shoppingapp.repository.SelectedProductsRepository
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -105,24 +103,26 @@ fun CheckoutPage(total: Float) {
 fun PayingContent() {
 
     var animState by remember { mutableIntStateOf(0) }
+    var visible by remember { mutableStateOf(false) }
 
     val paymentProcess = listOf(
-        "Payment is processing",
-        "Connecting with our servers..",
-        "enccrypting your data",
-        "Exchanging money throught our proxy banks",
-        "Buying some cryptovalue",
-        "Selling instantly the cryptovalue",
-        "Calculating interest for us",
-        "Payment almost done..",
-        "Finish! you did pay! "
+        Pair("Payment is processing", R.drawable.icon_cart_garden),
+        Pair("Connecting with our servers..", R.drawable.icon_favorite),
+        Pair("Payment almost done..", R.drawable.icon_edit),
+        Pair("Finish! you did pay! ", R.drawable.icon_done)
     )
 
+    val roomRepo = SelectedProductsRepository(LocalContext.current)
+
     LaunchedEffect(Unit) {
-        for (i in 0..< paymentProcess.size) {
-            delay( Random(seed = i*12345).nextLong(2000, 5000) )
+        for (i in 0..<paymentProcess.size) {
+            delay(Random(seed = i * 12345).nextLong(1000, 5000))
             animState = i
         }
+
+        roomRepo.dropCart()
+        delay(2000)
+        visible = true
     }
 
     Box(
@@ -132,36 +132,92 @@ fun PayingContent() {
     ) {
         Surface(
             Modifier
-                .size(300.dp)
+                .width(300.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.White)
         ) {
-            AnimatedContent(
-                targetState = animState,
-                label = "animated content",
-                transitionSpec = { ( slideInVertically { height -> height } + fadeIn() togetherWith
-                        slideOutVertically { height -> -height } + fadeOut() ).using(
-                        // Disable clipping since the faded slide-in/out should
-                        // be displayed out of bounds.
-                        SizeTransform(clip = false))
-                }
-            ) { targetState ->
-                // Make sure to use `targetCount`, not `count`.
-                Column(
-                    Modifier.fillMaxWidth().padding(26.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
 
-                    Text( paymentProcess[animState],
+            // Make sure to use `targetCount`, not `count`.
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(26.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                // animated text
+                AnimatedContent(
+                    targetState = animState,
+                    label = "animated text",
+                    transitionSpec = {
+                        (slideInVertically { height -> height } + fadeIn() togetherWith
+                                slideOutVertically { height -> -height } + fadeOut()).using(
+                            // Disable clipping since the faded slide-in/out should
+                            // be displayed out of bounds.
+                            SizeTransform(clip = false)
+                        )
+                    }
+                ) { targetState ->
+                    Text(
+                        paymentProcess[targetState].first,
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = AppStyle.colors.lightBlue,
                         ),
+                        modifier = Modifier.padding(vertical = 20.dp)
                     )
+                }
 
+                // animated icon
+                AnimatedContent(
+                    targetState = animState,
+                    label = "animated icon",
+                    transitionSpec = {
+                        (scaleIn() + fadeIn() togetherWith scaleOut() + fadeOut()).using(
+                            // Disable clipping since the faded slide-in/out should
+                            // be displayed out of bounds.
+                            SizeTransform(clip = false)
+                        )
+                    }
+                ) { targetState ->
+                    Icon(
+                        painter = painterResource(paymentProcess[targetState].second),
+                        contentDescription = paymentProcess[targetState].first,
+                        tint = AppStyle.colors.green,
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+
+                // button
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = scaleIn(
+                        initialScale = 0.5f
+                    ) + fadeIn(
+                        // Fade in with the initial alpha of 0.3f.
+                        initialAlpha = 0.6f
+                    ),
+                    exit = scaleOut() + fadeOut()
+                ) {
+                    Spacer(Modifier.height(20.dp))
+                    Button(
+                        onClick = {
+                            Routes.navController.navigate(Routes.main + "/" + Pages.FOUR.str) {
+                                popUpTo(Routes.main) { inclusive = true }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text("back to profile")
+                    }
                 }
 
             }
+
         }
 
     }
@@ -169,18 +225,10 @@ fun PayingContent() {
 }
 
 
-
-
-
-
 @Composable
 fun MainContent(total: Float, visible: MutableState<Boolean>) {
 
-
     var checked by remember { mutableStateOf(true) }
-
-
-
 
     Scaffold(
         topBar = { BackButtonSimpleTopBar("Payment") }
@@ -279,7 +327,6 @@ fun MainContent(total: Float, visible: MutableState<Boolean>) {
                     onCheckedChange = { checked = it }
                 )
             }
-
             //tton
             Button(
                 onClick = {
@@ -300,10 +347,8 @@ fun MainContent(total: Float, visible: MutableState<Boolean>) {
                 )
             }
 
-
         }
 
     }
-
 
 }

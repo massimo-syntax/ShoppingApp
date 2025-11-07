@@ -42,7 +42,7 @@ class SelectedProductsRepository (context: Context) {
 
 
     // CREATE + UPDATE
-    suspend fun dropInCart(productId: String){
+    suspend fun addToCart(productId: String){
         val cart = Cart(
             productId = productId,
             userId = userId,
@@ -88,6 +88,11 @@ class SelectedProductsRepository (context: Context) {
 
     suspend fun deleteFromFav(productId:String){
         favDao.delete(productId)
+    }
+
+    // DELETE ALL
+    suspend fun dropCart(){
+        cartDao.deleteAll()
     }
 
 

@@ -1,6 +1,5 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -136,7 +135,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
                         onToggleCart = {
                             coroutineScope.launch {
                                 if(!product.cart){
-                                    roomRepo.dropInCart(product.id)
+                                    roomRepo.addToCart(product.id)
                                     cartCount++
                                 }
                                 else{

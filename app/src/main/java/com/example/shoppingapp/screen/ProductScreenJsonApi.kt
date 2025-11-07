@@ -121,7 +121,7 @@ fun ProductScreenJsonApi(id:String){
                     IconButton(
                         onClick = {
                             runBlocking {
-                                if(!inCart) roomRepo.dropInCart(product.id)
+                                if(!inCart) roomRepo.addToCart(product.id)
                                 else roomRepo.deleteFromCart(product.id)
                                 inCart = !inCart
                             }
@@ -158,7 +158,7 @@ fun ProductScreenJsonApi(id:String){
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         runBlocking {
-                            if(!inCart) roomRepo.dropInCart(product.id)
+                            if(!inCart) roomRepo.addToCart(product.id)
                             else roomRepo.deleteFromCart(product.id)
                             inCart = !inCart
                         }
