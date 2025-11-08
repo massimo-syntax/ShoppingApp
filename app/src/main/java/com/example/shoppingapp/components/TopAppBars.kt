@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +43,7 @@ import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.data.model.User
+import com.example.shoppingapp.screen.Pages
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -110,9 +113,10 @@ fun MessagesTopBar(image: String = "", name: String = "") {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false) {
+fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notifications: Int = 0) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
     TopAppBar(
         colors = TopAppBarColors(
             containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
@@ -125,6 +129,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false) {
         modifier = Modifier,
         title = { Text(title) },
         actions = {
+            // first icon.. just to have, until now
             IconButton(onClick = {
                 Toast.makeText(context, "Nothing", Toast.LENGTH_SHORT).show()
             }) {
@@ -134,35 +139,77 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false) {
                     tint = if (dark) Color.White else AppStyle.colors.darkBlule
                 )
             }
+            // dropdown: notifications, logout
             IconButton(onClick = { expanded = !expanded }) {
-                Icon(
-                    painter = painterResource(R.drawable.icon_menu),
-                    contentDescription = "menu",
-                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
-                )
+                BadgedBox(
+                    badge = {
+                        if (notifications > 0)
+                            Badge(
+                                containerColor = Color.White,
+                                contentColor = AppStyle.colors.darkBlule
+                            ) {
+                                Text(notifications.toString())
+                            }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_menu),
+                        contentDescription = "menu",
+                        tint = if (dark) Color.White else AppStyle.colors.darkBlule
+                    )
+                }
             }
+
+
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
+                // leave rating notification
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        if(notifications > 0)
+                        Routes.navController.navigate(Routes.ratings)
+                    },
+                    text = { Text("Give rating") },
+                    leadingIcon = {
+                        BadgedBox(
+                            badge = {
+                                if (notifications > 0)
+                                    Badge(
+                                        containerColor = Color.White,
+                                        contentColor = AppStyle.colors.darkBlule
+                                    ) {
+                                        Text(notifications.toString())
+                                    }
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_star),
+                                contentDescription = "rating",
+                                tint = AppStyle.colors.darkBlule
+                            )
+                        }
+                    }
+                )
+                // nothing..
                 DropdownMenuItem(
                     onClick = { expanded = false },
-                    text = { Text("option 1") },
+                    text = { Text("Settings") },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.icon_menu),
-                            contentDescription = "menu",
+                            painter = painterResource(R.drawable.icon_settings),
+                            contentDescription = "settings",
                             tint = AppStyle.colors.darkBlule
                         )
                     }
                 )
-                DropdownMenuItem(
-                    onClick = { expanded = false },
-                    text = { Text("option 2") }
-                )
+
                 DropdownMenuItem(
                     onClick = {
                         Firebase.auth.signOut()
+                        Routes.navController.navigate(Routes.login)
                     },
                     text = { Text("Sign Out") },
                     leadingIcon = {

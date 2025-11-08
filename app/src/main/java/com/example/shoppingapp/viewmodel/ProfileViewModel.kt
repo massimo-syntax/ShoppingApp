@@ -20,7 +20,8 @@ class ProfileViewModel : ViewModel() {
             name = map["name"].toString(),
             email = "",
             image = (map["image"] ?: "") as String,
-            chat = (map["chat"] ?: mutableMapOf<String,String>()) as MutableMap<String, String>
+            chat = (map["chat"] ?: mutableMapOf<String,String>()) as MutableMap<String, String>,
+            ratings = (map["ratings"] ?: listOf<String>() ) as List<String>
         ) else null
     }
 

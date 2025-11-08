@@ -16,6 +16,7 @@ import com.example.shoppingapp.screen.NewProductUpload
 import com.example.shoppingapp.screen.Pages
 import com.example.shoppingapp.screen.ProductScreenJsonApi
 import com.example.shoppingapp.screen.ProductScreenUploaded
+import com.example.shoppingapp.screen.RatingsScreen
 import com.example.shoppingapp.screen.SignupScreen
 import com.example.shoppingapp.screen.UploadSinglePictureScreen
 import com.google.firebase.Firebase
@@ -82,6 +83,9 @@ fun Navigation(){
             val total = navArgs.arguments?.getString("total")!!.toFloat()
             CheckoutPage(total)
         }
+        composable(Routes.ratings){
+            RatingsScreen()
+        }
 
 
     }
@@ -103,4 +107,6 @@ object Routes{
     val chat = "CHAT"
     val checkout = "CHECKOUT"
     var checkoutPayload : Set<UiCart> = emptySet()
+
+    val ratings = "RATINGS"
 }

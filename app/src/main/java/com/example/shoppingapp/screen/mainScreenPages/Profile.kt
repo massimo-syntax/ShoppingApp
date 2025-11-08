@@ -71,6 +71,8 @@ fun ProfilePage(
     val tabs = listOf("Products", "Messages", "Favorites")
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    // profile injected
+
     // my profile
     var profile by remember { profileViewModel.profile }
 
@@ -84,7 +86,7 @@ fun ProfilePage(
 
     LaunchedEffect(Unit) {
         // get profile
-        profileViewModel.getProfile()
+        // profileViewModel.getProfile()
         // get favs
         userSelectedViewModel.getAllFavs(roomRepo)
         // get my products, for products tab

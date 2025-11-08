@@ -53,13 +53,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.components.CustomTextField
+import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.repository.SelectedProductsRepository
+import com.example.shoppingapp.viewmodel.ProfileViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -115,13 +121,31 @@ fun PayingContent() {
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
     LaunchedEffect(Unit) {
-        for (i in 0..<paymentProcess.size) {
-            delay(Random(seed = i * 12345).nextLong(1000, 5000))
-            animState = i
+        // send cart to database for ratings
+        val cart = roomRepo.getCart()
+        val list = cart.map { it.productId }
+
+        val ref = Firebase.firestore.collection("users")
+            .document(Firebase.auth.uid!!)
+        // firebase is also simple
+        ref.get().addOnCompleteListener {
+            val user = it.result.toObject(User::class.java)
+            val updateList = user!!.ratings.toMutableList()
+            updateList.addAll(list)
+            ref.update("ratings",updateList)
         }
 
+        // nice animation of payment process to engage user at best
+        for (i in 1..< paymentProcess.size) {
+            // first is already printed, so wait for the second, begin from index [1]
+            val ms = Random(seed = i * 12345).nextLong(1000, 3000)
+            delay(ms)
+            animState = i
+        }
+        // empty cart
         roomRepo.dropCart()
-        delay(2000)
+        // wait another second to show button
+        delay(100)
         visible = true
     }
 

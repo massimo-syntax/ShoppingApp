@@ -8,5 +8,6 @@ data class User(
     val email: String="",
     val name: String="Deleted User",
     val image: String = "",
-    val chat : MutableMap<String,String> = mutableMapOf()
+    val chat : MutableMap<String,String> = mutableMapOf(),
+    val ratings: List<String> = listOf()
 )

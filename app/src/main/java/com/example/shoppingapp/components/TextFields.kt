@@ -49,15 +49,18 @@ fun CustomTextField(
     placeholderText: String = "Placeholder",
     fontSize: TextUnit = 16.sp,
     text: MutableState<String> = mutableStateOf(""),
+    _text:String = "",
+    valueChange: (String)->Unit = {},
     singleLine:Boolean = true,
     keyboard: KeyboardType = KeyboardType.Unspecified
 ) {
     BasicTextField(modifier = modifier
         .fillMaxWidth(),
-        value = text.value,
+        value = _text,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
         onValueChange = {
-            text.value = it
+            //text.value = it
+            valueChange(it)
         },
         singleLine = singleLine,
         cursorBrush = SolidColor(AppStyle.colors.darkBlule),

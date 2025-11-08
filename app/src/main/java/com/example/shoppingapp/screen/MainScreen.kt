@@ -1,5 +1,6 @@
 package com.example.shoppingapp.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.ripple.RippleAlpha
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.SimpleStandardTopBar
@@ -35,6 +37,8 @@ import com.example.shoppingapp.screen.mainScreenPages.Cart
 import com.example.shoppingapp.screen.mainScreenPages.Home
 import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
 import com.example.shoppingapp.screen.mainScreenPages.RemoteProducts
+import com.example.shoppingapp.viewmodel.ProfileViewModel
+import kotlinx.coroutines.delay
 
 
 enum class Pages(val str: String) {
@@ -49,17 +53,22 @@ private val MyRippleConfiguration =
     RippleConfiguration(color = AppStyle.colors.lightBlue, rippleAlpha = RippleAlpha(0f,0f,0f,0f,))
 
 @Composable
-fun MainScreen(page:Pages = Pages.ONE){
+fun MainScreen(page:Pages = Pages.ONE , profileViewModel: ProfileViewModel = viewModel()){
 
     var selectedPage by rememberSaveable { mutableStateOf(page) }
     var cart by rememberSaveable { mutableIntStateOf(0) }
 
     val context = LocalContext.current
+    val profile by profileViewModel.profile
 
     LaunchedEffect(Unit) {
+        // count of cart for cart badge
         cart = SelectedProductsRepository(context).getCart().size
+        // to check notifications of ratings, or give directly to profile page once..
+        profileViewModel.getProfile()
     }
 
+    // as callback for pages that inteactively update the cart badge
     fun updateBadge(n:Int){
         cart = n
     }
@@ -69,6 +78,7 @@ fun MainScreen(page:Pages = Pages.ONE){
         else AppStyle.colors.middleBlue
     }
 
+    // page name, icon, on the navbar
     val navbarItems: List<Pair<Pages, Int>> = listOf(
         Pair(
             Pages.ONE,
@@ -90,10 +100,10 @@ fun MainScreen(page:Pages = Pages.ONE){
     Scaffold(
         topBar = {
             when(selectedPage){
-                Pages.ONE -> SimpleStandardTopBar(Pages.ONE.str , false)
-                Pages.TWO -> SimpleStandardTopBar(Pages.TWO.str , false)
-                Pages.CART -> SimpleStandardTopBar(Pages.CART.str , false)
-                Pages.FOUR -> SimpleStandardTopBar(Pages.FOUR.str , true)
+                Pages.ONE -> SimpleStandardTopBar(Pages.ONE.str , false , profile?.ratings?.size ?: 0)
+                Pages.TWO -> SimpleStandardTopBar(Pages.TWO.str , false , profile?.ratings?.size ?: 0)
+                Pages.CART -> SimpleStandardTopBar(Pages.CART.str , false ,profile?.ratings?.size ?: 0)
+                Pages.FOUR -> SimpleStandardTopBar(Pages.FOUR.str , true , profile?.ratings?.size ?: 0 )
             }
         },
         bottomBar = {
@@ -160,7 +170,8 @@ fun MainScreen(page:Pages = Pages.ONE){
         MainScreenContent(
             modifier= Modifier.padding(innerPadding),
             page = selectedPage,
-            updateBadge = { updateBadge(it) }
+            updateBadge = { updateBadge(it) },
+            profileViewModel = profileViewModel
         )
     }
 
@@ -168,13 +179,13 @@ fun MainScreen(page:Pages = Pages.ONE){
 }
 
 @Composable
-fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, updateBadge:(n:Int)->Unit ){
+fun MainScreenContent(modifier: Modifier = Modifier, page: Pages, updateBadge:(n:Int)->Unit , profileViewModel: ProfileViewModel ){
 
     when(page){
         Pages.ONE -> Home(modifier)
         Pages.TWO -> RemoteProducts(modifier, updateBadge)
         Pages.CART -> Cart(modifier, updateBadge)
-        Pages.FOUR -> ProfilePage(modifier)
+        Pages.FOUR -> ProfilePage(modifier, profileViewModel = profileViewModel)
     }
 
 }
