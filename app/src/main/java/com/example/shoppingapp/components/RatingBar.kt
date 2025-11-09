@@ -10,19 +10,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
+import kotlin.math.floor
+import kotlin.math.round
 
 @Composable
 fun RatingBar(
     rating: Float,
-    maxRating: Int = 5
+    maxRating: Int = 5,
+    iconSize: Int = 16
 ) {
     Row {
         repeat(maxRating) { index ->
             Icon(
-                painter = if (index < rating.toInt()) painterResource(R.drawable.icon_star) else painterResource(R.drawable.icon_settings),
+                painter = painterResource(R.drawable.icon_star),
                 contentDescription = "average of ${rating.toInt()} on $maxRating",
                 tint = if(index < rating.toInt()) AppStyle.colors.gold else Color.LightGray,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(iconSize.dp)
             )
         }
     }

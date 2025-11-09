@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,12 +49,18 @@ import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.RatingBar
 import com.example.shoppingapp.viewmodel.ProductsViewModel
 import com.example.shoppingapp.viewmodel.ProfileViewModel
+import com.example.shoppingapp.viewmodel.RatingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel(), profileVIewModel: ProfileViewModel=viewModel()){
+fun ProductScreenUploaded(
+    id: String,
+    viewModel: ProductsViewModel = viewModel(),
+    profileVIewModel: ProfileViewModel = viewModel(),
+    ratingsViewModel: RatingsViewModel = viewModel()
+) {
 
     val roomRepo = SelectedProductsRepository(LocalContext.current)
 
@@ -63,6 +70,8 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
     // it was not much pain to create a UIState also for single product..
     // so that is just the first in the list, anyways i would first ask to the senior
     val uiState by viewModel.uiProducts.collectAsState()
+
+    val ratingsUiState by ratingsViewModel.ratings.collectAsState()
 
     val shop by profileVIewModel.profile
 
@@ -75,11 +84,13 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
     // wait until the data of the product is loaded to fetch user
     LaunchedEffect(Unit) {
         var productFetched = false
-        while(!productFetched){
-            if( uiState.fetching ){
+        while (!productFetched) {
+            if (uiState.fetching) {
                 delay(200)
-            }else{
-                profileVIewModel.getProfile(uiState.result.first().userId)
+            } else {
+                val product = uiState.result.first()
+                profileVIewModel.getProfile(product.userId)
+                ratingsViewModel.getRatings(product.id)
                 productFetched = true
             }
         }
@@ -93,7 +104,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
             BackButtonSimpleTopBar("Product", false)
         },
         modifier = Modifier.fillMaxSize(),
-    ){ paddingScaffold ->
+    ) { paddingScaffold ->
         Column(
             modifier = Modifier
                 .padding(paddingScaffold)
@@ -107,15 +118,22 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
 
                 val imagesBoxHeight = 256.dp
                 // images
-                Box(Modifier.fillMaxWidth().height(imagesBoxHeight)){
-                    val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(imagesBoxHeight)
+                ) {
+                    val pagerState =
+                        rememberPagerState(initialPage = 0, pageCount = { images.size })
                     HorizontalPager(state = pagerState) { page ->
                         AsyncImage(
                             model = images[page],
                             contentDescription = "image of" + product.title,
                             contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.fillMaxWidth().height(imagesBoxHeight),
-                            )
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(imagesBoxHeight),
+                        )
                     }
 
 
@@ -128,12 +146,12 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                                 .fillMaxWidth()
                                 .padding(16.dp),
                             horizontalArrangement = Arrangement.End
-                        ){
+                        ) {
 
                             IconButton(
                                 onClick = {
                                     runBlocking {
-                                        if(!inFav) roomRepo.addToFav(product.id)
+                                        if (!inFav) roomRepo.addToFav(product.id)
                                         else roomRepo.deleteFromFav(product.id)
                                         inFav = !inFav
                                     }
@@ -159,14 +177,16 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
 
                 val size = 40.dp
 
-                Row (
-                    Modifier.fillMaxWidth().height(size),
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(size),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     // part left: image - title
-                    if(shop != null){
+                    if (shop != null) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -174,21 +194,28 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                                 model = shop!!.image,
                                 contentDescription = shop!!.name,
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.size(size,size).clip(RoundedCornerShape(100))
+                                modifier = Modifier
+                                    .size(size, size)
+                                    .clip(RoundedCornerShape(100))
                             )
-                            Spacer(Modifier.width(size/3))
+                            Spacer(Modifier.width(size / 3))
                             Text(shop!!.name)
                         }
-                    }
-                    else CircularProgressIndicator(modifier = Modifier.size(size), color = AppStyle.colors.lightBlue)
+                    } else CircularProgressIndicator(
+                        modifier = Modifier.size(size),
+                        color = AppStyle.colors.lightBlue
+                    )
 
                     // part right: button or whatelse
                     OutlinedButton(
-                        onClick={
-                            Routes.navController.navigate(Routes.chat +"/"+ shop?.id)
+                        onClick = {
+                            Routes.navController.navigate(Routes.chat + "/" + shop?.id)
                         }
                     ) {
-                        Icon(painter = painterResource(R.drawable.icon_mail), contentDescription = "message shop")
+                        Icon(
+                            painter = painterResource(R.drawable.icon_mail),
+                            contentDescription = "message shop"
+                        )
                         Text("Message shop")
                     }
 
@@ -209,20 +236,53 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                 )
 
                 // rating
-                Text(product.rating)
-                RatingBar(product.rating.toFloat())
-                
+
+                if (ratingsUiState.loading)
+                    RatingBar(0f)
+                else if (ratingsUiState.result.isNotEmpty()) {
+                    // calculate average
+                    val size = ratingsUiState.result.size
+                    var reducer = 0f
+                    for (rating in ratingsUiState.result) {
+                        reducer += rating.rating
+                    }
+                    val average = reducer / size
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RatingBar(
+                                rating = average,
+                                iconSize = 28
+                            )
+                            Text(average.toString())
+                        }
+                        TextButton(
+                            onClick = {}
+                        ) {
+                            Text("See all reviews")
+                        }
+
+                    }
+
+                } else Text("No ratings, buy and be the first to write a review!")
+
+
 
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         runBlocking {
-                            if(!inCart) roomRepo.addToCart(product.id)
+                            if (!inCart) roomRepo.addToCart(product.id)
                             else roomRepo.deleteFromCart(product.id)
                             inCart = !inCart
                         }
                     }
-                ){
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_cart_garden),
                         contentDescription = "cart",
@@ -230,7 +290,7 @@ fun ProductScreenUploaded(id:String , viewModel: ProductsViewModel = viewModel()
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text= if(inCart) "remove from cart" else "add to cart"
+                        text = if (inCart) "remove from cart" else "add to cart"
                     )
                 }
 

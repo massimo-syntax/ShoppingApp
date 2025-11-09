@@ -48,15 +48,14 @@ fun CustomTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     placeholderText: String = "Placeholder",
     fontSize: TextUnit = 16.sp,
-    text: MutableState<String> = mutableStateOf(""),
-    _text:String = "",
+    text:String = "",
     valueChange: (String)->Unit = {},
     singleLine:Boolean = true,
     keyboard: KeyboardType = KeyboardType.Unspecified
 ) {
     BasicTextField(modifier = modifier
         .fillMaxWidth(),
-        value = _text,
+        value = text,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
         onValueChange = {
             //text.value = it
@@ -77,7 +76,7 @@ fun CustomTextField(
             ) {
                 if (leadingIcon != null) leadingIcon()
                 Box(Modifier.weight(1f).padding(8.dp)) {
-                    if (text.value.isEmpty()) Text(
+                    if (text.isEmpty()) Text(
                         placeholderText,
                         style = LocalTextStyle.current.copy(
                             color = Color.LightGray,

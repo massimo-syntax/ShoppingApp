@@ -64,7 +64,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
     var uiProducts by viewModel.uiProducts
 
     // query from textfield
-    val searchQuery = remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
 
     // update room and ui when cart or fav is pressed,
     val coroutineScope = rememberCoroutineScope()
@@ -86,9 +86,9 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
                         modifier = Modifier.height(36.dp).width(36.dp),
                         onClick = {
                             focusManager.clearFocus()
-                            searchQuery.value = ""
+                            searchQuery = ""
                         }) {
-                        if(searchQuery.value.isEmpty())
+                        if(searchQuery.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_search),
                                 contentDescription = "Search",
@@ -103,6 +103,9 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
                                 modifier = Modifier.height(36.dp)
                             )
                     }
+                },
+                valueChange = {
+                    searchQuery = it
                 },
                 text = searchQuery
             )
@@ -126,7 +129,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp),
             ) {
-                val filtered  = uiProducts.filter { it.title.lowercase().contains(searchQuery.value.lowercase()) }
+                val filtered  = uiProducts.filter { it.title.lowercase().contains(searchQuery.lowercase()) }
                 items(filtered ){ product ->
                     val index = uiProducts.indexOf( product )
                     ProductCard(

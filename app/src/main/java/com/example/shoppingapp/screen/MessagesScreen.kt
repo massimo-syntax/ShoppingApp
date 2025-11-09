@@ -45,7 +45,7 @@ fun MessagesScreen(
 ) {
 
     // text field
-    val messageText = remember { mutableStateOf("") }
+    var messageText by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
 
@@ -96,9 +96,9 @@ fun MessagesScreen(
                 IconButton(
                     onClick = {
                         // send message
-                        sendMessage( messageText.value)
+                        sendMessage( messageText)
                         focusManager.clearFocus()
-                        messageText.value = ""
+                        messageText = ""
                     }
                 ) {
                     Icon(

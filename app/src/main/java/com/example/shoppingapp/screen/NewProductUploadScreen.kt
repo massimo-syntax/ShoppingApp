@@ -20,8 +20,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,10 +48,11 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
 
     val context = LocalContext.current
 
-    var title = remember { mutableStateOf("") }
-    var description = remember { mutableStateOf("") }
-    var price = remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
     val category = remember { mutableStateOf("") }
+    // parameter to list to fill from UploadMultipleImages(pictures)
     val pictures = mutableListOf<String>()
 
 
@@ -83,7 +86,7 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(title.value.isEmpty())
+                        if(title.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -112,7 +115,7 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(description.value.isEmpty())
+                        if(description.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -144,7 +147,7 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(price.value.isEmpty())
+                        if(price.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -177,7 +180,7 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                 // start image picker when not uploading
                 onClick = {
 
-                    if(title.value.isEmpty()||description.value.isEmpty()||price.value.isEmpty()||category.value.isEmpty()||pictures.isEmpty())
+                    if(title.isEmpty()||description.isEmpty()||price.isEmpty()||category.value.isEmpty()||pictures.isEmpty())
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_LONG).show()
                     else{
                         var images = ""
@@ -186,9 +189,9 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                         images = images.dropLast(1)
 
                         viewModel.uploadProduct(
-                            title = title.value,
-                            description = description.value,
-                            price = price.value,
+                            title = title,
+                            description = description,
+                            price = price,
                             category = category.value,
                             images = images
                         ){
