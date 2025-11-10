@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -194,7 +196,7 @@ fun ProductCard(
 ) {
     Card(
         shape = RoundedCornerShape(14.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier.padding(4.dp).fillMaxWidth()
     ) {
         Column(
@@ -225,7 +227,7 @@ fun ProductCard(
                         Icon(
                             painterResource(R.drawable.icon_favorite),
                             contentDescription = if (isInFav) "Added" else "Add to Favorites",
-                            tint = if (isInFav) Color.Red else Color.LightGray
+                            tint = if (isInFav) AppStyle.colors.red else Color.White
                         )
                     }
                 }
@@ -238,13 +240,14 @@ fun ProductCard(
                     style = MaterialTheme.typography.titleMedium,
                     lineHeight = 20.sp,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = AppStyle.colors.darkBlule
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$${product.price}",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = AppStyle.colors.green,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -253,19 +256,20 @@ fun ProductCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+
                     // see button
-                    OutlinedButton(
+                    Button(
                         onClick = {
                             Routes.navController.navigate(Routes.productJsonApi+"/"+product.id)
                         },
-                        modifier = Modifier.height(36.dp).width(100.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        modifier = Modifier
+                            //.height(48.dp)
+                            .padding(0.dp),
+                        shape = RoundedCornerShape(6.dp)
                     ) {
-                        Icon(
-                            painterResource( R.drawable.icon_settings),
-                            contentDescription = if (isInCart) "Added" else "Add to Cart",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Text("View")
+                        Text("View",color=Color.White)
+
                     }
 
                     // add to cart icon
@@ -275,7 +279,7 @@ fun ProductCard(
                         Icon(
                             painterResource( R.drawable.icon_cart_garden),
                             contentDescription = if (isInCart) "Added" else "Add to Cart",
-                            tint = if(isInCart) Color.Blue else Color.LightGray
+                            tint = if(isInCart) AppStyle.colors.middleBlue else Color.LightGray
                         )
                     }
                 }

@@ -90,14 +90,11 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
     var text by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableFloatStateOf(0f) }
 
-    val coroutineScope = rememberCoroutineScope()
     var loading by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(Unit) {
         // list of all products id
         profileViewModel.getProfile()
-
     }
     // very important
     if (profile == null) return
@@ -107,11 +104,13 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
         val _ratings = mutableListOf<RatingState>()
         var count = 0
         profile!!.ratings.forEach {
+            val productId = it.key
             // in this particular case
             // digit only id is from Json
-            if (it.isDigitsOnly()) {
-                val jsonProduct = RemoteProductsRepository().getProduct(it)
+            if (productId.isDigitsOnly()) {
+                val jsonProduct = RemoteProductsRepository().getProduct(productId)
                 val p = Product(
+                    id = jsonProduct.id,
                     title = jsonProduct.title,
                     images = jsonProduct.image
                 )
@@ -119,7 +118,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                 _ratings.add(RatingState(pid = p.id))
                 count ++
             } else { // from firebase
-                Firebase.firestore.collection("products").document(it).get().addOnSuccessListener {
+                Firebase.firestore.collection("products").document(productId).get().addOnSuccessListener {
                     val p = it.toObject(Product::class.java)!!
                     completeList.add(p)
                     _ratings.add(RatingState(pid = p.id))
@@ -155,17 +154,27 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                 .imePadding()
         ) {
 
-            // skip rating -text button-
+            // skip all ratings -text button-
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextButton(
                     onClick = {
+                        ratingsViewModel.deleteAllProductsForRating {
+                            tst("You don't have to review the products")
+                        }
                         Routes.navController.popBackStack()
                     },
                 ) {
-                    Text("Skip all ratings for now..  >")
+                    Text("Skip all ratings")
+                    Spacer(Modifier.width(10.dp))
+                    Icon(
+                        painter = painterResource(R.drawable.icon_further),
+                        contentDescription = "skip, further",
+                        tint = AppStyle.colors.darkBlule,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
 
@@ -191,6 +200,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                                 ratings = updateList.toList()
                                 // prepare written text to have already in textfield
                                 text = rating.comment
+                                sliderPosition = rating.rating
                             }
                         )
                 ) {
@@ -313,17 +323,12 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                             )
                         }
 
+                        tst(ratingsToSave)
                         ratingsViewModel.saveRatings(ratingsToSave){
                             tst("Ratings are saved")
                             loading = false
                             Routes.navController.popBackStack()
                         }
-
-
-
-
-
-
 
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),

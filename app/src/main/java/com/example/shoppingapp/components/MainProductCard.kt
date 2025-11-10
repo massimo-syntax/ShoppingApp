@@ -73,7 +73,7 @@ fun MainProductCard(
                     Icon(
                         painterResource(R.drawable.icon_favorite),
                         contentDescription = if (isInFav) "Added" else "Add to Favorites",
-                        tint = if (isInFav) Color.Red else Color.LightGray
+                        tint = if (isInFav) AppStyle.colors.red else Color.White
                     )
                 }
             }

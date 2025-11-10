@@ -38,13 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.features.UIEvent
 import com.example.shoppingapp.features.UIViewModel
 
 
 @Composable
-fun UploadMultipleImages(  images: MutableList<String> , viewModel: UIViewModel = viewModel() ){
+fun UploadMultipleImages(images: MutableList<String>, viewModel: UIViewModel = viewModel()) {
 
     val uiState by viewModel.uiState.collectAsState()
     val progress by viewModel.uploadProgress.collectAsState()
@@ -54,18 +55,19 @@ fun UploadMultipleImages(  images: MutableList<String> , viewModel: UIViewModel 
     val multipleImagePickerLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = { uris -> viewModel.onEvent(UIEvent.MultipleImageChanged( uris, context ) ) }
+            onResult = { uris -> viewModel.onEvent(UIEvent.MultipleImageChanged(uris, context)) }
         )
 
 
-    Column(modifier = Modifier
-        .fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         if (uiState.images.isNotEmpty()) {
-            LazyRow (
+            LazyRow(
                 contentPadding = PaddingValues(6.dp),
                 //modifier = Modifier.height(200.dp)
             ) {
@@ -104,27 +106,29 @@ fun UploadMultipleImages(  images: MutableList<String> , viewModel: UIViewModel 
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0073E6),
-                    contentColor = Color.White,
-                ),
             onClick = {
                 if (!uiState.isUploading) {
                     multipleImagePickerLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 }
-            }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+            modifier = Modifier
+                .height(48.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(6.dp)
         ) {
             if (!uiState.isUploading) {
-                Row {
-                    Icon(painterResource(R.drawable.icon_image), contentDescription = null)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Pick multiple photos", style = TextStyle(fontSize = 18.sp))
-                }
+                Icon(
+                    painter = painterResource(R.drawable.icon_plus),
+                    contentDescription = "rating icon on button",
+                    tint = Color.White,
+                    modifier = Modifier.size(36.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(text = "Pick multiple photos", style = TextStyle(fontSize = 18.sp))
+
             } else {
                 CircularProgressIndicator(
                     progress = { progress },
@@ -134,14 +138,11 @@ fun UploadMultipleImages(  images: MutableList<String> , viewModel: UIViewModel 
                     strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
                 )
             }
+
         }
 
 
-
-
     }
-
-
 
 
 }

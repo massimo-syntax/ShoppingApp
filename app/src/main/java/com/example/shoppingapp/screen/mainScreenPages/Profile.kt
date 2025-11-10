@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -139,7 +140,7 @@ fun ProfilePage(
                 if (profile == null || profile?.image!!.isEmpty())
                 // Avatar
                     Image(
-                        painter = painterResource(R.drawable.icon_profile), // Replace with your drawable
+                        painter = painterResource(R.drawable.icon_profile),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .size(120.dp)
@@ -330,6 +331,11 @@ fun ProductItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
+            .clickable(
+                onClick = {
+                    Routes.navController.navigate(Routes.productUploaded+"/"+product.id)
+                }
+            )
     ) {
         Row(
             modifier = Modifier.padding(10.dp)
@@ -557,6 +563,15 @@ fun FavoritedItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
+            .clickable(
+                onClick = {
+                    if(  favItem.id.isDigitsOnly() ){
+                        Routes.navController.navigate(Routes.productJsonApi+"/"+favItem.id)
+                    }else{
+                        Routes.navController.navigate(Routes.productUploaded+"/"+favItem.id)
+                    }
+                }
+            )
     ) {
         Row(
             modifier = Modifier.padding(start = 10.dp, top = 12.dp,bottom=12.dp, end = 4.dp)

@@ -3,12 +3,16 @@ package com.example.shoppingapp.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.Category
 import com.example.shoppingapp.R
 
@@ -45,8 +50,6 @@ fun DropdownDemo(
 
     Column(Modifier.padding(20.dp)) {
 
-        // Create an Outlined Text Field
-        // with icon and not expanded
         OutlinedTextField(
             value = selectedText.value,
             onValueChange = { selectedText.value = it },
@@ -66,6 +69,28 @@ fun DropdownDemo(
             },
             enabled = false
         )
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+        ) {
+            Text(
+                selectedText.value,
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
+            Spacer(Modifier.width(16.dp))
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = "rating icon on button",
+                tint = AppStyle.colors.lightBlue,
+                modifier = Modifier.size(36.dp)
+            )
+
+        }
+
 
         // Create a drop-down menu with list of cities,
         // when clicked, set the Text Field text as the city selected

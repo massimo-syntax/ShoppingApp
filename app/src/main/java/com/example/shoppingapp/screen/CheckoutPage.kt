@@ -63,6 +63,7 @@ import com.example.shoppingapp.components.CustomTextField
 import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.example.shoppingapp.viewmodel.ProfileViewModel
+import com.example.shoppingapp.viewmodel.RatingsViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
@@ -106,7 +107,7 @@ fun CheckoutPage(total: Float) {
 
 
 @Composable
-fun PayingContent() {
+fun PayingContent(ratingsViewModel: RatingsViewModel = viewModel()) {
 
     var animState by remember { mutableIntStateOf(0) }
     var visible by remember { mutableStateOf(false) }
@@ -125,15 +126,7 @@ fun PayingContent() {
         val cart = roomRepo.getCart()
         val list = cart.map { it.productId }
 
-        val ref = Firebase.firestore.collection("users")
-            .document(Firebase.auth.uid!!)
-        // firebase is also simple
-        ref.get().addOnCompleteListener {
-            val user = it.result.toObject(User::class.java)
-            val updateList = user!!.ratings.toMutableList()
-            updateList.addAll(list)
-            ref.update("ratings",updateList)
-        }
+        ratingsViewModel.addNewProductsForRating(list)
 
         // nice animation of payment process to engage user at best
         for (i in 1..< paymentProcess.size) {
@@ -145,7 +138,7 @@ fun PayingContent() {
         // empty cart
         roomRepo.dropCart()
         // wait another second to show button
-        delay(100)
+        delay(1000)
         visible = true
     }
 

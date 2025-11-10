@@ -14,16 +14,6 @@ class ProfileViewModel : ViewModel() {
     private val _profile = mutableStateOf<User?>(null)
     val profile = _profile
 
-    private fun documentToUser(map: Map<String, Any>?): User? {
-        return if (map != null) User(
-            id = map["id"].toString(),
-            name = map["name"].toString(),
-            email = "",
-            image = (map["image"] ?: "") as String,
-            chat = (map["chat"] ?: mutableMapOf<String,String>()) as MutableMap<String, String>,
-            ratings = (map["ratings"] ?: listOf<String>() ) as List<String>
-        ) else null
-    }
 
     fun getProfile(profileId:String = userId){
         DB  .collection("users")
@@ -43,7 +33,7 @@ class ProfileViewModel : ViewModel() {
                 }
                 // val user = document.toObject(User::class.java)
                 // java.lang.RuntimeException: Could not deserialize object. Class com.example.shoppingapp.data.model.User does not define a no-argument constructor. If you are using ProGuard, make sure these constructors are not stripped
-                val user = documentToUser(document.data)
+                val user = document.toObject(User::class.java)
                 _profile.value = user
             }
     }

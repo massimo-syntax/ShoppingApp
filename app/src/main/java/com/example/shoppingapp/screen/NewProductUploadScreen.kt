@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +45,7 @@ import com.example.shoppingapp.viewmodel.ProductsViewModel
 
 @Composable
 
-fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
+fun NewProductUpload(viewModel: ProductsViewModel = viewModel()) {
 
     val context = LocalContext.current
 
@@ -56,13 +57,14 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
     val pictures = mutableListOf<String>()
 
 
-    Scaffold (
-        topBar = {BackButtonSimpleTopBar("Upload new product", true)},
+    Scaffold(
+        topBar = { BackButtonSimpleTopBar("Upload new product", true) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        Column (
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .padding(16.dp)
                 .fillMaxWidth()
                 .imePadding()
                 .verticalScroll(rememberScrollState())
@@ -70,23 +72,34 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
 
             val focusManager = LocalFocusManager.current
 
+            Text(
+                "Pictures",
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
 
-            Text("Pictures")
 
             // upload multiple pictures screen
             UploadMultipleImages(pictures)
 
 
-            Text("Title")
+            Text(
+                "Title",
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
+
             CustomTextField(
                 text = title,
                 trailingIcon = {
                     IconButton(
-                        modifier = Modifier.height(36.dp).width(36.dp),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .width(36.dp),
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(title.isEmpty())
+                        if (title.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -104,18 +117,24 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                 },
             )
 
-            Text("Description")
+            Text(
+                "Description",
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
 
             CustomTextField(
                 text = description,
                 singleLine = false,
                 trailingIcon = {
                     IconButton(
-                        modifier = Modifier.height(36.dp).width(36.dp),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .width(36.dp),
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(description.isEmpty())
+                        if (description.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -133,21 +152,32 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                 },
             )
 
-            Text("Category")
+            Text(
+                "Category",
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
+
             DropdownDemo(category)
 
-            Text("Price")
+            Text(
+                "Price",
+                style = MaterialTheme.typography.titleMedium,
+                color = AppStyle.colors.darkBlule
+            )
             CustomTextField(
                 text = price,
                 singleLine = true,
                 keyboard = KeyboardType.Decimal,
                 trailingIcon = {
                     IconButton(
-                        modifier = Modifier.height(36.dp).width(36.dp),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .width(36.dp),
                         onClick = {
                             focusManager.clearFocus()
                         }) {
-                        if(price.isEmpty())
+                        if (price.isEmpty())
                             Icon(
                                 painterResource(R.drawable.icon_edit),
                                 contentDescription = "Search",
@@ -167,24 +197,18 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
 
 
             Spacer(Modifier.height(16.dp))
-            // Save product
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = AppStyle.colors.darkBlule,
-                    contentColor = Color.White,
-                ),
-                // start image picker when not uploading
+                    .height(48.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(6.dp),
                 onClick = {
-
-                    if(title.isEmpty()||description.isEmpty()||price.isEmpty()||category.value.isEmpty()||pictures.isEmpty())
+                    if (title.isEmpty() || description.isEmpty() || price.isEmpty() || category.value.isEmpty() || pictures.isEmpty())
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_LONG).show()
-                    else{
+                    else {
                         var images = ""
-                        pictures.forEach { images += "$it,"}
+                        pictures.forEach { images += "$it," }
                         // last char is a comma now
                         images = images.dropLast(1)
 
@@ -194,22 +218,28 @@ fun NewProductUpload(viewModel: ProductsViewModel = viewModel() ){
                             price = price,
                             category = category.value,
                             images = images
-                        ){
-                            Toast.makeText(context, "Product uploaded successfully", Toast.LENGTH_LONG).show()
+                        ) {
+                            Toast.makeText(
+                                context,
+                                "Product uploaded successfully",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
-
                 }
+
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_save),
-                    contentDescription = "save picture",
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
+                    contentDescription = "upload",
+                    tint = AppStyle.colors.green,
+                    modifier = Modifier.size(36.dp)
                 )
-                Spacer(Modifier.width(6.dp))
-                Text(text = "Upload product", style = TextStyle(fontSize = 18.sp))
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(text = "Upload product", style = TextStyle(fontSize = 18.sp), color = Color.White)
             }
+
+
 
             Spacer(Modifier.height(20.dp))
 

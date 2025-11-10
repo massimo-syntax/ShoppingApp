@@ -16,6 +16,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +41,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
@@ -51,6 +57,7 @@ import com.example.shoppingapp.viewmodel.ProductsViewModel
 import com.example.shoppingapp.viewmodel.ProfileViewModel
 import com.example.shoppingapp.viewmodel.RatingsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
@@ -67,13 +74,13 @@ fun ProductScreenUploaded(
     var inCart by remember { mutableStateOf(false) }
     var inFav by remember { mutableStateOf(false) }
 
-    // it was not much pain to create a UIState also for single product..
-    // so that is just the first in the list, anyways i would first ask to the senior
     val uiState by viewModel.uiProducts.collectAsState()
 
     val ratingsUiState by ratingsViewModel.ratings.collectAsState()
 
     val shop by profileVIewModel.profile
+
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         inCart = roomRepo.getOneCart(id) != null
@@ -136,7 +143,7 @@ fun ProductScreenUploaded(
                         )
                     }
 
-
+                    // icon fav on picture
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Bottom
@@ -147,21 +154,19 @@ fun ProductScreenUploaded(
                                 .padding(16.dp),
                             horizontalArrangement = Arrangement.End
                         ) {
-
                             IconButton(
                                 onClick = {
-                                    runBlocking {
+                                    coroutineScope.launch {
                                         if (!inFav) roomRepo.addToFav(product.id)
                                         else roomRepo.deleteFromFav(product.id)
                                         inFav = !inFav
                                     }
-
                                 }
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.icon_favorite),
                                     contentDescription = "favorite",
-                                    tint = if (inFav) Color.Red else Color.LightGray,
+                                    tint = if (inFav) AppStyle.colors.red else Color.White,
                                     modifier = Modifier.size(36.dp)
                                 )
                             }
@@ -170,131 +175,153 @@ fun ProductScreenUploaded(
                 }
 
 
-                // USER
-                //
-                //
-                //
-
-                val size = 40.dp
-
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(size),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    Modifier.padding(16.dp)
                 ) {
+                    // User
+                    val size = 40.dp
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(size),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // part left: image - title
+                        if (shop != null) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AsyncImage(
+                                    model = shop!!.image,
+                                    contentDescription = shop!!.name,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(size, size)
+                                        .clip(RoundedCornerShape(100))
+                                )
+                                Spacer(Modifier.width(size / 3))
+                                Text(
+                                    shop!!.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = AppStyle.colors.lightBlue,
+                                )
+                            }
+                        } else CircularProgressIndicator(
+                            modifier = Modifier.size(size),
+                            color = AppStyle.colors.lightBlue
+                        )
 
-                    // part left: image - title
-                    if (shop != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                        // part right: button or whatelse
+                        Button(
+                            onClick = {
+                                Routes.navController.navigate(Routes.chat + "/" + shop?.id)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                            modifier = Modifier
+                                .height(48.dp),
+                            shape = RoundedCornerShape(6.dp)
                         ) {
-                            AsyncImage(
-                                model = shop!!.image,
-                                contentDescription = shop!!.name,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(size, size)
-                                    .clip(RoundedCornerShape(100))
+                            Icon(
+                                painter = painterResource(R.drawable.icon_mail),
+                                contentDescription = "mail icon",
+                                tint = Color.White,
+                                modifier = Modifier.size(36.dp)
                             )
-                            Spacer(Modifier.width(size / 3))
-                            Text(shop!!.name)
                         }
-                    } else CircularProgressIndicator(
-                        modifier = Modifier.size(size),
-                        color = AppStyle.colors.lightBlue
+
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+                    // title
+                    Text(
+                        text = product.title,
+                        style = MaterialTheme.typography.titleLarge,
                     )
 
-                    // part right: button or whatelse
-                    OutlinedButton(
-                        onClick = {
-                            Routes.navController.navigate(Routes.chat + "/" + shop?.id)
+                    Spacer(Modifier.height(16.dp))
+
+                    // description
+
+                    Text(
+                        text = product.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+
+                    Spacer(Modifier.height(46.dp))
+
+                    // rating
+                    if (ratingsUiState.loading)
+                        RatingBar(0f)
+                    else if (ratingsUiState.result.isNotEmpty()) {
+                        // calculate average
+                        val size = ratingsUiState.result.size
+                        var reducer = 0f
+                        for (rating in ratingsUiState.result) {
+                            reducer += rating.rating
                         }
+                        val average = reducer / size
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RatingBar(
+                                    rating = average,
+                                    iconSize = 28
+                                )
+                                Text(average.toString())
+                            }
+                            TextButton(
+                                onClick = {}
+                            ) {
+                                Text("See all reviews")
+                            }
+
+                        }
+
+                    } else
+                    Text(
+                        text = "No ratings, buy and be the first to write a review!",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+
+                    Spacer(Modifier.height(46.dp))
+
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                if (!inCart) roomRepo.addToCart(product.id)
+                                else roomRepo.deleteFromCart(product.id)
+                                inCart = !inCart
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(6.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.icon_mail),
-                            contentDescription = "message shop"
+                            painter = painterResource(R.drawable.icon_cart_garden),
+                            contentDescription = "rating icon on button",
+                            tint = if (!inCart) AppStyle.colors.green else AppStyle.colors.red,
+                            modifier = Modifier.size(36.dp)
                         )
-                        Text("Message shop")
+
+                        Spacer(Modifier.width(6.dp))
+
+                        Text(
+                            text = if (inCart) "remove from cart" else "add to cart"
+                        )
                     }
+                    Spacer(Modifier.height(16.dp))
 
-
-                }
-
-
-                // title
-                Text(
-                    text = product.title,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                // description
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-
-                // rating
-
-                if (ratingsUiState.loading)
-                    RatingBar(0f)
-                else if (ratingsUiState.result.isNotEmpty()) {
-                    // calculate average
-                    val size = ratingsUiState.result.size
-                    var reducer = 0f
-                    for (rating in ratingsUiState.result) {
-                        reducer += rating.rating
-                    }
-                    val average = reducer / size
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RatingBar(
-                                rating = average,
-                                iconSize = 28
-                            )
-                            Text(average.toString())
-                        }
-                        TextButton(
-                            onClick = {}
-                        ) {
-                            Text("See all reviews")
-                        }
-
-                    }
-
-                } else Text("No ratings, buy and be the first to write a review!")
-
-
-
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        runBlocking {
-                            if (!inCart) roomRepo.addToCart(product.id)
-                            else roomRepo.deleteFromCart(product.id)
-                            inCart = !inCart
-                        }
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_cart_garden),
-                        contentDescription = "cart",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        text = if (inCart) "remove from cart" else "add to cart"
-                    )
-                }
-
-            }// product != null
+                }// product != null
+            }
         }// column
     }// scaffold
 }
