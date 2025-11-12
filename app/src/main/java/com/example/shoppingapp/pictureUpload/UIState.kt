@@ -1,4 +1,4 @@
-package com.example.shoppingapp.features
+package com.example.shoppingapp.pictureUpload
 
 data class UIState(
     val isUploading: Boolean = false,

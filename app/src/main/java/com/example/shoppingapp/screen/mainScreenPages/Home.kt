@@ -60,17 +60,12 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
     val uiProducts by viewModel.uiProducts.collectAsState()
 
     val imagesForBanner = listOf(
-        "https://thumbs.wbm.im/pw/small/92c2fbe5257623fe6d57a3399ffcd286.jpg",
-        "https://thumbs.wbm.im/pw/medium/5a654aff4ee2fd3d9f061d6d00ab5708.jpg",
-        "https://t3.ftcdn.net/jpg/02/26/54/32/360_F_226543201_ZtKNzyJqxGdW5Lc1louWUd3euRmbjDh9.jpg",
-        "https://t3.ftcdn.net/jpg/02/28/87/62/360_F_228876249_pfyLC3Kn976HOyHgzlQ5L2oH4CcYYMyD.jpg",
-        "https://thumbs.wbm.im/pw/medium/6910be32cd99b7a5a6d6e3a094cafa1d.jpg",
-        "https://thumbs.wbm.im/pw/medium/5f301e483793e9fa9d52ab20ebd377ba.jpg",
-        "https://thumbs.wbm.im/pw/medium/fb3667c9e2b6e58776d9ec5ceb8ce6f4.jpg",
-        "https://thumbs.wbm.im/pw/medium/29195c0bd1049e7730f3c3d9b0a10c2d.jpg",
-        "https://thumbs.wbm.im/pw/medium/a01c7657a3ebdf0cc8626433771ca716.jpg",
-        "https://thumbs.wbm.im/pw/medium/9ee418a4b66688ceee3278d579fdb937.jpg",
-        "https://thumbs.wbm.im/pw/medium/d162945b80040f050d8541c09f9e85e2.jpg",
+
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIF.xQ0b4dehSn5BCsVYtwymtw%3Fpid%3DApi&f=1&ipt=71b44b97ec6a8fb2f94c4ac43e0a9c56ebc0ea475f95dd030d947e967e00145c&ipo=images",
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.hh2LFcptiqicfhOmitj_5wHaFj%3Fcb%3Ducfimg2%26pid%3DApi%26ucfimg%3D1&f=1&ipt=15a88cbd1cc40eb1c3f60dccf90405e2e98a48e071ddf6f33386a45e819e88fc&ipo=images",
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.eho3h1am0_qVdU_n_ppI3AHaE7%3Fcb%3Ducfimgc2%26pid%3DApi&f=1&ipt=92aa694ee6798742d9a2d1f4c0eef5b237c0862240d877af330f20b6f0ef7a95&ipo=images",
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%2Fid%2FOIP.FDmuJRfi4-dXtPjxtKfqMwHaE7%3Fcb%3Ducfimgc2%26pid%3DApi&f=1&ipt=9f1bdf43357f363946d30cc87d2062aac3eeb249d61a5628439ab2e4147daff2&ipo=images",
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%2Fid%2FOIP.pQDcBamA1j_aBc0Tp2JAAQHaE7%3Fcb%3Ducfimgc2%26pid%3DApi&f=1&ipt=8f7aa7efd821f1650a7a6d9d02d7461444b4f94ac41945b1878277d9602f080e&ipo=images"
         )
 
 
@@ -92,7 +87,7 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
         //Welconimg Titile
         Text("New products",
             style = MaterialTheme.typography.headlineMedium.copy(
-                color = AppStyle.colors.lightBlue,
+                color = AppStyle.colors.middleBlue,
             ),
             modifier = Modifier.padding(horizontal = spaceSmall).padding(top=spaceSmall)
         )
@@ -175,7 +170,7 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
                         Routes.navController.navigate( Routes.category +"/"+ it )
                     },
                     colors = SuggestionChipDefaults.suggestionChipColors().copy(
-                        containerColor = AppStyle.colors.darkBlule,
+                        containerColor = AppStyle.colors.darkBlue,
                         labelColor = Color.White
                     ),
                 )
@@ -189,7 +184,7 @@ fun Home(modifier: Modifier = Modifier ,  viewModel: ProductsViewModel = viewMod
             modifier = Modifier.padding(horizontal = spaceSmall).padding(top=spaceSmall)
         )
         Text("Here you can choose the product that you like most! you can even like it before you buy!",
-            style = TextStyle(color = AppStyle.colors.darkBlule , fontWeight = FontWeight.Medium ),
+            style = TextStyle(color = AppStyle.colors.darkBlue , fontWeight = FontWeight.Medium ),
             modifier = modifierPaddingSmall
         )
 

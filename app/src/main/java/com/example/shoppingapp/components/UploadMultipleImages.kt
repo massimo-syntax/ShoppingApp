@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,8 +39,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
-import com.example.shoppingapp.features.UIEvent
-import com.example.shoppingapp.features.UIViewModel
+import com.example.shoppingapp.pictureUpload.UIEvent
+import com.example.shoppingapp.pictureUpload.UIViewModel
 
 
 @Composable
@@ -69,18 +68,16 @@ fun UploadMultipleImages(images: MutableList<String>, viewModel: UIViewModel = v
         if (uiState.images.isNotEmpty()) {
             LazyRow(
                 contentPadding = PaddingValues(6.dp),
-                //modifier = Modifier.height(200.dp)
             ) {
                 items(uiState.images.size) { index ->
-//                    NetworkImage(imageUrl = uiState.images[index].imageUrl)
                     AsyncImage(
                         model = uiState.images[index].imageUrl,
                         contentDescription = "product image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(150.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .padding(4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .padding(4.dp),
                     )
                 }
             }
@@ -92,16 +89,16 @@ fun UploadMultipleImages(images: MutableList<String>, viewModel: UIViewModel = v
             }
 
         } else {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             if (!uiState.isUploading) {
                 Text(
                     text = "No uploaded Images yet",
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = AppStyle.colors.red
                 )
             }
         }
-
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -113,7 +110,7 @@ fun UploadMultipleImages(images: MutableList<String>, viewModel: UIViewModel = v
                     )
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
             modifier = Modifier
                 .height(48.dp)
                 .fillMaxWidth(),

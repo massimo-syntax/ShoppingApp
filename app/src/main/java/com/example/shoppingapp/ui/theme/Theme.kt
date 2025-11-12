@@ -1,6 +1,5 @@
 package com.example.shoppingapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +19,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = AppStyle.colors.darkBlule,
+    primary = AppStyle.colors.darkBlue,
     secondary = AppStyle.colors.middleBlue,
     tertiary = AppStyle.colors.lightBlue,
 

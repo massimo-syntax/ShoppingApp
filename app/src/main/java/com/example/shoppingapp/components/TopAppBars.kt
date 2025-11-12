@@ -1,17 +1,11 @@
 package com.example.shoppingapp.components
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
@@ -31,19 +25,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
-import com.example.shoppingapp.data.model.User
-import com.example.shoppingapp.screen.Pages
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -74,7 +63,7 @@ fun MessagesTopBar(image: String = "", name: String = "") {
                     Icon(
                         painter = painterResource(R.drawable.icon_back),
                         contentDescription = "menu",
-                        tint = AppStyle.colors.darkBlule,
+                        tint = AppStyle.colors.darkBlue,
                     )
                 }
             }
@@ -85,7 +74,7 @@ fun MessagesTopBar(image: String = "", name: String = "") {
                 Icon(
                     painter = painterResource(R.drawable.icon_menu),
                     contentDescription = "menu",
-                    tint = AppStyle.colors.darkBlule
+                    tint = AppStyle.colors.darkBlue
                 )
             }
 
@@ -119,12 +108,12 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
 
     TopAppBar(
         colors = TopAppBarColors(
-            containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            scrolledContainerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            containerColor = if (dark) AppStyle.colors.darkBlue else Color.White,
+            scrolledContainerColor = if (dark) AppStyle.colors.darkBlue else Color.White,
+            titleContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            subtitleContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            actionIconContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
         ),
         modifier = Modifier,
         title = { Text(title) },
@@ -136,7 +125,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                 Icon(
                     painter = painterResource(R.drawable.icon_settings),
                     contentDescription = "menu",
-                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlue
                 )
             }
             // dropdown: notifications, logout
@@ -146,7 +135,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                         if (notifications > 0)
                             Badge(
                                 containerColor = Color.White,
-                                contentColor = AppStyle.colors.darkBlule
+                                contentColor = AppStyle.colors.darkBlue
                             ) {
                                 Text(notifications.toString())
                             }
@@ -155,7 +144,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                     Icon(
                         painter = painterResource(R.drawable.icon_menu),
                         contentDescription = "menu",
-                        tint = if (dark) Color.White else AppStyle.colors.darkBlule
+                        tint = if (dark) Color.White else AppStyle.colors.darkBlue
                     )
                 }
             }
@@ -179,7 +168,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                                 if (notifications > 0)
                                     Badge(
                                         containerColor = Color.White,
-                                        contentColor = AppStyle.colors.darkBlule
+                                        contentColor = AppStyle.colors.darkBlue
                                     ) {
                                         Text(notifications.toString())
                                     }
@@ -188,7 +177,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                             Icon(
                                 painter = painterResource(R.drawable.icon_star),
                                 contentDescription = "rating",
-                                tint = AppStyle.colors.darkBlule
+                                tint = AppStyle.colors.darkBlue
                             )
                         }
                     }
@@ -201,7 +190,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                         Icon(
                             painter = painterResource(R.drawable.icon_settings),
                             contentDescription = "settings",
-                            tint = AppStyle.colors.darkBlule
+                            tint = AppStyle.colors.darkBlue
                         )
                     }
                 )
@@ -216,7 +205,7 @@ fun SimpleStandardTopBar(title: String = "Title", dark: Boolean = false, notific
                         Icon(
                             painter = painterResource(R.drawable.icon_profile),
                             contentDescription = "menu",
-                            tint = AppStyle.colors.darkBlule
+                            tint = AppStyle.colors.darkBlue
                         )
                     }
                 )
@@ -233,12 +222,12 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
     val context = LocalContext.current
     TopAppBar(
         colors = TopAppBarColors(
-            containerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            scrolledContainerColor = if (dark) AppStyle.colors.darkBlule else Color.White,
-            titleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            subtitleContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            actionIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
-            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlule else Color.White,
+            containerColor = if (dark) AppStyle.colors.darkBlue else Color.White,
+            scrolledContainerColor = if (dark) AppStyle.colors.darkBlue else Color.White,
+            titleContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            subtitleContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            actionIconContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
+            navigationIconContentColor = if (!dark) AppStyle.colors.darkBlue else Color.White,
         ),
         modifier = Modifier,
         title = { Text(title) },
@@ -251,7 +240,7 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
                     Icon(
                         painter = painterResource(R.drawable.icon_back),
                         contentDescription = "menu",
-                        tint = if (dark) Color.White else AppStyle.colors.darkBlule,
+                        tint = if (dark) Color.White else AppStyle.colors.darkBlue,
                     )
                 }
             }
@@ -263,14 +252,14 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
                 Icon(
                     painter = painterResource(R.drawable.icon_settings),
                     contentDescription = "menu",
-                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlue
                 )
             }
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     painter = painterResource(R.drawable.icon_menu),
                     contentDescription = "menu",
-                    tint = if (dark) Color.White else AppStyle.colors.darkBlule
+                    tint = if (dark) Color.White else AppStyle.colors.darkBlue
                 )
             }
             DropdownMenu(
@@ -284,7 +273,7 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
                         Icon(
                             painter = painterResource(R.drawable.icon_menu),
                             contentDescription = "menu",
-                            tint = AppStyle.colors.darkBlule
+                            tint = AppStyle.colors.darkBlue
                         )
                     }
                 )
@@ -301,7 +290,7 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
                         Icon(
                             painter = painterResource(R.drawable.icon_profile),
                             contentDescription = "menu",
-                            tint = AppStyle.colors.darkBlule
+                            tint = AppStyle.colors.darkBlue
                         )
                     }
                 )

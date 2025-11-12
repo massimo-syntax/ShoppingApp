@@ -1,6 +1,5 @@
 package com.example.shoppingapp.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.ripple.RippleAlpha
@@ -38,7 +37,6 @@ import com.example.shoppingapp.screen.mainScreenPages.Home
 import com.example.shoppingapp.screen.mainScreenPages.ProfilePage
 import com.example.shoppingapp.screen.mainScreenPages.RemoteProducts
 import com.example.shoppingapp.viewmodel.ProfileViewModel
-import kotlinx.coroutines.delay
 
 
 enum class Pages(val str: String) {
@@ -108,7 +106,7 @@ fun MainScreen(page:Pages = Pages.ONE , profileViewModel: ProfileViewModel = vie
         },
         bottomBar = {
                 NavigationBar(
-                    containerColor = AppStyle.colors.darkBlule,
+                    containerColor = AppStyle.colors.darkBlue,
                     contentColor = Color.White,
                     //modifier = Modifier.border(5.dp, Color.White).clip(RoundedCornerShape(6.dp))
                 ) {
@@ -132,7 +130,7 @@ fun MainScreen(page:Pages = Pages.ONE , profileViewModel: ProfileViewModel = vie
                                             if(it.first == Pages.CART && cart > 0 )
                                                 Badge(
                                                     containerColor = Color.White,
-                                                    contentColor = AppStyle.colors.darkBlule
+                                                    contentColor = AppStyle.colors.darkBlue
                                                 ) {
                                                     Text(cart.toString())
                                                 }

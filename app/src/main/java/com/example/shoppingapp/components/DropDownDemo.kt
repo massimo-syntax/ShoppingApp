@@ -79,7 +79,7 @@ fun DropdownDemo(
             Text(
                 selectedText.value,
                 style = MaterialTheme.typography.titleMedium,
-                color = AppStyle.colors.darkBlule
+                color = AppStyle.colors.darkBlue
             )
             Spacer(Modifier.width(16.dp))
             Icon(

@@ -22,7 +22,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,10 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
@@ -58,7 +54,6 @@ import com.example.shoppingapp.viewmodel.ProfileViewModel
 import com.example.shoppingapp.viewmodel.RatingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -217,7 +212,7 @@ fun ProductScreenUploaded(
                             onClick = {
                                 Routes.navController.navigate(Routes.chat + "/" + shop?.id)
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                             modifier = Modifier
                                 .height(48.dp),
                             shape = RoundedCornerShape(6.dp)
@@ -299,7 +294,7 @@ fun ProductScreenUploaded(
                                 inCart = !inCart
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                         modifier = Modifier
                             .height(48.dp)
                             .fillMaxWidth(),

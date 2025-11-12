@@ -60,13 +60,8 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
 import com.example.shoppingapp.components.BackButtonSimpleTopBar
 import com.example.shoppingapp.components.CustomTextField
-import com.example.shoppingapp.data.model.User
 import com.example.shoppingapp.repository.SelectedProductsRepository
-import com.example.shoppingapp.viewmodel.ProfileViewModel
 import com.example.shoppingapp.viewmodel.RatingsViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -223,7 +218,7 @@ fun PayingContent(ratingsViewModel: RatingsViewModel = viewModel()) {
                                 popUpTo(Routes.main) { inclusive = true }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                         modifier = Modifier
                             .height(48.dp)
                             .fillMaxWidth(),
@@ -283,7 +278,7 @@ fun MainContent(total: Float, visible: MutableState<Boolean>) {
                             it.title,
                             style = TextStyle(
                                 fontSize = 16.sp,
-                                color = AppStyle.colors.darkBlule,
+                                color = AppStyle.colors.darkBlue,
                                 fontWeight = FontWeight.Medium
                             ),
                             maxLines = 2,
@@ -350,7 +345,7 @@ fun MainContent(total: Float, visible: MutableState<Boolean>) {
                     // start nice animation
                     visible.value = !visible.value
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                 modifier = Modifier
                     .height(48.dp)
                     .fillMaxWidth(),

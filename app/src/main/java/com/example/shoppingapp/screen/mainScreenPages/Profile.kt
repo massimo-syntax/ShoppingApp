@@ -3,7 +3,6 @@ package com.example.shoppingapp.screen.mainScreenPages
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -128,7 +126,7 @@ fun ProfilePage(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(AppStyle.colors.darkBlule),
+                .background(AppStyle.colors.darkBlue),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -239,7 +237,7 @@ fun ProfilePage(
                     },
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White,
-                        containerColor = AppStyle.colors.darkBlule
+                        containerColor = AppStyle.colors.darkBlue
                     ),
                     shape = RoundedCornerShape(40)
                 ) {
@@ -253,14 +251,14 @@ fun ProfilePage(
         SecondaryTabRow(
             selectedTabIndex = selectedTab,
             containerColor = Color.White,
-            contentColor = AppStyle.colors.darkBlule,
+            contentColor = AppStyle.colors.darkBlue,
             indicator = {
                 TabRowDefaults.SecondaryIndicator(
                     Modifier.tabIndicatorOffset(selectedTab, matchContentSize = false),
-                    color = AppStyle.colors.darkBlule
+                    color = AppStyle.colors.darkBlue
                 )
             },
-            divider = { HorizontalDivider(color = AppStyle.colors.darkBlule) },
+            divider = { HorizontalDivider(color = AppStyle.colors.darkBlue) },
         ) {
             tabs.forEachIndexed { index, tab ->
                 Tab(
@@ -369,7 +367,7 @@ fun ProductItem(
                     product.description,
                     style = TextStyle(
                         fontSize = 14.sp,
-                        color = AppStyle.colors.darkBlule,
+                        color = AppStyle.colors.darkBlue,
                         fontWeight = FontWeight.Normal
                     ),
                     maxLines = 2,
@@ -491,7 +489,7 @@ fun ContactItem(contact: Contact) {
                     contact.lastMessage,
                     style = TextStyle(
                         fontSize = 14.sp,
-                        color = AppStyle.colors.darkBlule,
+                        color = AppStyle.colors.darkBlue,
                         fontWeight = FontWeight.Normal
                     ),
                     maxLines = 3,
@@ -607,7 +605,7 @@ fun FavoritedItem(
                     favItem.description,
                     style = TextStyle(
                         fontSize = 14.sp,
-                        color = AppStyle.colors.darkBlule,
+                        color = AppStyle.colors.darkBlue,
                         fontWeight = FontWeight.Normal
                     ),
                     maxLines = 2,

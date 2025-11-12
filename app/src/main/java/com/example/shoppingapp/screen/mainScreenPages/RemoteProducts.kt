@@ -17,12 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -94,14 +92,14 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
                             Icon(
                                 painterResource(R.drawable.icon_search),
                                 contentDescription = "Search",
-                                tint = AppStyle.colors.darkBlule,
+                                tint = AppStyle.colors.darkBlue,
                                 modifier = Modifier.height(36.dp)
                             )
                         else
                             Icon(
                                 painterResource(R.drawable.icon_undo),
                                 contentDescription = "Exit search",
-                                tint = AppStyle.colors.darkBlule,
+                                tint = AppStyle.colors.darkBlue,
                                 modifier = Modifier.height(36.dp)
                             )
                     }
@@ -122,7 +120,7 @@ fun RemoteProducts(modifier: Modifier = Modifier, updateBadge:(n:Int)->Unit, vie
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier.width(36.dp),
-                    color = AppStyle.colors.darkBlule
+                    color = AppStyle.colors.darkBlue
                 )
             }
         } else {
@@ -196,7 +194,7 @@ fun ProductCard(
 ) {
     Card(
         shape = RoundedCornerShape(14.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        //elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier.padding(4.dp).fillMaxWidth()
     ) {
         Column(
@@ -241,7 +239,7 @@ fun ProductCard(
                     lineHeight = 20.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    color = AppStyle.colors.darkBlule
+                    color = AppStyle.colors.darkBlue
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -262,9 +260,9 @@ fun ProductCard(
                         onClick = {
                             Routes.navController.navigate(Routes.productJsonApi+"/"+product.id)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                         modifier = Modifier
-                            //.height(48.dp)
+                            .height(36.dp)
                             .padding(0.dp),
                         shape = RoundedCornerShape(6.dp)
                     ) {

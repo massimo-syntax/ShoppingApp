@@ -1,16 +1,11 @@
 package com.example.shoppingapp.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.Category
 import com.example.shoppingapp.data.model.Product
 import com.example.shoppingapp.data.model.UiProductWithFieldsFromRoom
-import com.example.shoppingapp.data.model.User
-import com.example.shoppingapp.features.ImageResults
-import com.example.shoppingapp.repository.MessagesRepository
 import com.example.shoppingapp.repository.SelectedProductsRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -22,8 +17,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.random.Random
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class ProductsViewModel : ViewModel() {
 

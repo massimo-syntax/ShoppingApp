@@ -1,4 +1,4 @@
-package com.example.shoppingapp.features
+package com.example.shoppingapp.pictureUpload
 
 import android.content.Context
 import android.net.Uri
@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.math.absoluteValue
 
 
 class UIViewModel : ViewModel() {
@@ -48,19 +47,7 @@ class UIViewModel : ViewModel() {
 
             object : UploadFileCallback {
                 override fun onFailure(e: UploadcareApiException) {
-
                     Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-                    Log.wtf("ERROR_UPLOAD", e.message.toString())
-
-
                 }
 
                 override fun onProgressUpdate(

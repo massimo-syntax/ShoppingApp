@@ -1,6 +1,5 @@
 package com.example.shoppingapp.screen.mainScreenPages
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,7 +38,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.Navigator
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
@@ -164,7 +162,7 @@ fun ProductCartItem(
                     text = product.title,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-                    color = AppStyle.colors.darkBlule,
+                    color = AppStyle.colors.darkBlue,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -281,7 +279,7 @@ fun CheckoutBar(total: Float , cart : Set<UiCart>) {
                 Routes.navController.navigate(Routes.checkout+"/"+total )
 
             },
-            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+            colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
             modifier = Modifier
                 .height(48.dp)
                 .width(160.dp),

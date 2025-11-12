@@ -44,8 +44,8 @@ import coil.request.ImageRequest
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.Routes
-import com.example.shoppingapp.features.UIEvent
-import com.example.shoppingapp.features.UIViewModel
+import com.example.shoppingapp.pictureUpload.UIEvent
+import com.example.shoppingapp.pictureUpload.UIViewModel
 import com.example.shoppingapp.viewmodel.ProfileViewModel
 
 
@@ -194,7 +194,7 @@ fun PhotoScreen(viewModel: UIViewModel = viewModel() , profileViewModel: Profile
                     Icon(
                         painter = painterResource(R.drawable.icon_image),
                         contentDescription = "save picture",
-                        tint = AppStyle.colors.darkBlule,
+                        tint = AppStyle.colors.darkBlue,
                         modifier = Modifier.size(32.dp)
                     )
                     Text("save image" )
@@ -207,7 +207,7 @@ fun PhotoScreen(viewModel: UIViewModel = viewModel() , profileViewModel: Profile
                     Icon(
                         painter = painterResource(R.drawable.icon_back),
                         contentDescription = "icon back",
-                        tint = AppStyle.colors.darkBlule,
+                        tint = AppStyle.colors.darkBlue,
                         modifier = Modifier.size(32.dp)
                     )
                 }

@@ -20,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -32,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,11 +58,8 @@ import com.example.shoppingapp.viewmodel.ProfileViewModel
 import com.example.shoppingapp.viewmodel.RatingsViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.UUID
 import kotlin.math.round
 
 @Composable
@@ -172,7 +167,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                     Icon(
                         painter = painterResource(R.drawable.icon_further),
                         contentDescription = "skip, further",
-                        tint = AppStyle.colors.darkBlule,
+                        tint = AppStyle.colors.darkBlue,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -219,7 +214,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                             Text(
                                 product.title,
                                 style = TextStyle(
-                                    color = AppStyle.colors.darkBlule,
+                                    color = AppStyle.colors.darkBlue,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 ),
@@ -229,7 +224,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                             Text(
                                 rating.comment,
                                 style = TextStyle(
-                                    color = AppStyle.colors.darkBlule,
+                                    color = AppStyle.colors.darkBlue,
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 14.sp
                                 ),
@@ -256,7 +251,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                                 colors = SliderDefaults.colors(
                                     thumbColor = AppStyle.colors.gold,
                                     activeTrackColor = AppStyle.colors.lightBlue,
-                                    inactiveTrackColor = AppStyle.colors.darkBlule,
+                                    inactiveTrackColor = AppStyle.colors.darkBlue,
                                 ),
                                 steps = 3,
                                 valueRange = 1f..5f
@@ -300,7 +295,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                 Text(
                     "Products must have a comment, or have a rating more that 1 star to be saved",
                     style = TextStyle(
-                        color = AppStyle.colors.darkBlule,
+                        color = AppStyle.colors.darkBlue,
                         fontWeight = FontWeight.Medium
                     ),
                 )
@@ -331,7 +326,7 @@ fun RatingsScreen(profileViewModel: ProfileViewModel = viewModel() , ratingsView
                         }
 
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlule),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppStyle.colors.darkBlue),
                     modifier = Modifier
                         .height(48.dp)
                         .fillMaxWidth(),

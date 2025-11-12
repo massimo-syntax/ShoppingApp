@@ -1,6 +1,5 @@
 package com.example.shoppingapp.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,10 +15,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,15 +59,15 @@ fun CustomTextField(
             valueChange(it)
         },
         singleLine = singleLine,
-        cursorBrush = SolidColor(AppStyle.colors.darkBlule),
+        cursorBrush = SolidColor(AppStyle.colors.darkBlue),
         textStyle = LocalTextStyle.current.copy(
-            color = AppStyle.colors.darkBlule,
+            color = AppStyle.colors.darkBlue,
             fontSize = fontSize
         ),
         decorationBox = { innerTextField ->
             Row(
                 modifier
-                    .border(1.dp, AppStyle.colors.darkBlule, shape = RoundedCornerShape(6.dp))
+                    .border(1.dp, AppStyle.colors.darkBlue, shape = RoundedCornerShape(6.dp))
                     .padding(horizontal = 10.dp, vertical= 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

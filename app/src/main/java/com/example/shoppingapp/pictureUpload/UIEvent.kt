@@ -1,4 +1,4 @@
-package com.example.shoppingapp.features
+package com.example.shoppingapp.pictureUpload
 
 import android.content.Context
 import android.net.Uri
