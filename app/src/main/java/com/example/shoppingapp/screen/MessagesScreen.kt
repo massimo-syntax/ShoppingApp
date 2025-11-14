@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -53,10 +55,6 @@ fun MessagesScreen(
     val myProfile = viewModel.myProfile
     val messages = viewModel.messages
 
-    fun sendMessage(text: String) {
-        viewModel.sendMessage(text)
-    }
-
     LaunchedEffect(Unit) {
         viewModel.getUserProfilesAndRequestConversation(idReceiver)
     }
@@ -65,6 +63,7 @@ fun MessagesScreen(
     Scaffold(
         topBar = { MessagesTopBar(receiverProfile.image, receiverProfile.name )}
     ) { scffoldPadding ->
+        if (myProfile.id.isEmpty()) return@Scaffold
         Column(
             modifier = Modifier
                 .imePadding()
@@ -76,19 +75,33 @@ fun MessagesScreen(
                 Modifier.weight(1f)
             ) {
                 items(messages) {
-                    Text(
-                        it.content,
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .border(1.dp, AppStyle.colors.lightBlue),
-                        color = if(it.senderId == idReceiver) Color.LightGray else Color.DarkGray
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = { if (it.senderId == myProfile.id) Arrangement.End else Arrangement.Start } as Arrangement.Horizontal
+                    ) {
+                        Column(
+                            Modifier.width(300.dp)
+                                .border(1.dp, if (it.senderId == myProfile.id) AppStyle.colors.lightBlue else AppStyle.colors.middleBlue )
+                        ) {
+                            Text(
+                                text = it.content,
+                                modifier = Modifier
+                                    .padding(10.dp),
+                                color = AppStyle.colors.darkBlue
+                            )
+                            Text(
+                                text = it.timestamp.toString(),
+                                modifier = Modifier
+                                    .padding(6.dp),
+                                color = AppStyle.colors.darkBlue
+                            )
+                        }
+                    }
                 }
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, AppStyle.colors.lightBlue),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -96,7 +109,7 @@ fun MessagesScreen(
                 IconButton(
                     onClick = {
                         // send message
-                        sendMessage( messageText)
+                        viewModel.sendMessage( messageText )
                         focusManager.clearFocus()
                         messageText = ""
                     }
@@ -104,7 +117,8 @@ fun MessagesScreen(
                     Icon(
                         painter = painterResource(R.drawable.icon_send),
                         contentDescription = "icon send",
-                        tint = AppStyle.colors.lightBlue
+                        tint = AppStyle.colors.lightBlue,
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }
