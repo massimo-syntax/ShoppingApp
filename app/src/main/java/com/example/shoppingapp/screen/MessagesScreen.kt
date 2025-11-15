@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -29,16 +30,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
 import com.example.shoppingapp.components.CustomTextField
 import com.example.shoppingapp.components.MessagesTopBar
+import com.example.shoppingapp.data.model.Message
 import com.example.shoppingapp.repository.MessagesRepository
 import com.example.shoppingapp.viewmodel.MessagesViewModel
 import com.example.shoppingapp.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun MessagesScreen(
@@ -71,41 +79,44 @@ fun MessagesScreen(
                 .padding(10.dp)
                 .fillMaxSize()
         ) {
+
             LazyColumn(
                 Modifier.weight(1f)
             ) {
                 items(messages) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = { if (it.senderId == myProfile.id) Arrangement.End else Arrangement.Start } as Arrangement.Horizontal
-                    ) {
-                        Column(
-                            Modifier.width(300.dp)
-                                .border(1.dp, if (it.senderId == myProfile.id) AppStyle.colors.lightBlue else AppStyle.colors.middleBlue )
-                        ) {
-                            Text(
-                                text = it.content,
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                color = AppStyle.colors.darkBlue
-                            )
-                            Text(
-                                text = it.timestamp.toString(),
-                                modifier = Modifier
-                                    .padding(6.dp),
-                                color = AppStyle.colors.darkBlue
-                            )
+                    // print day when different
+                    if (it.id == "LABEL"){
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ){
+                            Text(it.content)
                         }
+                    }else{
+
+
+                        if(myProfile.id == it.senderId)
+                            MessageSenderMe(it)
+                        else
+                            MessageSenderOther(it)
+
+
                     }
+
                 }
             }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CustomTextField(text = messageText, modifier = Modifier.weight(1f))
+                CustomTextField(
+                    text = messageText,
+                    valueChange = {messageText = it},
+                    modifier = Modifier.weight(1f)
+                )
                 IconButton(
                     onClick = {
                         // send message
@@ -127,3 +138,86 @@ fun MessagesScreen(
     }
 
 }
+
+@Composable
+fun MessageSenderMe(message: Message){
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+
+        Row(
+            modifier = Modifier.width(260.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+
+            Column(
+                Modifier
+                    .border(2.dp, color = AppStyle.colors.middleBlue, shape = RoundedCornerShape(10.dp,10.dp,0.dp,10.dp))
+                    .padding(14.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = message.content,
+                    color = AppStyle.colors.darkBlue
+                )
+                // datetime
+                val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val date = Date(message.timestamp)
+                val text = sdf.format(date)
+                Text(
+                    text,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.LightGray,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
+
+        }
+
+    }
+
+}
+
+@Composable
+fun MessageSenderOther(message: Message){
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+
+        Row(
+            modifier = Modifier.width(260.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+
+            Column(
+                Modifier
+                    .border(2.dp, color = AppStyle.colors.lightBlue, shape = RoundedCornerShape(10.dp,10.dp,10.dp,0.dp))
+                    .padding(14.dp)
+            ) {
+                Text(
+                    text = message.content,
+                    color = AppStyle.colors.darkBlue
+                )
+                // datetime
+                val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val date = Date(message.timestamp)
+                val text = sdf.format(date)
+                Text(
+                    text,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.LightGray,
+                        fontWeight = FontWeight.Normal
+                    ),
+                )
+            }
+
+        }
+
+    }
+}
+

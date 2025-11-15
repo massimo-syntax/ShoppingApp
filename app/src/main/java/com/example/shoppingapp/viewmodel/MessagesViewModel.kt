@@ -11,7 +11,11 @@ import com.example.shoppingapp.repository.MessagesRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
+import kotlin.text.format
 
 
 class MessagesViewModel : ViewModel() {
@@ -52,7 +56,24 @@ class MessagesViewModel : ViewModel() {
 
     fun getAndListenMessages(messageRepo: MessagesRepository){
         messageRepo.getMessages { newMessages ->
-            messages = newMessages
+
+            // crate a new list to insert also the changing days
+            val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
+            var lastDay = ""
+
+            val listWithDayLables = mutableListOf<Message>()
+
+            newMessages.forEach {
+                val today = sdf.format(Date(it.timestamp))
+                if(today != lastDay){
+                    listWithDayLables.add(Message(id="LABEL", content = today))
+                    lastDay = today
+                }
+                listWithDayLables.add(it)
+            }
+
+            messages = listWithDayLables.toList()
+
         }
     }
 

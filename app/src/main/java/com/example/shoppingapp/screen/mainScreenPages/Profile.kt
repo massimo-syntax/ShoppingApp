@@ -288,32 +288,8 @@ fun ProfilePage(
 fun ProductsTab(myProducts: List<Product> = emptyList()) {
 
     LazyColumn {
-        items(myProducts) { product ->
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Row(modifier = Modifier.padding(12.dp)) {
-                    AsyncImage(
-                        model = product.images.split(",").first(),
-                        contentDescription = product.title,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(product.title, fontWeight = FontWeight.Bold)
-                        Text(product.description)
-                    }
-                }
-            }
-
+        items(myProducts) {
+            ProductItem( it )
         }
     }
 }
@@ -376,25 +352,6 @@ fun ProductItem(
 
             }
 
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .height(heightSize),
-                verticalArrangement = Arrangement.Center
-            ) {
-                IconButton(
-                    onClick = {
-                        // delete product
-                    },
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.adaptivecarticon_foreground),
-                        contentDescription = "delete form favorites",
-                        modifier = Modifier.size(24.dp),
-                        tint = AppStyle.colors.green
-                    )
-                }
-            }
 
         }
 
