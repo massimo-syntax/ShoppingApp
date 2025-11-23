@@ -119,7 +119,7 @@ fun LoginScreen( navController: NavController, authViewModel: AuthViewModel = vi
                 authViewModel.login(email, password){ success, message ->
                     if(success){
                         //redirect user
-                        navController.navigate(Routes.main){
+                        navController.navigate(Routes.main+"/"+Pages.ONE.str){
                             // pop [auth][signup] backstack, first in backstack is main now
                             popUpTo(Routes.auth){inclusive = true}
                         }

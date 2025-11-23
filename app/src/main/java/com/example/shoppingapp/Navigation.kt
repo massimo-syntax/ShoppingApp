@@ -45,9 +45,11 @@ fun Navigation(){
             SignupScreen(navController)
         }
         composable(Routes.main+"/{page}") {  navArgs ->
-            val arg = navArgs.arguments?.getString("page")
+            val arg = navArgs.arguments?.getString("page") ?: Pages.ONE.str
+
             val page = when(arg){
                 "Profile" -> Pages.FOUR
+                Pages.ONE.str -> Pages.ONE
                 else -> {Pages.ONE}
             }
             MainScreen(page)

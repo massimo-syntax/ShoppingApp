@@ -144,7 +144,7 @@ fun SignupScreen( navController: NavController ,authViewModel: AuthViewModel = v
                     authViewModel.signup(email, name, password){ successful, message ->
                         if(successful){
                             signupLoading = false
-                            navController.navigate(Routes.main){
+                            navController.navigate(Routes.main+"/"+Pages.ONE.str){
                                 // pop [auth][signup] backstack, first in backstack is main now
                                 popUpTo(Routes.auth){inclusive = true}
                             }
