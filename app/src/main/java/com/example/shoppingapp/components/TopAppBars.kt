@@ -23,12 +23,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.window.embedding.EmbeddingBounds
 import coil.compose.AsyncImage
 import com.example.shoppingapp.AppStyle.AppStyle
 import com.example.shoppingapp.R
@@ -42,15 +45,18 @@ fun MessagesTopBar(image: String = "", name: String = "") {
     var expanded by remember { mutableStateOf(false) }
     TopAppBar(
         title = {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 AsyncImage(
                     image,
                     "user image",
                     Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
+                        .size(46.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(10.dp))
                 Text(name)
             }
         },
@@ -298,71 +304,3 @@ fun BackButtonSimpleTopBar(title: String, dark: Boolean = false) {
         },
     )
 }
-
-
-// NOT POSSIBLE TO DO: NO TEXTFIELD POPPING UP
-/*
-    - when the view is recomposed, every combination of focus-requester-manager,  keyboard controller
-    do not prevent the keyboard bouncing.. get hidden, then again appears for some ms then disappeares again,
-    every time..
-    I wanted to do like Whatsapp, which is kind of opening another fragment even hiding the bottom bar
-    when on search..
-*/
-// THAT WAS ALSO JUST EXPERIMENTAL
-/*
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBarHouse(textState: TextFieldState) {
-    var active by remember {mutableStateOf(false)}
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    keyboardController?.hide()
-
-    TopAppBar(
-        modifier = Modifier.background(color = Color.Transparent),
-        title = {
-            if(active) SearchTextField(textState , focusRequester)
-            else Text("title")
-                },
-        actions = {
-            Spacer(Modifier.width(8.dp))
-            IconButton(onClick = {
-
-                if(active){
-                    //focusRequester.requestFocus()
-                    textState.setTextAndPlaceCursorAtEnd("")
-                    //keyboardController?.show()
-                }else{
-                    //textState.clearText()
-                    //textState.setTextAndPlaceCursorAtEnd("")
-                    //focusManager.clearFocus()
-                   // keyboardController?.hide()
-                }
-                active = !active
-            }) {
-
-                if(active)
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = "cart icon",
-                )
-                else
-                    Image(
-                        painter = painterResource(R.drawable.adaptivecarticon_foreground),
-                        contentDescription = "cart icon",
-                    )
-            }
-
-            IconButton(onClick = {}) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_background),
-                    contentDescription = "cart icon",
-                )
-            }
-
-        },
-    )
-}
-
-*/

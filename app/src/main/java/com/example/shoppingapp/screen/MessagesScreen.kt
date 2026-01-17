@@ -1,6 +1,5 @@
 package com.example.shoppingapp.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -40,10 +38,7 @@ import com.example.shoppingapp.R
 import com.example.shoppingapp.components.CustomTextField
 import com.example.shoppingapp.components.MessagesTopBar
 import com.example.shoppingapp.data.model.Message
-import com.example.shoppingapp.repository.MessagesRepository
 import com.example.shoppingapp.viewmodel.MessagesViewModel
-import com.example.shoppingapp.viewmodel.ProfileViewModel
-import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -90,17 +85,20 @@ fun MessagesScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ){
-                            Text(it.content)
+                            Text(
+                                text = it.content,
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    color = Color.LightGray,
+                                    fontWeight = FontWeight.Normal
+                                )
+                            )
                         }
                     }else{
-
-
                         if(myProfile.id == it.senderId)
                             MessageSenderMe(it)
                         else
                             MessageSenderOther(it)
-
-
                     }
 
                 }
@@ -120,6 +118,7 @@ fun MessagesScreen(
                 IconButton(
                     onClick = {
                         // send message
+                        if(messageText.isEmpty())return@IconButton
                         viewModel.sendMessage( messageText )
                         focusManager.clearFocus()
                         messageText = ""
@@ -154,7 +153,7 @@ fun MessageSenderMe(message: Message){
             Column(
                 Modifier
                     .border(2.dp, color = AppStyle.colors.middleBlue, shape = RoundedCornerShape(10.dp,10.dp,0.dp,10.dp))
-                    .padding(14.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
@@ -196,7 +195,7 @@ fun MessageSenderOther(message: Message){
             Column(
                 Modifier
                     .border(2.dp, color = AppStyle.colors.lightBlue, shape = RoundedCornerShape(10.dp,10.dp,10.dp,0.dp))
-                    .padding(14.dp)
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
             ) {
                 Text(
                     text = message.content,

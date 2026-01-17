@@ -144,6 +144,7 @@ fun ProfilePage(
                             .size(120.dp)
                             .clip(CircleShape)
                             .background(Color.White),
+                        contentScale = ContentScale.Crop
                     )
                 else
                     AsyncImage(
